@@ -8,6 +8,8 @@
     "make-perks": "node scripts/make_perks_from_dennisreep.mjs",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "predeploy": "npm run build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
+    "deploy": "gh-pages -d dist -b gh-pages",
     "preview": "vite preview"
   },
   "dependencies": {
