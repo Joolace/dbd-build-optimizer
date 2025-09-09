@@ -214,7 +214,7 @@ export default function App() {
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
               <input
-                placeholder="Cerca perk..."
+                placeholder="Find perk..."
                 value={settings.search}
                 onChange={(e) => setSettings({ ...settings, search: e.target.value })}
                 className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none focus:ring-2 focus:ring-red-700/40"
