@@ -205,7 +205,7 @@ export default function App() {
           </div>
           <div className="flex gap-2">
             <button onClick={() => setSettings({ ...settings, role: settings.role === "survivor" ? "killer" : "survivor" })} className="px-3 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-sm">
-              Ruolo: <span className="font-semibold ml-1">{settings.role === "survivor" ? "Survivor" : "Killer"}</span>
+              Role: <span className="font-semibold ml-1">{settings.role === "survivor" ? "Survivor" : "Killer"}</span>
             </button>
           </div>
         </header>
