@@ -25,22 +25,14 @@
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_deadMansSwitch.webp"
     },
     {
-      "id": "hex_thrill_of_the_hunt",
-      "name": "Hex: Thrill of the Hunt",
-      "role": "killer",
-      "tags": [],
-      "desc": "A Hex rooting its power on hope. The false hope of Survivors fills you with excitement and strengthens your Totems. For each Totem remaining in the environment, Hex: Thrill of the Hunt is granted 1 Token. For each Token, all Survivors suffer from a stack-able 10/12/14 % Action Speed penalty to Cleansing and Blessing Totems, up to a maximum of 50/60/70 %. Grants a stack-able 10 % bonus Bloodpoints for actions in the Hunter Category per Token, up to a maximum of 50 %. All effects of the Hex Perk persist until its Hex Totem is cleansed or blessed.",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_thrillOfTheHunt.webp"
-    },
-    {
-      "id": "lethal_pursuer",
-      "name": "Lethal Pursuer",
+      "id": "corrupt_intervention",
+      "name": "Corrupt Intervention",
       "role": "killer",
       "tags": [
-        "aura-reading"
+        "generator"
       ],
-      "desc": "This description is based on the changes announced for or featured in the upcoming Patch 6.1.0 You have been designed to track down and eliminate targets. At the start of the Trial, the Auras of all Survivors are revealed to you for 7/8/9 seconds. Extends the duration of all instances of a Survivor Aura being revealed to you by +2 seconds. Lethal Pursuer benefits from its own effect. \"...it knows what it wants and won't stop till it gets it.\" - Carlos Oliveira",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_lethalPursuer.webp"
+      "desc": "This description is based on the changes announced for or featured in the upcoming Patch 6.1.0 Your prayers invoke a dark power that meddles with the Survivors' chances of survival. At the start of the Trial, the 3 Generators located farthest from you are blocked by The Entity for 80/100/120 seconds. Corrupt Intervention deactivates prematurely once the first Survivor is put into the Dying State. \"It shall be known across the land that the Gods curse the unfaithful.\" - (The Tablet of Adiris, 3.7)",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_corruptIntervention.webp"
     },
     {
       "id": "barbecue_chilli",
@@ -54,37 +46,14 @@
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_barbecueAndChili.webp"
     },
     {
-      "id": "grim_embrace",
-      "name": "Grim Embrace",
+      "id": "lethal_pursuer",
+      "name": "Lethal Pursuer",
       "role": "killer",
       "tags": [
-        "aura-reading",
-        "generator",
-        "hook"
+        "aura-reading"
       ],
-      "desc": "This description is based on the changes announced for or featured in the upcoming Patch 8.0.0 Your act of servitude to The Entity has not gone unnoticed. Each time a Survivor is hooked for the first time, Grim Embrace gains +1 Token and activates once you are at least 16 metres away from the Hook: 1-3 Tokens: Blocks all Generators for 6/8/10 seconds. 4 Tokens: Blocks all Generators for 40 seconds and the Aura of the Obsession is revealed to you for 6 seconds. \"Are we nothing but prisoners to our sorrow?\" - Carmina Mora",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_grimEmbrace.webp"
-    },
-    {
-      "id": "nowhere_to_hide",
-      "name": "Nowhere to Hide",
-      "role": "killer",
-      "tags": [
-        "aura-reading",
-        "generator"
-      ],
-      "desc": "This description is based on the changes announced for or featured in the upcoming Patch 6.4.0 The machinations of the weak and craven draw your ire.Your anger forces Survivors to reveal themselves. Performing the Damage Generator action on a Generator triggers Nowhere to Hide: The Auras of all Survivors within 24 metres of your location are revealed to you for 3/4/5 seconds. \"Out with you, cowards! Show yourselves!\" - Tarhos KovÃ¡cs",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_nowhereToHide.webp"
-    },
-    {
-      "id": "corrupt_intervention",
-      "name": "Corrupt Intervention",
-      "role": "killer",
-      "tags": [
-        "generator"
-      ],
-      "desc": "This description is based on the changes announced for or featured in the upcoming Patch 6.1.0 Your prayers invoke a dark power that meddles with the Survivors' chances of survival. At the start of the Trial, the 3 Generators located farthest from you are blocked by The Entity for 80/100/120 seconds. Corrupt Intervention deactivates prematurely once the first Survivor is put into the Dying State. \"It shall be known across the land that the Gods curse the unfaithful.\" - (The Tablet of Adiris, 3.7)",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_corruptIntervention.webp"
+      "desc": "This description is based on the changes announced for or featured in the upcoming Patch 6.1.0 You have been designed to track down and eliminate targets. At the start of the Trial, the Auras of all Survivors are revealed to you for 7/8/9 seconds. Extends the duration of all instances of a Survivor Aura being revealed to you by +2 seconds. Lethal Pursuer benefits from its own effect. \"...it knows what it wants and won't stop till it gets it.\" - Carlos Oliveira",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_lethalPursuer.webp"
     },
     {
       "id": "mindbreaker",
@@ -98,6 +67,17 @@
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_mindbreaker.webp"
     },
     {
+      "id": "nowhere_to_hide",
+      "name": "Nowhere to Hide",
+      "role": "killer",
+      "tags": [
+        "aura-reading",
+        "generator"
+      ],
+      "desc": "This description is based on the changes announced for or featured in the upcoming Patch 6.4.0 The machinations of the weak and craven draw your ire.Your anger forces Survivors to reveal themselves. Performing the Damage Generator action on a Generator triggers Nowhere to Hide: The Auras of all Survivors within 24 metres of your location are revealed to you for 3/4/5 seconds. \"Out with you, cowards! Show yourselves!\" - Tarhos KovÃ¡cs",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_nowhereToHide.webp"
+    },
+    {
       "id": "eruption",
       "name": "Eruption",
       "role": "killer",
@@ -107,6 +87,18 @@
       ],
       "desc": "This description is based on the changes announced for or featured in the upcoming Patch 6.6.0 The NE-Î± parasite provides you with the intelligence and awareness needed to set a trap. Performing the Damage Generator action on a Generator applies Eruption: All affected Generators are highlighted to you in yellow. The next time any Survivor enters the Dying State by any means, all affected Generators explode and immediately start regressing, which removes the highlighted Aura. Instantly regresses the Generator by -10 % of its maximum possible Progression. Causes all Survivors repairing the afflicted Generators to scream and reveal their Aura to you for 8/10/12 seconds. Eruption has a cool-down of 30 seconds. \"It can use weapons?\" - Jill Valentine",
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_eruption.webp"
+    },
+    {
+      "id": "grim_embrace",
+      "name": "Grim Embrace",
+      "role": "killer",
+      "tags": [
+        "aura-reading",
+        "generator",
+        "hook"
+      ],
+      "desc": "This description is based on the changes announced for or featured in the upcoming Patch 8.0.0 Your act of servitude to The Entity has not gone unnoticed. Each time a Survivor is hooked for the first time, Grim Embrace gains +1 Token and activates once you are at least 16 metres away from the Hook: 1-3 Tokens: Blocks all Generators for 6/8/10 seconds. 4 Tokens: Blocks all Generators for 40 seconds and the Aura of the Obsession is revealed to you for 6 seconds. \"Are we nothing but prisoners to our sorrow?\" - Carmina Mora",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_grimEmbrace.webp"
     },
     {
       "id": "hubris",
@@ -932,6 +924,14 @@
       ],
       "desc": "Each time you hook a Survivor other than your Obsession, you gain +1 Token: For as long as the Obsession is alive, all other Survivors suffer from a stack-able 2/2.5/3 % per Token Action Speed penalty to Repairing, Healing, and Sabotaging, up to a maximum of 22/27.5/33 % or 11 Tokens. The Obsession is unaffected by this penalty and instead granted a permanent +33 % Action Speed bonus to Unhooking and Healing other Survivors. You can only be obsessed with one Survivor at a time. \"This isn't a man...\" - Dr Sam Loomis",
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_dyingLight.webp"
+    },
+    {
+      "id": "hex_thrill_of_the_hunt",
+      "name": "Hex: Thrill of the Hunt",
+      "role": "killer",
+      "tags": [],
+      "desc": "A Hex rooting its power on hope. The false hope of Survivors fills you with excitement and strengthens your Totems. For each Totem remaining in the environment, Hex: Thrill of the Hunt is granted 1 Token. For each Token, all Survivors suffer from a stack-able 10/12/14 % Action Speed penalty to Cleansing and Blessing Totems, up to a maximum of 50/60/70 %. Grants a stack-able 10 % bonus Bloodpoints for actions in the Hunter Category per Token, up to a maximum of 50 %. All effects of the Hex Perk persist until its Hex Totem is cleansed or blessed.",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_thrillOfTheHunt.webp"
     },
     {
       "id": "whispers",
