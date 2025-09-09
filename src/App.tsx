@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * Dead by Daylight – Build Optimizer (Read‑only, production-ready MVP)
@@ -108,12 +108,6 @@ function scorePerk(
     // Se tra i perk correnti c'è già un perk con un tag mutex, applichiamo una penalità forte
     const currentHasSameMutex = ctx.current.some((c) => c.tags.map(normalize).some((t) => pTags.has(t) && mutex.has(t)));
     if (currentHasSameMutex) score -= 100; // di fatto impedisce il secondo perk di quel gruppo
-
-    // Inoltre: se l'utente ha già lockato un perk con lo stesso tag mutex, ferma subito
-    const lockedHasSameMutex = ctx.locked.some((name) => {
-      const n = normalize(name);
-      return ctx.current.concat().some(() => false) || false; // placeholder to satisfy TS
-    });
   }
 
   // 5) Tiebreaker leggero per stabilità
@@ -142,7 +136,7 @@ export default function App() {
     let isMounted = true;
     (async () => {
       try {
-        const res = await fetch(import.meta.env.BASE_URL + 'perks.json', { cache: 'no-store' })
+        const res = await fetch(import.meta.env.BASE_URL + 'perks.json', { cache: 'no-store' });
         if (!res.ok) throw new Error("perks.json non trovato");
         const json = (await res.json()) as DbdDataset;
         if (isMounted) setDataset(json);
