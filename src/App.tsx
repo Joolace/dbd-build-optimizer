@@ -196,15 +196,15 @@ export default function App() {
   }, [JSON.stringify(perks), settings.role, JSON.stringify(settings.selectedTags), JSON.stringify(settings.locked), JSON.stringify(settings.banned)]);
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 px-4 py-6 flex justify-center">
+    <div className="min-h-screen bg-black text-zinc-100 px-4 py-6 flex justify-center">
        <div className="w-full max-w-none mx-auto px-4 py-6 space-y-6">
         <header className="flex items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">DBD Build Optimizer</h1>
-            <p className="text-neutral-400 text-sm">Version: 0.8.1a</p>
+            <p className="text-zinc-400 text-sm">Version: 0.8.1a</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setSettings({ ...settings, role: settings.role === "survivor" ? "killer" : "survivor" })} className="px-3 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-sm">
+            <button onClick={() => setSettings({ ...settings, role: settings.role === "survivor" ? "killer" : "survivor" })} className="px-3 py-2 rounded-xl bg-red-700/20 hover:bg-red-700/30 border border-red-900/40 text-sm">
               Role: <span className="font-semibold ml-1">{settings.role === "survivor" ? "Survivor" : "Killer"}</span>
             </button>
           </div>
@@ -217,7 +217,7 @@ export default function App() {
                 placeholder="Cerca perk..."
                 value={settings.search}
                 onChange={(e) => setSettings({ ...settings, search: e.target.value })}
-                className="w-full px-3 py-2 rounded-xl bg-neutral-900 border border-neutral-800 outline-none focus:ring-2 focus:ring-neutral-700"
+                className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none focus:ring-2 focus:ring-red-700/40"
               />
             </div>
 
@@ -232,7 +232,7 @@ export default function App() {
                       const sel = active ? settings.selectedTags.filter((x: string) => x !== t) : [...settings.selectedTags, t];
                       setSettings({ ...settings, selectedTags: sel });
                     }}
-                    className={`px-3 py-1 rounded-full border text-sm ${active ? "bg-neutral-200 text-neutral-900 border-neutral-200" : "bg-neutral-950 border-neutral-700 text-neutral-300 hover:bg-neutral-900"}`}
+                    className={`px-3 py-1 rounded-full border text-sm ${active ? "bg-red-600 text-white border-red-600" : "bg-black border-red-900/40 text-zinc-300 hover:bg-zinc-900"}`}
                   >
                     {t}
                   </button>
@@ -255,12 +255,12 @@ export default function App() {
 
           {/* Right column: Optimizer */}
           <aside className="space-y-4">
-            <div className="p-4 rounded-2xl bg-neutral-900 border border-neutral-800">
+            <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40">
               <h2 className="font-semibold mb-2">Optimizer</h2>
-              <p className="text-sm text-neutral-400 mb-3">Block or ban perks, choose tags, then generate. The algorithm suggests up to 4 synergistic perks.</p>
+              <p className="text-sm text-zinc-400 mb-3">Block or ban perks, choose tags, then generate. The algorithm suggests up to 4 synergistic perks.</p>
 
               <div className="mb-3">
-                <label className="text-xs text-neutral-400">Locked</label>
+                <label className="text-xs text-zinc-400">Locked</label>
                 <TokenList
                   items={settings.locked}
                   onRemove={(x) => setSettings({ ...settings, locked: settings.locked.filter((i: string) => i !== x) })}
@@ -268,52 +268,52 @@ export default function App() {
               </div>
 
               <div className="mb-3">
-                <label className="text-xs text-neutral-400">Banned</label>
+                <label className="text-xs text-zinc-400">Banned</label>
                 <TokenList
                   items={settings.banned}
                   onRemove={(x) => setSettings({ ...settings, banned: settings.banned.filter((i: string) => i !== x) })}
                 />
               </div>
 
-              <button onClick={() => { /* recompute */ setTimeout(runOptimize, 0); }} className="w-full px-3 py-2 rounded-xl bg-white text-neutral-950 font-medium hover:opacity-90">Generate build</button>
+              <button onClick={() => { /* recompute */ setTimeout(runOptimize, 0); }} className="w-full px-3 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-500">Generate build</button>
 
               <div className="mt-4 grid grid-cols-1 gap-3">
                 {suggested.map((p) => (
-                  <div key={p.id} className="p-3 rounded-xl bg-neutral-800 border border-neutral-700">
+                  <div key={p.id} className="p-3 rounded-xl bg-zinc-800 border border-red-900/40">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-medium">{p.name}</div>
-                        <div className="text-xs text-neutral-300">{p.tags.join(" · ")}</div>
+                        <div className="text-xs text-zinc-300">{p.tags.join(" · ")}</div>
                       </div>
                       <div className="flex gap-2">
                         <button
-                          className="text-xs px-2 py-1 rounded-lg bg-neutral-700 hover:bg-neutral-600"
+                          className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
                           onClick={() => setSettings({ ...settings, locked: Array.from(new Set([...settings.locked, p.name])) })}
                         >Lock</button>
                         <button
-                          className="text-xs px-2 py-1 rounded-lg bg-neutral-700 hover:bg-neutral-600"
+                          className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
                           onClick={() => setSettings({ ...settings, banned: Array.from(new Set([...settings.banned, p.name])) })}
                         >Ban</button>
                       </div>
                     </div>
                     {p.synergy && p.synergy.length > 0 && (
-                      <div className="text-xs text-neutral-300 mt-1">Sinergie: {p.synergy.join(", ")}</div>
+                      <div className="text-xs text-zinc-300 mt-1">Sinergie: {p.synergy.join(", ")}</div>
                     )}
-                    {p.desc && <p className="text-xs text-neutral-400 mt-1">{p.desc}</p>}
+                    {p.desc && <p className="text-xs text-zinc-400 mt-1">{p.desc}</p>}
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-neutral-900 border border-neutral-800">
+            <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40">
               <h3 className="font-semibold mb-2">Dataset</h3>
-              <p className="text-sm text-neutral-400 mb-3">The data is updated and created with the <a href="https://dbd.tricky.lol" target="_blank">dbd.tricky.lol</a> APIs. This tool is still under development, so you may encounter bugs, data errors, etc. </p>
-              <p className="text-xs text-neutral-400">Developed by <a href="https://github.com/Joolace/" target="_blank">Joolace</a></p>
+              <p className="text-sm text-zinc-400 mb-3">The data is updated and created with the <a href="https://dbd.tricky.lol" target="_blank">dbd.tricky.lol</a> APIs. This tool is still under development, so you may encounter bugs, data errors, etc. </p>
+              <p className="text-xs text-zinc-400">Developed by <a href="https://github.com/Joolace/" target="_blank">Joolace</a></p>
             </div>
           </aside>
         </section>
 
-        <footer className="text-center text-xs text-neutral-500 pt-4 border-t border-neutral-900">
+        <footer className="text-center text-xs text-zinc-500 pt-4 border-t border-neutral-900">
           <p>Dataset: {dataset?.version ?? "fallback"}</p>
         </footer>
       </div>
@@ -323,25 +323,25 @@ export default function App() {
 
 function PerkCard({ perk, onLock, onBan }: { perk: Perk; onLock: () => void; onBan: () => void }) {
   return (
-    <div className="p-3 rounded-2xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition">
+    <div className="p-3 rounded-2xl bg-zinc-900 border border-red-900/40 hover:border-red-900/40 transition">
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="font-medium">{perk.name}</div>
-          <div className="text-xs text-neutral-300 capitalize">{perk.role}</div>
+          <div className="text-xs text-zinc-300 capitalize">{perk.role}</div>
         </div>
         <div className="flex gap-2">
-          <button onClick={onLock} className="text-xs px-2 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700">Lock</button>
-          <button onClick={onBan} className="text-xs px-2 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700">Ban</button>
+          <button onClick={onLock} className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700">Lock</button>
+          <button onClick={onBan} className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700">Ban</button>
         </div>
       </div>
       {perk.tags?.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
           {perk.tags.map((t) => (
-            <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 border border-neutral-700 text-neutral-200">{t}</span>
+            <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 border border-red-900/40 text-zinc-200">{t}</span>
           ))}
         </div>
       )}
-      {perk.desc && <p className="text-xs text-neutral-400 mt-2">{perk.desc}</p>}
+      {perk.desc && <p className="text-xs text-zinc-400 mt-2">{perk.desc}</p>}
     </div>
   );
 }
@@ -349,11 +349,11 @@ function PerkCard({ perk, onLock, onBan }: { perk: Perk; onLock: () => void; onB
 function TokenList({ items, onRemove }: { items: string[]; onRemove: (x: string) => void }) {
   return (
     <div className="flex flex-wrap gap-2">
-      {items.length === 0 && <div className="text-xs text-neutral-500">(empty)</div>}
+      {items.length === 0 && <div className="text-xs text-zinc-500">(empty)</div>}
       {items.map((x) => (
-        <span key={x} className="text-xs px-2 py-1 rounded-full bg-neutral-800 border border-neutral-700">
+        <span key={x} className="text-xs px-2 py-1 rounded-full bg-zinc-800 border border-red-900/40">
           {x}
-          <button onClick={() => onRemove(x)} className="ml-2 text-neutral-300 hover:text-white">×</button>
+          <button onClick={() => onRemove(x)} className="ml-2 text-zinc-300 hover:text-white">×</button>
         </span>
       ))}
     </div>
