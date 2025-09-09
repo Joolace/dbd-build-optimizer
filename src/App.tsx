@@ -307,8 +307,8 @@ export default function App() {
 
             <div className="p-4 rounded-2xl bg-neutral-900 border border-neutral-800">
               <h3 className="font-semibold mb-2">Dataset</h3>
-              <p className="text-sm text-neutral-400 mb-3">L'app legge <code>/perks.json</code> (statico). Aggiorna il file sul server per modificare i perk visibili.</p>
-              <p className="text-xs text-neutral-400">Per ambienti di staging puoi lasciare il fallback integrato, ma in produzione carica sempre il JSON completo.</p>
+              <p className="text-sm text-neutral-400 mb-3">The data is updated and created with the <a href="https://dbd.tricky.lol" target="_blank">dbd.tricky.lol</a> APIs.</p>
+              <p className="text-xs text-neutral-400">Developed by <a href="https://github.com/Joolace/" target="_blank">Joolace</a></p>
             </div>
           </aside>
         </section>
