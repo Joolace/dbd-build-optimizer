@@ -2,7 +2,7 @@
 
 A client‑side companion web app to create, refine, and share **perk builds** for *Dead by Daylight*. Users pick a role, choose style tags, lock/ban perks, and the optimizer proposes up to 4 perks using **synergy** and **mutual‑exclusion** rules (e.g., no double *Exhaustion* perks).
 
-> **Live demo:** _(insert your GitHub Pages URL or custom domain)_
+> **LIVE:** [DBD Build Optimizer](https://www.dbdbuildoptimizer.com/)
 
 ---
 
