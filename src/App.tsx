@@ -472,10 +472,16 @@ export default function App() {
                   key={p.id}
                   perk={p}
                   onLock={() =>
-                    setSettings({
-                      ...settings,
-                      locked: Array.from(new Set([...settings.locked, p.name])),
-                    })
+                    setSettings((prev) => ({
+                      ...prev,
+                      locked: Array.from(new Set([...prev.locked, p.name])),
+                      // se era bannato, toglilo dai banned
+                      banned: prev.banned.filter(
+                        (i) =>
+                          normalize(i) !== normalize(p.name) &&
+                          normalize(i) !== normalize(p.id)
+                      ),
+                    }))
                   }
                   onBan={() =>
                     setSettings((prev) => ({
@@ -580,12 +586,17 @@ export default function App() {
                         <button
                           className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
                           onClick={() =>
-                            setSettings({
-                              ...settings,
+                            setSettings((prev) => ({
+                              ...prev,
                               locked: Array.from(
-                                new Set([...settings.locked, p.name])
+                                new Set([...prev.locked, p.name])
                               ),
-                            })
+                              banned: prev.banned.filter(
+                                (i) =>
+                                  normalize(i) !== normalize(p.name) &&
+                                  normalize(i) !== normalize(p.id)
+                              ),
+                            }))
                           }
                         >
                           Lock
