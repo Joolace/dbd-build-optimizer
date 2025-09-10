@@ -313,51 +313,39 @@ export default function App() {
 
   const [suggested, setSuggested] = useState<Perk[]>([]);
   const runOptimize = () => {
-    const lockedPerks = perks.filter((p) =>
-      settings.locked.some(
-        (n) =>
-          normalize(n) === normalize(p.name) || normalize(n) === normalize(p.id)
-      )
+    const isBanned = (x: Perk | string) => {
+      const name = typeof x === "string" ? x : x.name;
+      const id = typeof x === "string" ? x : x.id;
+      return settings.banned.some(
+        (b) =>
+          normalize(b) === normalize(name) || normalize(b) === normalize(id)
+      );
+    };
+
+    // locked effettivi = locked - banned
+    const lockedPerks = perks.filter(
+      (p) =>
+        settings.locked.some(
+          (n) =>
+            normalize(n) === normalize(p.name) ||
+            normalize(n) === normalize(p.id)
+        ) && !isBanned(p)
     );
+
     let chosen: Perk[] = dedupeByName(lockedPerks).slice(0, 4);
+    if (chosen.length >= 4) {
+      setSuggested(chosen.slice(0, 4));
+      return;
+    }
+
+    // pool = solo stesso ruolo, non già scelti, NON bannati
     const pool = perks
       .filter((p) => p.role === settings.role)
       .filter(
         (p) => !chosen.some((c) => normalize(c.name) === normalize(p.name))
       )
+      .filter((p) => !isBanned(p))
       .slice();
-    pool.sort(
-      (a, b) =>
-        scorePerk(b, {
-          role: settings.role,
-          tags: settings.selectedTags,
-          locked: settings.locked,
-          banned: settings.banned,
-          current: chosen,
-          killerFocus: settings.killerFocus,
-        }) -
-        scorePerk(a, {
-          role: settings.role,
-          tags: settings.selectedTags,
-          locked: settings.locked,
-          banned: settings.banned,
-          current: chosen,
-          killerFocus: settings.killerFocus,
-        })
-    );
-    const pick = pool.shift()!;
-    if (
-      scorePerk(pick, {
-        role: settings.role,
-        tags: settings.selectedTags,
-        locked: settings.locked,
-        banned: settings.banned,
-        current: chosen,
-        killerFocus: settings.killerFocus,
-      }) > -9999
-    ) {
-      chosen.push(pick);
-    }
 
     while (chosen.length < 4 && pool.length) {
       pool.sort(
@@ -368,6 +356,7 @@ export default function App() {
             locked: settings.locked,
             banned: settings.banned,
             current: chosen,
+            killerFocus: settings.killerFocus,
           }) -
           scorePerk(a, {
             role: settings.role,
@@ -375,9 +364,12 @@ export default function App() {
             locked: settings.locked,
             banned: settings.banned,
             current: chosen,
+            killerFocus: settings.killerFocus,
           })
       );
+
       const pick = pool.shift()!;
+      // (il filtro sopra evita già i banned, questo è solo difensivo)
       if (
         scorePerk(pick, {
           role: settings.role,
@@ -385,12 +377,14 @@ export default function App() {
           locked: settings.locked,
           banned: settings.banned,
           current: chosen,
+          killerFocus: settings.killerFocus,
         }) > -9999
       ) {
         chosen.push(pick);
       }
     }
-    setSuggested(chosen);
+
+    setSuggested(chosen.slice(0, 4));
   };
 
   useEffect(() => {
@@ -402,6 +396,7 @@ export default function App() {
     JSON.stringify(settings.selectedTags),
     JSON.stringify(settings.locked),
     JSON.stringify(settings.banned),
+    settings.killerFocus, // 👈 aggiungi questa
   ]);
 
   return (
@@ -483,10 +478,15 @@ export default function App() {
                     })
                   }
                   onBan={() =>
-                    setSettings({
+                    setSettings((prev) => ({
                       ...settings,
                       banned: Array.from(new Set([...settings.banned, p.name])),
-                    })
+                      locked: prev.locked.filter(
+                        (i) =>
+                          normalize(i) !== normalize(p.name) &&
+                          normalize(i) !== normalize(p.id)
+                      ),
+                    }))
                   }
                 />
               ))}
@@ -593,12 +593,19 @@ export default function App() {
                         <button
                           className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
                           onClick={() =>
-                            setSettings({
-                              ...settings,
+                            setSettings((prev) => ({
+                              ...prev,
+                              // aggiungi ai banned (senza duplicati)
                               banned: Array.from(
-                                new Set([...settings.banned, p.name])
+                                new Set([...prev.banned, p.name])
                               ),
-                            })
+                              // rimuovi dagli eventuali locked
+                              locked: prev.locked.filter(
+                                (i) =>
+                                  normalize(i) !== normalize(p.name) &&
+                                  normalize(i) !== normalize(p.id)
+                              ),
+                            }))
                           }
                         >
                           Ban

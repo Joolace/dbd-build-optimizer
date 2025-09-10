@@ -10,17 +10,52 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const SOURCES = [
-  { role: "killer",   url: "https://dennisreep.nl/dbd/perks/killer/"   },
+  { role: "killer", url: "https://dennisreep.nl/dbd/perks/killer/" },
   { role: "survivor", url: "https://dennisreep.nl/dbd/perks/survivor/" },
 ];
 
 const KILLERS = [
-  "nurse","blight","dark_lord","executioner","singularity","lich","animatronic","artist","ghoul",
-  "oni","knight","unknown","spirit","xenomorph","nightmare","hillbilly","plague","mastermind","nemesis",
-  "clown","shape","cenobite","huntress","good_guy","demogorgon","cannibal","legion","deathslinger","onryo",
-  "dredge","pig","wraith","trickster","doctor","twins","ghost_face","houndmaster","hag","trapper","skull_merchant"
+  "nurse",
+  "blight",
+  "dark_lord",
+  "executioner",
+  "singularity",
+  "lich",
+  "animatronic",
+  "artist",
+  "ghoul",
+  "oni",
+  "knight",
+  "unknown",
+  "spirit",
+  "xenomorph",
+  "nightmare",
+  "hillbilly",
+  "plague",
+  "mastermind",
+  "nemesis",
+  "clown",
+  "shape",
+  "cenobite",
+  "huntress",
+  "good_guy",
+  "demogorgon",
+  "cannibal",
+  "legion",
+  "deathslinger",
+  "onryo",
+  "dredge",
+  "pig",
+  "wraith",
+  "trickster",
+  "doctor",
+  "twins",
+  "ghost_face",
+  "houndmaster",
+  "hag",
+  "trapper",
+  "skull_merchant",
 ];
-
 
 /** Normalizza testo (spazi multipli, NBSP) */
 function clean(t) {
@@ -32,7 +67,8 @@ function clean(t) {
 
 /** id stabile a partire dal nome */
 function toId(name) {
-  return clean(name).toLowerCase()
+  return clean(name)
+    .toLowerCase()
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
 }
@@ -45,7 +81,9 @@ function parseFirstNumber(s) {
 
 async function scrapeKillerTopPerks(slug) {
   const url = `https://dennisreep.nl/dbd/killers/${slug}`;
-  const res = await fetch(url, { headers: { "User-Agent": "perk-scraper/1.0" } });
+  const res = await fetch(url, {
+    headers: { "User-Agent": "perk-scraper/1.0" },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status} per ${url}`);
   const html = await res.text();
   const $ = cheerio.load(html);
@@ -73,12 +111,19 @@ async function scrapeKillerTopPerks(slug) {
 
   // 2) fallback generico se non abbiamo trovato la tabella (prendi nomi da link/list/item)
   if (names.length === 0) {
-    $section.find("a, li, td, .perk, .perk-name, .card, .grid *").each((_, node) => {
-      const txt = clean($(node).text());
-      if (txt && txt.length <= 60 && /[A-Za-z]/.test(txt) && !/top perks/i.test(txt)) {
-        names.push(txt);
-      }
-    });
+    $section
+      .find("a, li, td, .perk, .perk-name, .card, .grid *")
+      .each((_, node) => {
+        const txt = clean($(node).text());
+        if (
+          txt &&
+          txt.length <= 60 &&
+          /[A-Za-z]/.test(txt) &&
+          !/top perks/i.test(txt)
+        ) {
+          names.push(txt);
+        }
+      });
   }
 
   // Dedup mantenendo l'ordine e limita
@@ -86,7 +131,10 @@ async function scrapeKillerTopPerks(slug) {
   const seen = new Set();
   for (const n of names) {
     const k = n.toLowerCase();
-    if (!seen.has(k)) { seen.add(k); out.push(n); }
+    if (!seen.has(k)) {
+      seen.add(k);
+      out.push(n);
+    }
   }
   return { slug, perks: out.slice(0, 12) };
 }
@@ -96,7 +144,9 @@ async function scrapeKillerTopPerks(slug) {
  * Se il layout cambia, prova ad adattare i selettori qui.
  */
 async function scrapePerks(role, url) {
-  const res = await fetch(url, { headers: { "User-Agent": "perk-scraper/1.0" } });
+  const res = await fetch(url, {
+    headers: { "User-Agent": "perk-scraper/1.0" },
+  });
   if (!res.ok) throw new Error(`HTTP ${res.status} per ${url}`);
   const html = await res.text();
   const $ = cheerio.load(html);
@@ -109,25 +159,28 @@ async function scrapePerks(role, url) {
     if ($tds.length < 3) return;
 
     // Colonne minime
-    const name = clean($tds.eq(1).text());       // Name
+    const name = clean($tds.eq(1).text()); // Name
     const descCell = $tds.eq(2).clone();
-    descCell.find(
-    '.dynamicTitle'
-    ).remove();
+    descCell.find(".dynamicTitle").remove();
 
     let desc = clean(descCell.text());
 
     // Hardening: togli eventuali frasi “disclaimer” rimaste nel testo
     desc = desc
-   .replace(/This description is based on[^.]*upcoming Patch[^.]*\.\s*/gi, '')
-  . replace(/^Patch\s*\d+(?:\.\d+)*[^.]*\.\s*/gi, '');     // Description
+      .replace(
+        /This description is based on[^.]*upcoming Patch[^.]*\.\s*/gi,
+        ""
+      )
+      .replace(/^Patch\s*\d+(?:\.\d+)*[^.]*\.\s*/gi, ""); // Description
     if (!name) return;
 
     // Owner/Tier/Rate se presenti
     const owner = $tds.length >= 4 ? clean($tds.eq(3).text()) : null; // Killer/Survivor name
     const tierRaw = $tds.length >= 5 ? clean($tds.eq(4).text()) : null; // e.g. "S", "A"
     const rateRaw = $tds.length >= 6 ? clean($tds.eq(5).text()) : null; // e.g. "4.6"
-    const tier = tierRaw ? tierRaw.replace(/[^A-Za-z]/g, "").toUpperCase() || null : null;
+    const tier = tierRaw
+      ? tierRaw.replace(/[^A-Za-z]/g, "").toUpperCase() || null
+      : null;
     const rate = rateRaw ? parseFirstNumber(rateRaw) : null;
 
     // Tag basilari dal testo (puoi estendere liberamente)
@@ -139,13 +192,16 @@ async function scrapePerks(role, url) {
     if (lower.includes("gen")) tags.push("generator");
     if (lower.includes("hook")) tags.push("hook");
     if (lower.includes("endurance")) tags.push("endurance");
-    if (lower.includes("stealth") || lower.includes("scratch")) tags.push("stealth");
+    if (lower.includes("stealth") || lower.includes("scratch"))
+      tags.push("stealth");
     // piccolo aiuto: tag per Scourge Hook
     if (/^scourge hook/i.test(name)) tags.push("scourge_hook");
 
     // Icona (se presente)
     const iconEl = $tds.eq(0).find("img").first();
-    const icon = iconEl.attr("src") ? new URL(iconEl.attr("src"), url).href : null;
+    const icon = iconEl.attr("src")
+      ? new URL(iconEl.attr("src"), url).href
+      : null;
 
     // Costruisci il perk mantenendo la "struttura" esistente
     const perk = {
@@ -160,7 +216,7 @@ async function scrapePerks(role, url) {
     // Aggiunte NON invasive in meta
     const meta = {};
     if (owner) meta.owner = owner;
-    if (tier) meta.tier = tier;   // "S", "A", "B", ...
+    if (tier) meta.tier = tier; // "S", "A", "B", ...
     if (rate !== null) meta.rate = rate; // numero (float)
     if (Object.keys(meta).length > 0) perk.meta = meta;
 
@@ -187,36 +243,36 @@ async function main() {
   }
 
   // Mappa per nome normalizzato -> perk
-// Mappa per nome e per id
-const byName = new Map();
-const byId = new Map();
-for (const p of results) {
-  byName.set(p.name.toLowerCase(), p);
-  byId.set(p.id, p);
-}
-
-// Per ogni killer, marca i top perks con { slug, rank }
-for (const slug of KILLERS) {
-  try {
-    const { perks: topNames } = await scrapeKillerTopPerks(slug);
-    topNames.forEach((nm, idx) => {
-      // 1) prova match per nome
-      let perk = byName.get(nm.toLowerCase());
-      // 2) fallback: prova per id normalizzato
-      if (!perk) perk = byId.get(toId(nm));
-      if (!perk) return;
-
-      perk.meta = perk.meta || {};
-      perk.meta.topForKillers = perk.meta.topForKillers || [];
-      if (!perk.meta.topForKillers.some((x) => x.slug === slug)) {
-        perk.meta.topForKillers.push({ slug, rank: idx + 1 });
-      }
-    });
-    console.log(`[top] ${slug}: ${topNames.length} nomi trovati`);
-  } catch (e) {
-    console.warn(`Top Perks falliti per ${slug}:`, e.message);
+  // Mappa per nome e per id
+  const byName = new Map();
+  const byId = new Map();
+  for (const p of results) {
+    byName.set(p.name.toLowerCase(), p);
+    byId.set(p.id, p);
   }
-}
+
+  // Per ogni killer, marca i top perks con { slug, rank }
+  for (const slug of KILLERS) {
+    try {
+      const { perks: topNames } = await scrapeKillerTopPerks(slug);
+      topNames.forEach((nm, idx) => {
+        // 1) prova match per nome
+        let perk = byName.get(nm.toLowerCase());
+        // 2) fallback: prova per id normalizzato
+        if (!perk) perk = byId.get(toId(nm));
+        if (!perk) return;
+
+        perk.meta = perk.meta || {};
+        perk.meta.topForKillers = perk.meta.topForKillers || [];
+        if (!perk.meta.topForKillers.some((x) => x.slug === slug)) {
+          perk.meta.topForKillers.push({ slug, rank: idx + 1 });
+        }
+      });
+      console.log(`[top] ${slug}: ${topNames.length} nomi trovati`);
+    } catch (e) {
+      console.warn(`Top Perks falliti per ${slug}:`, e.message);
+    }
+  }
 
   const data = {
     version: new Date().toISOString().slice(0, 10),
