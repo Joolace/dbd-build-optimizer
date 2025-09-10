@@ -407,7 +407,7 @@ export default function App() {
             <h1 className="text-2xl font-semibold tracking-tight">
               DBD Build Optimizer
             </h1>
-            <p className="text-zinc-400 text-sm">Version: 0.8.1a</p>
+            <p className="text-zinc-400 text-sm">Version: 0.9.0</p>
           </div>
           <div className="flex gap-2">
             <button
