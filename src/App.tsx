@@ -448,7 +448,7 @@ export default function App() {
         </header>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 md:col-start-1 space-y-4">
+          <div className="order-2 md:order-1 md:col-span-2 md:col-start-1 space-y-4">
             <div className="flex items-center gap-2">
               <input
                 placeholder="Find perk..."
@@ -520,7 +520,7 @@ export default function App() {
           </div>
 
           {/* Right column: Optimizer */}
-          <aside className="space-y-4 md:col-start-3 md:row-start-1">
+          <aside className="order-1 md:order-2 space-y-4 md:col-start-3 md:row-start-1">
             <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40">
               <h2 className="font-semibold mb-2">Optimizer</h2>
               <p className="text-sm text-zinc-400 mb-3">
