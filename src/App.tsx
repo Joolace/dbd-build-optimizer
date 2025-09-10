@@ -78,6 +78,47 @@ function dedupeByName(perks: Perk[]) {
   return out;
 }
 
+// ---- Meta scoring (Tier + Rate)
+const TIER_BONUS: Record<string, number> = {
+  S: 10,
+  A: 6,
+  B: 3,
+  C: 0,
+  D: -2,
+  E: -4,
+  F: -6,
+};
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function getRate(p: Perk): number | null {
+  const r = (p.meta as any)?.rate;
+  if (typeof r === "number") return r;
+  if (typeof r === "string") {
+    const n = parseFloat(r.replace(",", "."));
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+/** Trasforma un rate 0–5 in un bonus centrato su 2.5 (range ~[-7.5, +7.5]) */
+function rateBonus(p: Perk) {
+  const r = getRate(p);
+  if (r == null) return 0;
+  const rr = clamp(r, 0, 5);
+  return (rr - 2.5) * 3;
+}
+
+/** Punteggio da tier (S,A,B,...) */
+function tierBonus(p: Perk) {
+  const raw = (p.meta as any)?.tier;
+  const key = typeof raw === "string" ? raw.toUpperCase() : "";
+  return key in TIER_BONUS ? TIER_BONUS[key] : 0;
+}
+
+
 // Basic score: match tags, add synergy, penalize anti-synergy
 function scorePerk(
   p: Perk,
@@ -85,6 +126,7 @@ function scorePerk(
 ) {
   if (p.role !== ctx.role) return -9999;
   if (ctx.banned.some((b) => normalize(b) === normalize(p.name) || normalize(b) === normalize(p.id))) return -9999;
+
   let score = 0;
 
   // 1) Match dei tag selezionati
@@ -100,18 +142,24 @@ function scorePerk(
   const anti = new Set((p.anti_synergy || []).map(normalize));
   for (const n of currentNames) if (anti.has(n)) score -= 12;
 
-  // 4) Auto-anti-synergy per tag "mutualmente esclusivi" (no doppioni di exhaustion, ecc.)
+  // 4) Regole mutex (es. niente doppio exhaustion / scourge_hook)
   const mutex = new Set((MUTEX_TAGS[p.role] || []).map(normalize));
   const pTags = new Set(p.tags.map(normalize));
   const hasMutexTag = [...pTags].some((t) => mutex.has(t));
   if (hasMutexTag) {
-    // Se tra i perk correnti c'è già un perk con un tag mutex, applichiamo una penalità forte
-    const currentHasSameMutex = ctx.current.some((c) => c.tags.map(normalize).some((t) => pTags.has(t) && mutex.has(t)));
-    if (currentHasSameMutex) score -= 100; // di fatto impedisce il secondo perk di quel gruppo
+    const currentHasSameMutex = ctx.current.some((c) =>
+      c.tags.map(normalize).some((t) => pTags.has(t) && mutex.has(t))
+    );
+    if (currentHasSameMutex) score -= 100;
   }
 
-  // 5) Tiebreaker leggero per stabilità
+  // 5) Meta: Tier + Rate (p.meta.tier / p.meta.rate)
+  score += tierBonus(p);  // S > A > B ...
+  score += rateBonus(p);  // meglio se il rate è > 2.5
+
+  // 6) Tiebreaker leggero per stabilità
   score += (100 - Math.min(100, p.name.length)) * 0.01;
+
   return score;
 }
 
@@ -327,6 +375,10 @@ function PerkCard({ perk, onLock, onBan }: { perk: Perk; onLock: () => void; onB
       <div className="flex items-start justify-between gap-2">
         <div>
           <div className="font-medium">{perk.name}</div>
+          <div className="text-xs text-zinc-300">
+            {perk.meta?.tier && <>Tier: {perk.meta.tier} · </>}
+            {typeof perk.meta?.rate !== "undefined" && <>Rate: {Number(perk.meta.rate).toFixed(1)}</>}
+          </div>
           <div className="text-xs text-zinc-300 capitalize">{perk.role}</div>
         </div>
         <div className="flex gap-2">
