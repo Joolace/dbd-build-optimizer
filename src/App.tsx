@@ -136,7 +136,7 @@ export default function App() {
     let isMounted = true;
     (async () => {
       try {
-        const res = await fetch(import.meta.env.BASE_URL + 'perks.json', { cache: 'no-store' });
+        const res = await fetch('/perks.json', { cache: 'no-store' });
         if (!res.ok) throw new Error("perks.json non trovato");
         const json = (await res.json()) as DbdDataset;
         if (isMounted) setDataset(json);
