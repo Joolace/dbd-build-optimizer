@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dbdbuildoptimizer.com/sitemap.xml
