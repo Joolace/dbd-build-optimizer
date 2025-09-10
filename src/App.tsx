@@ -307,7 +307,7 @@ export default function App() {
 
             <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40">
               <h3 className="font-semibold mb-2">Dataset</h3>
-              <p className="text-sm text-zinc-400 mb-3">The data is updated and created with the <a href="https://dbd.tricky.lol" target="_blank">dbd.tricky.lol</a> APIs. This tool is still under development, so you may encounter bugs, data errors, etc. </p>
+              <p className="text-sm text-zinc-400 mb-3">The data is updated and created with the <a href="https://dennisreep.nl/" target="_blank">dennisreep.nl</a>. This tool is still under development, so you may encounter bugs, data errors, etc. </p>
               <p className="text-xs text-zinc-400">Developed by <a href="https://github.com/Joolace/" target="_blank">Joolace</a></p>
             </div>
           </aside>
