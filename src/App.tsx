@@ -402,14 +402,34 @@ export default function App() {
   return (
     <div className="min-h-screen bg-black text-zinc-100 px-4 py-6 flex justify-center">
       <div className="w-full max-w-none mx-auto px-4 py-6 space-y-6">
-        <header className="flex items-center justify-between gap-4">
+        <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="!text-xl md:!text-3xl font-semibold tracking-tight leading-tight">
               DBD Build Optimizer
             </h1>
             <p className="text-zinc-400 text-sm">Version: 0.9.0</p>
+
+            {/* Role sotto la versione su mobile */}
+            <div className="mt-2 md:hidden">
+              <button
+                onClick={() =>
+                  setSettings({
+                    ...settings,
+                    role: settings.role === "survivor" ? "killer" : "survivor",
+                  })
+                }
+                className="w-full sm:w-auto px-3 py-2 rounded-xl bg-red-700/20 hover:bg-red-700/30 border border-red-900/40 text-sm"
+              >
+                Role:{" "}
+                <span className="font-semibold ml-1">
+                  {settings.role === "survivor" ? "Survivor" : "Killer"}
+                </span>
+              </button>
+            </div>
           </div>
-          <div className="flex gap-2">
+
+          {/* Role a destra su desktop */}
+          <div className="hidden md:flex gap-2">
             <button
               onClick={() =>
                 setSettings({
@@ -427,8 +447,8 @@ export default function App() {
           </div>
         </header>
 
-        <section className="grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-4">
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 md:col-start-1 space-y-4">
             <div className="flex items-center gap-2">
               <input
                 placeholder="Find perk..."
@@ -500,7 +520,7 @@ export default function App() {
           </div>
 
           {/* Right column: Optimizer */}
-          <aside className="space-y-4">
+          <aside className="space-y-4 md:col-start-3 md:row-start-1">
             <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40">
               <h2 className="font-semibold mb-2">Optimizer</h2>
               <p className="text-sm text-zinc-400 mb-3">
