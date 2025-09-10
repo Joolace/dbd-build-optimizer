@@ -404,7 +404,7 @@ export default function App() {
       <div className="w-full max-w-none mx-auto px-4 py-6 space-y-6">
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
-            <h1 className="!text-xl md:!text-3xl font-semibold tracking-tight leading-tight">
+            <h1 className="!text-xl lg:!text-3xl font-semibold tracking-tight leading-tight">
               DBD Build Optimizer
             </h1>
             <p className="text-zinc-400 text-sm">Version: 0.9.0</p>
@@ -418,7 +418,7 @@ export default function App() {
                     role: settings.role === "survivor" ? "killer" : "survivor",
                   })
                 }
-                className="w-full sm:w-auto px-3 py-2 rounded-xl bg-red-700/20 hover:bg-red-700/30 border border-red-900/40 text-sm"
+                className="w-full lg:w-auto px-3 py-2 rounded-xl bg-red-700/20 hover:bg-red-700/30 border border-red-900/40 text-sm"
               >
                 Role:{" "}
                 <span className="font-semibold ml-1">
@@ -447,8 +447,8 @@ export default function App() {
           </div>
         </header>
 
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="order-2 md:order-1 md:col-span-2 md:col-start-1 space-y-4">
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="order-2 lg:order-1 lg:col-span-2 lg:col-start-1 space-y-4">
             <div className="flex items-center gap-2">
               <input
                 placeholder="Find perk..."
@@ -486,7 +486,7 @@ export default function App() {
             </div>
 
             {/* Perk list */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
               {visiblePerks.map((p) => (
                 <PerkCard
                   key={p.id}
@@ -520,8 +520,8 @@ export default function App() {
           </div>
 
           {/* Right column: Optimizer */}
-          <aside className="order-1 md:order-2 space-y-4 md:col-start-3 md:row-start-1">
-            <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40">
+          <aside className="order-1 lg:order-2 lg:col-start-3 lg:row-start-1 space-y-4">
+            <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40 xl:sticky :top-4">
               <h2 className="font-semibold mb-2">Optimizer</h2>
               <p className="text-sm text-zinc-400 mb-3">
                 Block or ban perks, choose tags, then generate. The algorithm
