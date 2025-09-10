@@ -719,6 +719,7 @@ export default function App() {
           <p>Dataset: {dataset?.version ?? "fallback"}</p>
         </footer>
       </div>
+      <FloatingBugButton href="https://discord.gg/mC7Eabu3QW" />
     </div>
   );
 }
@@ -839,6 +840,41 @@ function TokenList({
           </button>
         </span>
       ))}
+    </div>
+  );
+}
+
+function FloatingBugButton({ href }: { href: string }) {
+  return (
+    <div className="group fixed bottom-4 right-4 z-50">
+      {/* Tooltip bubble (desktop) */}
+      <div className="pointer-events-none absolute right-14 bottom-1/2 translate-y-1/2 hidden md:block">
+        <div
+          role="tooltip"
+          className="whitespace-nowrap rounded-lg bg-zinc-900 border border-red-900/40 text-white text-sm px-3 py-1.5
+                     opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0
+                     group-focus-within:opacity-100 group-focus-within:translate-x-0 transition"
+        >
+          Report a bug
+        </div>
+      </div>
+
+      {/* Round button */}
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Report a bug"
+        title="Report a bug"
+        className="flex h-12 w-12 items-center justify-center rounded-full
+                   bg-white hover:bg-zinc-100 active:bg-zinc-200
+                   text-black shadow-lg shadow-black/20 border border-zinc-300
+                   focus:outline-none focus:ring-2 focus:ring-red-600/50"
+      >
+        <span className="text-xl" aria-hidden>
+          🐞
+        </span>
+      </a>
     </div>
   );
 }
