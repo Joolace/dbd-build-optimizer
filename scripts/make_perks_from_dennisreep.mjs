@@ -14,6 +14,14 @@ const SOURCES = [
   { role: "survivor", url: "https://dennisreep.nl/dbd/perks/survivor/" },
 ];
 
+const KILLERS = [
+  "nurse","blight","dark_lord","executioner","singularity","lich","animatronic","artist","ghoul",
+  "oni","knight","unknown","spirit","xenomorph","nightmare","hillbilly","plague","mastermind","nemesis",
+  "clown","shape","cenobite","huntress","good_guy","demogorgon","cannibal","legion","deathslinger","onryo",
+  "dredge","pig","wraith","trickster","doctor","twins","ghost_face","houndmaster","hag","trapper","skull_merchant"
+];
+
+
 /** Normalizza testo (spazi multipli, NBSP) */
 function clean(t) {
   return (t ?? "")
@@ -33,6 +41,54 @@ function toId(name) {
 function parseFirstNumber(s) {
   const m = clean(s).match(/[0-9]+(?:[.,][0-9]+)?/);
   return m ? parseFloat(m[0].replace(",", ".")) : null;
+}
+
+async function scrapeKillerTopPerks(slug) {
+  const url = `https://dennisreep.nl/dbd/killers/${slug}`;
+  const res = await fetch(url, { headers: { "User-Agent": "perk-scraper/1.0" } });
+  if (!res.ok) throw new Error(`HTTP ${res.status} per ${url}`);
+  const html = await res.text();
+  const $ = cheerio.load(html);
+
+  // Trova heading che contenga sia "Top" che "Perks" (es. "Top Artist Perks")
+  let start = null;
+  $("h1,h2,h3,h4").each((_, el) => {
+    const t = clean($(el).text()).toLowerCase();
+    if (!start && t.includes("top") && t.includes("perks")) start = el;
+  });
+  if (!start) return { slug, perks: [] };
+
+  // Sezione tra questo heading e il prossimo
+  const $section = $(start).nextUntil("h1,h2,h3,h4");
+  const names = [];
+
+  // 1) prova a leggere la tabella Top Perks: Icon | Name | Description | Killer | Tier | Rate
+  $section.find("table tbody tr").each((_, tr) => {
+    const $td = $(tr).find("td");
+    if ($td.length >= 2) {
+      let nm = clean($td.eq(1).text()) || clean($td.eq(1).find("a").text());
+      if (nm && nm.length <= 80) names.push(nm);
+    }
+  });
+
+  // 2) fallback generico se non abbiamo trovato la tabella (prendi nomi da link/list/item)
+  if (names.length === 0) {
+    $section.find("a, li, td, .perk, .perk-name, .card, .grid *").each((_, node) => {
+      const txt = clean($(node).text());
+      if (txt && txt.length <= 60 && /[A-Za-z]/.test(txt) && !/top perks/i.test(txt)) {
+        names.push(txt);
+      }
+    });
+  }
+
+  // Dedup mantenendo l'ordine e limita
+  const out = [];
+  const seen = new Set();
+  for (const n of names) {
+    const k = n.toLowerCase();
+    if (!seen.has(k)) { seen.add(k); out.push(n); }
+  }
+  return { slug, perks: out.slice(0, 12) };
 }
 
 /**
@@ -129,6 +185,38 @@ async function main() {
     const items = await scrapePerks(src.role, src.url);
     results.push(...items);
   }
+
+  // Mappa per nome normalizzato -> perk
+// Mappa per nome e per id
+const byName = new Map();
+const byId = new Map();
+for (const p of results) {
+  byName.set(p.name.toLowerCase(), p);
+  byId.set(p.id, p);
+}
+
+// Per ogni killer, marca i top perks con { slug, rank }
+for (const slug of KILLERS) {
+  try {
+    const { perks: topNames } = await scrapeKillerTopPerks(slug);
+    topNames.forEach((nm, idx) => {
+      // 1) prova match per nome
+      let perk = byName.get(nm.toLowerCase());
+      // 2) fallback: prova per id normalizzato
+      if (!perk) perk = byId.get(toId(nm));
+      if (!perk) return;
+
+      perk.meta = perk.meta || {};
+      perk.meta.topForKillers = perk.meta.topForKillers || [];
+      if (!perk.meta.topForKillers.some((x) => x.slug === slug)) {
+        perk.meta.topForKillers.push({ slug, rank: idx + 1 });
+      }
+    });
+    console.log(`[top] ${slug}: ${topNames.length} nomi trovati`);
+  } catch (e) {
+    console.warn(`Top Perks falliti per ${slug}:`, e.message);
+  }
+}
 
   const data = {
     version: new Date().toISOString().slice(0, 10),

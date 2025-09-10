@@ -27,6 +27,7 @@ type Perk = {
   desc?: string;
   rarity?: string;
   meta?: Record<string, any>;
+  icon?: string | null;
 };
 
 type DbdDataset = {
@@ -38,12 +39,55 @@ type DbdDataset = {
 const FALLBACK: DbdDataset = {
   version: "fallback",
   perks: [
-    { id: "dead_hard", name: "Dead Hard", role: "survivor", tags: ["chase", "exhaustion"], synergy: ["Adrenaline", "Resilience"], anti_synergy: ["No Mither"], desc: "Dash forward to avoid a hit while exhausted." },
-    { id: "adrenaline", name: "Adrenaline", role: "survivor", tags: ["endgame", "heal", "speed"], synergy: ["Dead Hard", "Resilience"], desc: "On last gen completion: heal one state and gain haste." },
-    { id: "resilience", name: "Resilience", role: "survivor", tags: ["injured", "repair", "general"], synergy: ["Adrenaline", "Dead Hard"], desc: "Action speed bonus while injured." },
-    { id: "barbecue_and_chili", name: "Barbecue & Chili", role: "killer", tags: ["tracking", "economy"], synergy: ["Pop Goes the Weasel"], desc: "Auras on hook; bonus bloodpoints." },
-    { id: "pop_goes_the_weasel", name: "Pop Goes the Weasel", role: "killer", tags: ["gen_regression", "hook"], synergy: ["Barbecue & Chili", "Pain Resonance"], desc: "After hook: kick a gen for big regression." },
-    { id: "pain_resonance", name: "Scourge Hook: Pain Resonance", role: "killer", tags: ["gen_regression", "hook"], synergy: ["Pop Goes the Weasel"], desc: "Scourge hook triggers regression/explosion." }
+    {
+      id: "dead_hard",
+      name: "Dead Hard",
+      role: "survivor",
+      tags: ["chase", "exhaustion"],
+      synergy: ["Adrenaline", "Resilience"],
+      anti_synergy: ["No Mither"],
+      desc: "Dash forward to avoid a hit while exhausted.",
+    },
+    {
+      id: "adrenaline",
+      name: "Adrenaline",
+      role: "survivor",
+      tags: ["endgame", "heal", "speed"],
+      synergy: ["Dead Hard", "Resilience"],
+      desc: "On last gen completion: heal one state and gain haste.",
+    },
+    {
+      id: "resilience",
+      name: "Resilience",
+      role: "survivor",
+      tags: ["injured", "repair", "general"],
+      synergy: ["Adrenaline", "Dead Hard"],
+      desc: "Action speed bonus while injured.",
+    },
+    {
+      id: "barbecue_and_chili",
+      name: "Barbecue & Chili",
+      role: "killer",
+      tags: ["tracking", "economy"],
+      synergy: ["Pop Goes the Weasel"],
+      desc: "Auras on hook; bonus bloodpoints.",
+    },
+    {
+      id: "pop_goes_the_weasel",
+      name: "Pop Goes the Weasel",
+      role: "killer",
+      tags: ["gen_regression", "hook"],
+      synergy: ["Barbecue & Chili", "Pain Resonance"],
+      desc: "After hook: kick a gen for big regression.",
+    },
+    {
+      id: "pain_resonance",
+      name: "Scourge Hook: Pain Resonance",
+      role: "killer",
+      tags: ["gen_regression", "hook"],
+      synergy: ["Pop Goes the Weasel"],
+      desc: "Scourge hook triggers regression/explosion.",
+    },
   ],
 };
 
@@ -59,7 +103,9 @@ function useLocalStorage<T>(key: string, initial: T) {
     }
   });
   useEffect(() => {
-    try { localStorage.setItem(key, JSON.stringify(state)); } catch {}
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch {}
   }, [key, state]);
   return [state, setState] as const;
 }
@@ -73,7 +119,10 @@ function dedupeByName(perks: Perk[]) {
   const out: Perk[] = [];
   for (const p of perks) {
     const key = normalize(p.name);
-    if (!seen.has(key)) { seen.add(key); out.push(p); }
+    if (!seen.has(key)) {
+      seen.add(key);
+      out.push(p);
+    }
   }
   return out;
 }
@@ -118,25 +167,50 @@ function tierBonus(p: Perk) {
   return key in TIER_BONUS ? TIER_BONUS[key] : 0;
 }
 
+function killerFocusBonus(p: Perk, slug: string | undefined | null): number {
+  if (!slug) return 0;
+  const arr = (p.meta as any)?.topForKillers;
+  if (!Array.isArray(arr)) return 0;
+  const hit = arr.find((x: any) => x?.slug === slug);
+  if (!hit) return 0;
+  const rank = Number(hit.rank ?? 99);
+  // Rank 1 = +14, 2 = +12, 3 = +10 ... min 0
+  return Math.max(0, 14 - (rank - 1) * 2);
+}
 
 // Basic score: match tags, add synergy, penalize anti-synergy
 function scorePerk(
   p: Perk,
-  ctx: { role: Role; tags: string[]; locked: string[]; banned: string[]; current: Perk[] }
+  ctx: {
+    role: Role;
+    tags: string[];
+    locked: string[];
+    banned: string[];
+    current: Perk[];
+    killerFocus?: string;
+  }
 ) {
   if (p.role !== ctx.role) return -9999;
-  if (ctx.banned.some((b) => normalize(b) === normalize(p.name) || normalize(b) === normalize(p.id))) return -9999;
+  if (
+    ctx.banned.some(
+      (b) =>
+        normalize(b) === normalize(p.name) || normalize(b) === normalize(p.id)
+    )
+  )
+    return -9999;
 
   let score = 0;
 
   // 1) Match dei tag selezionati
-  for (const t of ctx.tags) if (p.tags.map(normalize).includes(normalize(t))) score += 10;
+  for (const t of ctx.tags)
+    if (p.tags.map(normalize).includes(normalize(t))) score += 10;
 
   // 2) Bonus di sinergia con locked + scelti correnti
   const related = new Set((p.synergy || []).map(normalize));
   const lockedNames = ctx.locked.map((n) => normalize(n));
   const currentNames = ctx.current.map((c) => normalize(c.name));
-  for (const n of [...lockedNames, ...currentNames]) if (related.has(n)) score += 8;
+  for (const n of [...lockedNames, ...currentNames])
+    if (related.has(n)) score += 8;
 
   // 3) Penalità anti-sinergia dichiarata
   const anti = new Set((p.anti_synergy || []).map(normalize));
@@ -154,8 +228,10 @@ function scorePerk(
   }
 
   // 5) Meta: Tier + Rate (p.meta.tier / p.meta.rate)
-  score += tierBonus(p);  // S > A > B ...
-  score += rateBonus(p);  // meglio se il rate è > 2.5
+  score += tierBonus(p); // S > A > B ...
+  score += rateBonus(p); // meglio se il rate è > 2.5
+
+  score += killerFocusBonus(p, ctx.killerFocus);
 
   // 6) Tiebreaker leggero per stabilità
   score += (100 - Math.min(100, p.name.length)) * 0.01;
@@ -177,6 +253,7 @@ export default function App() {
     locked: [] as string[],
     banned: [] as string[],
     search: "",
+    killerFocus: "" as string,
   });
 
   // Fetch read-only dataset
@@ -184,7 +261,7 @@ export default function App() {
     let isMounted = true;
     (async () => {
       try {
-        const res = await fetch('/perks.json', { cache: 'no-store' });
+        const res = await fetch("/perks.json", { cache: "no-store" });
         if (!res.ok) throw new Error("perks.json non trovato");
         const json = (await res.json()) as DbdDataset;
         if (isMounted) setDataset(json);
@@ -192,10 +269,29 @@ export default function App() {
         if (isMounted) setDataset(FALLBACK);
       }
     })();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const perks = dataset?.perks ?? FALLBACK.perks;
+
+  function prettyKiller(slug: string) {
+    return slug
+      .split("_")
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(" ");
+  }
+
+  const killerOptions = useMemo(() => {
+    const s = new Set<string>();
+    perks.forEach((p) => {
+      const arr = (p.meta as any)?.topForKillers;
+      if (Array.isArray(arr))
+        arr.forEach((e: any) => e?.slug && s.add(String(e.slug)));
+    });
+    return Array.from(s).sort();
+  }, [perks]);
 
   const allTags = useMemo(() => {
     const s = new Set<string>();
@@ -218,20 +314,79 @@ export default function App() {
   const [suggested, setSuggested] = useState<Perk[]>([]);
   const runOptimize = () => {
     const lockedPerks = perks.filter((p) =>
-      settings.locked.some((n) => normalize(n) === normalize(p.name) || normalize(n) === normalize(p.id))
+      settings.locked.some(
+        (n) =>
+          normalize(n) === normalize(p.name) || normalize(n) === normalize(p.id)
+      )
     );
     let chosen: Perk[] = dedupeByName(lockedPerks).slice(0, 4);
     const pool = perks
       .filter((p) => p.role === settings.role)
-      .filter((p) => !chosen.some((c) => normalize(c.name) === normalize(p.name)))
+      .filter(
+        (p) => !chosen.some((c) => normalize(c.name) === normalize(p.name))
+      )
       .slice();
+    pool.sort(
+      (a, b) =>
+        scorePerk(b, {
+          role: settings.role,
+          tags: settings.selectedTags,
+          locked: settings.locked,
+          banned: settings.banned,
+          current: chosen,
+          killerFocus: settings.killerFocus,
+        }) -
+        scorePerk(a, {
+          role: settings.role,
+          tags: settings.selectedTags,
+          locked: settings.locked,
+          banned: settings.banned,
+          current: chosen,
+          killerFocus: settings.killerFocus,
+        })
+    );
+    const pick = pool.shift()!;
+    if (
+      scorePerk(pick, {
+        role: settings.role,
+        tags: settings.selectedTags,
+        locked: settings.locked,
+        banned: settings.banned,
+        current: chosen,
+        killerFocus: settings.killerFocus,
+      }) > -9999
+    ) {
+      chosen.push(pick);
+    }
+
     while (chosen.length < 4 && pool.length) {
-      pool.sort((a, b) =>
-        scorePerk(b, { role: settings.role, tags: settings.selectedTags, locked: settings.locked, banned: settings.banned, current: chosen }) -
-        scorePerk(a, { role: settings.role, tags: settings.selectedTags, locked: settings.locked, banned: settings.banned, current: chosen })
+      pool.sort(
+        (a, b) =>
+          scorePerk(b, {
+            role: settings.role,
+            tags: settings.selectedTags,
+            locked: settings.locked,
+            banned: settings.banned,
+            current: chosen,
+          }) -
+          scorePerk(a, {
+            role: settings.role,
+            tags: settings.selectedTags,
+            locked: settings.locked,
+            banned: settings.banned,
+            current: chosen,
+          })
       );
       const pick = pool.shift()!;
-      if (scorePerk(pick, { role: settings.role, tags: settings.selectedTags, locked: settings.locked, banned: settings.banned, current: chosen }) > -9999) {
+      if (
+        scorePerk(pick, {
+          role: settings.role,
+          tags: settings.selectedTags,
+          locked: settings.locked,
+          banned: settings.banned,
+          current: chosen,
+        }) > -9999
+      ) {
         chosen.push(pick);
       }
     }
@@ -241,19 +396,38 @@ export default function App() {
   useEffect(() => {
     runOptimize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(perks), settings.role, JSON.stringify(settings.selectedTags), JSON.stringify(settings.locked), JSON.stringify(settings.banned)]);
+  }, [
+    JSON.stringify(perks),
+    settings.role,
+    JSON.stringify(settings.selectedTags),
+    JSON.stringify(settings.locked),
+    JSON.stringify(settings.banned),
+  ]);
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 px-4 py-6 flex justify-center">
-       <div className="w-full max-w-none mx-auto px-4 py-6 space-y-6">
+      <div className="w-full max-w-none mx-auto px-4 py-6 space-y-6">
         <header className="flex items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">DBD Build Optimizer</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              DBD Build Optimizer
+            </h1>
             <p className="text-zinc-400 text-sm">Version: 0.8.1a</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setSettings({ ...settings, role: settings.role === "survivor" ? "killer" : "survivor" })} className="px-3 py-2 rounded-xl bg-red-700/20 hover:bg-red-700/30 border border-red-900/40 text-sm">
-              Role: <span className="font-semibold ml-1">{settings.role === "survivor" ? "Survivor" : "Killer"}</span>
+            <button
+              onClick={() =>
+                setSettings({
+                  ...settings,
+                  role: settings.role === "survivor" ? "killer" : "survivor",
+                })
+              }
+              className="px-3 py-2 rounded-xl bg-red-700/20 hover:bg-red-700/30 border border-red-900/40 text-sm"
+            >
+              Role:{" "}
+              <span className="font-semibold ml-1">
+                {settings.role === "survivor" ? "Survivor" : "Killer"}
+              </span>
             </button>
           </div>
         </header>
@@ -264,7 +438,9 @@ export default function App() {
               <input
                 placeholder="Find perk..."
                 value={settings.search}
-                onChange={(e) => setSettings({ ...settings, search: e.target.value })}
+                onChange={(e) =>
+                  setSettings({ ...settings, search: e.target.value })
+                }
                 className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none focus:ring-2 focus:ring-red-700/40"
               />
             </div>
@@ -277,10 +453,16 @@ export default function App() {
                   <button
                     key={t}
                     onClick={() => {
-                      const sel = active ? settings.selectedTags.filter((x: string) => x !== t) : [...settings.selectedTags, t];
+                      const sel = active
+                        ? settings.selectedTags.filter((x: string) => x !== t)
+                        : [...settings.selectedTags, t];
                       setSettings({ ...settings, selectedTags: sel });
                     }}
-                    className={`px-3 py-1 rounded-full border text-sm ${active ? "bg-red-600 text-white border-red-600" : "bg-black border-red-900/40 text-zinc-300 hover:bg-zinc-900"}`}
+                    className={`px-3 py-1 rounded-full border text-sm ${
+                      active
+                        ? "bg-red-600 text-white border-red-600"
+                        : "bg-black border-red-900/40 text-zinc-300 hover:bg-zinc-900"
+                    }`}
                   >
                     {t}
                   </button>
@@ -294,8 +476,18 @@ export default function App() {
                 <PerkCard
                   key={p.id}
                   perk={p}
-                  onLock={() => setSettings({ ...settings, locked: Array.from(new Set([...settings.locked, p.name])) })}
-                  onBan={() => setSettings({ ...settings, banned: Array.from(new Set([...settings.banned, p.name])) })}
+                  onLock={() =>
+                    setSettings({
+                      ...settings,
+                      locked: Array.from(new Set([...settings.locked, p.name])),
+                    })
+                  }
+                  onBan={() =>
+                    setSettings({
+                      ...settings,
+                      banned: Array.from(new Set([...settings.banned, p.name])),
+                    })
+                  }
                 />
               ))}
             </div>
@@ -305,13 +497,43 @@ export default function App() {
           <aside className="space-y-4">
             <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40">
               <h2 className="font-semibold mb-2">Optimizer</h2>
-              <p className="text-sm text-zinc-400 mb-3">Block or ban perks, choose tags, then generate. The algorithm suggests up to 4 synergistic perks.</p>
+              <p className="text-sm text-zinc-400 mb-3">
+                Block or ban perks, choose tags, then generate. The algorithm
+                suggests up to 4 synergistic perks.
+              </p>
+
+              {settings.role === "killer" && (
+                <div className="mb-3">
+                  <label className="text-xs text-zinc-400 block mb-1">
+                    Killer focus
+                  </label>
+                  <select
+                    value={settings.killerFocus}
+                    onChange={(e) =>
+                      setSettings({ ...settings, killerFocus: e.target.value })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none"
+                  >
+                    <option value="">(none)</option>
+                    {killerOptions.map((slug) => (
+                      <option key={slug} value={slug}>
+                        {prettyKiller(slug)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div className="mb-3">
                 <label className="text-xs text-zinc-400">Locked</label>
                 <TokenList
                   items={settings.locked}
-                  onRemove={(x) => setSettings({ ...settings, locked: settings.locked.filter((i: string) => i !== x) })}
+                  onRemove={(x) =>
+                    setSettings({
+                      ...settings,
+                      locked: settings.locked.filter((i: string) => i !== x),
+                    })
+                  }
                 />
               </div>
 
@@ -319,35 +541,117 @@ export default function App() {
                 <label className="text-xs text-zinc-400">Banned</label>
                 <TokenList
                   items={settings.banned}
-                  onRemove={(x) => setSettings({ ...settings, banned: settings.banned.filter((i: string) => i !== x) })}
+                  onRemove={(x) =>
+                    setSettings({
+                      ...settings,
+                      banned: settings.banned.filter((i: string) => i !== x),
+                    })
+                  }
                 />
               </div>
 
-              <button onClick={() => { /* recompute */ setTimeout(runOptimize, 0); }} className="w-full px-3 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-500">Generate build</button>
+              <button
+                onClick={() => {
+                  /* recompute */ setTimeout(runOptimize, 0);
+                }}
+                className="w-full px-3 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-500"
+              >
+                Generate build
+              </button>
 
               <div className="mt-4 grid grid-cols-1 gap-3">
                 {suggested.map((p) => (
-                  <div key={p.id} className="p-3 rounded-xl bg-zinc-800 border border-red-900/40">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium">{p.name}</div>
-                        <div className="text-xs text-zinc-300">{p.tags.join(" · ")}</div>
-                      </div>
-                      <div className="flex gap-2">
+                  <div
+                    key={p.id}
+                    className="p-3 rounded-xl bg-zinc-800 border border-red-900/40"
+                  >
+                    <div className="flex items-center">
+                      {/* Icona a sinistra */}
+                      {p.icon && (
+                        <img
+                          src={p.icon}
+                          alt=""
+                          className="w-16 h-16 mr-3 mb-2 rounded border border-red-900/40 bg-black/40"
+                        />
+                      )}
+
+                      {/* Bottoni a destra */}
+                      <div className="ml-auto flex gap-2 shrink-0">
                         <button
                           className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
-                          onClick={() => setSettings({ ...settings, locked: Array.from(new Set([...settings.locked, p.name])) })}
-                        >Lock</button>
+                          onClick={() =>
+                            setSettings({
+                              ...settings,
+                              locked: Array.from(
+                                new Set([...settings.locked, p.name])
+                              ),
+                            })
+                          }
+                        >
+                          Lock
+                        </button>
                         <button
                           className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
-                          onClick={() => setSettings({ ...settings, banned: Array.from(new Set([...settings.banned, p.name])) })}
-                        >Ban</button>
+                          onClick={() =>
+                            setSettings({
+                              ...settings,
+                              banned: Array.from(
+                                new Set([...settings.banned, p.name])
+                              ),
+                            })
+                          }
+                        >
+                          Ban
+                        </button>
                       </div>
                     </div>
+
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="font-medium">{p.name}</div>
+
+                        {/* Tier / Rate */}
+                        <div className="text-xs text-zinc-300">
+                          {p.meta?.tier && (
+                            <>
+                              Tier: {p.meta.tier}
+                              {typeof p.meta?.rate !== "undefined" ? " · " : ""}
+                            </>
+                          )}
+                          {typeof p.meta?.rate !== "undefined" && (
+                            <>Rate: {Number(p.meta.rate).toFixed(1)}</>
+                          )}
+                        </div>
+
+                        {/* Ruolo + Owner (killer/survivor) */}
+                        <div className="text-xs text-zinc-300 capitalize">
+                          {p.role}
+                          {p.meta?.owner && (
+                            <>
+                              {" "}
+                              ·{" "}
+                              <span className="normal-case">
+                                {p.meta.owner}
+                              </span>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Tag (come prima) */}
+                        <div className="text-xs text-zinc-300">
+                          {p.tags.join(" · ")}
+                        </div>
+                      </div>
+                    </div>
+
                     {p.synergy && p.synergy.length > 0 && (
-                      <div className="text-xs text-zinc-300 mt-1">Sinergie: {p.synergy.join(", ")}</div>
+                      <div className="text-xs text-zinc-300 mt-1">
+                        Sinergie: {p.synergy.join(", ")}
+                      </div>
                     )}
-                    {p.desc && <p className="text-xs text-zinc-400 mt-1">{p.desc}</p>}
+                    {p.desc && (
+                      <p className="text-xs text-zinc-400 mt-1">{p.desc}</p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -355,8 +659,20 @@ export default function App() {
 
             <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40">
               <h3 className="font-semibold mb-2">Dataset</h3>
-              <p className="text-sm text-zinc-400 mb-3">The data is updated and created with the <a href="https://dennisreep.nl/" target="_blank">dennisreep.nl</a>. This tool is still under development, so you may encounter bugs, data errors, etc. </p>
-              <p className="text-xs text-zinc-400">Developed by <a href="https://github.com/Joolace/" target="_blank">Joolace</a></p>
+              <p className="text-sm text-zinc-400 mb-3">
+                The data is updated and created with the{" "}
+                <a href="https://dennisreep.nl/" target="_blank">
+                  dennisreep.nl
+                </a>
+                . This tool is still under development, so you may encounter
+                bugs, data errors, etc.{" "}
+              </p>
+              <p className="text-xs text-zinc-400">
+                Developed by{" "}
+                <a href="https://github.com/Joolace/" target="_blank">
+                  Joolace
+                </a>
+              </p>
             </div>
           </aside>
         </section>
@@ -369,43 +685,120 @@ export default function App() {
   );
 }
 
-function PerkCard({ perk, onLock, onBan }: { perk: Perk; onLock: () => void; onBan: () => void }) {
+function PerkCard({
+  perk,
+  onLock,
+  onBan,
+}: {
+  perk: Perk;
+  onLock: () => void;
+  onBan: () => void;
+}) {
+  const hasRate =
+    typeof perk.meta?.rate !== "undefined" && perk.meta?.rate !== null;
+
   return (
     <div className="p-3 rounded-2xl bg-zinc-900 border border-red-900/40 hover:border-red-900/40 transition">
       <div className="flex items-start justify-between gap-2">
         <div>
+          {/* Icona sopra al nome (se presente) */}
+          {perk.icon && (
+            <img
+              src={perk.icon}
+              alt={perk.name}
+              className="w-16 h-16 mb-2 rounded-lg border border-red-900/40 object-contain bg-black/40"
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+
+          {/* Nome */}
           <div className="font-medium">{perk.name}</div>
+
+          {/* Tier / Rate */}
           <div className="text-xs text-zinc-300">
-            {perk.meta?.tier && <>Tier: {perk.meta.tier} · </>}
-            {typeof perk.meta?.rate !== "undefined" && <>Rate: {Number(perk.meta.rate).toFixed(1)}</>}
+            {perk.meta?.tier && (
+              <>
+                Tier: {perk.meta.tier}
+                {hasRate ? " · " : ""}
+              </>
+            )}
+            {hasRate && <>Rate: {Number(perk.meta!.rate).toFixed(1)}</>}
           </div>
-          <div className="text-xs text-zinc-300 capitalize">{perk.role}</div>
+
+          {/* Ruolo + Owner (per es. "survivor · Meg Thomas" o "killer · The Artist") */}
+          <div className="text-xs text-zinc-300 capitalize">
+            {perk.role}
+            {perk.meta?.owner && (
+              <>
+                {" "}
+                · <span className="normal-case">{perk.meta.owner}</span>
+              </>
+            )}
+          </div>
         </div>
+
+        {/* Azioni */}
         <div className="flex gap-2">
-          <button onClick={onLock} className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700">Lock</button>
-          <button onClick={onBan} className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700">Ban</button>
+          <button
+            onClick={onLock}
+            className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700"
+          >
+            Lock
+          </button>
+          <button
+            onClick={onBan}
+            className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700"
+          >
+            Ban
+          </button>
         </div>
       </div>
+
+      {/* Tag */}
       {perk.tags?.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1">
           {perk.tags.map((t) => (
-            <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 border border-red-900/40 text-zinc-200">{t}</span>
+            <span
+              key={t}
+              className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 border border-red-900/40 text-zinc-200"
+            >
+              {t}
+            </span>
           ))}
         </div>
       )}
+
+      {/* Descrizione */}
       {perk.desc && <p className="text-xs text-zinc-400 mt-2">{perk.desc}</p>}
     </div>
   );
 }
 
-function TokenList({ items, onRemove }: { items: string[]; onRemove: (x: string) => void }) {
+function TokenList({
+  items,
+  onRemove,
+}: {
+  items: string[];
+  onRemove: (x: string) => void;
+}) {
   return (
     <div className="flex flex-wrap gap-2">
-      {items.length === 0 && <div className="text-xs text-zinc-500">(empty)</div>}
+      {items.length === 0 && (
+        <div className="text-xs text-zinc-500">(empty)</div>
+      )}
       {items.map((x) => (
-        <span key={x} className="text-xs px-2 py-1 rounded-full bg-zinc-800 border border-red-900/40">
+        <span
+          key={x}
+          className="text-xs px-2 py-1 rounded-full bg-zinc-800 border border-red-900/40"
+        >
           {x}
-          <button onClick={() => onRemove(x)} className="ml-2 text-zinc-300 hover:text-white">×</button>
+          <button
+            onClick={() => onRemove(x)}
+            className="ml-2 text-zinc-300 hover:text-white"
+          >
+            ×
+          </button>
         </span>
       ))}
     </div>

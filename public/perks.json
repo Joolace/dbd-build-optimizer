@@ -2,22 +2,6 @@
   "version": "2025-09-10",
   "perks": [
     {
-      "id": "languid_touch",
-      "name": "Languid Touch",
-      "role": "killer",
-      "tags": [
-        "exhaustion",
-        "aura-reading"
-      ],
-      "desc": "Your dreadful aura is so suffocating that even terrifying scenes tire your prey. When a Survivor scares off a Crow within 36 metres of your location, Languid Touch activates: Causes that Survivor to suffer from the Exhausted Status Effect for 6/8/10 seconds. Languid Touch has a cool-down of 5 seconds. \"Submit to me. It is inevitable.\" - Vecna",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_languidTouch.webp",
-      "meta": {
-        "owner": "Lich",
-        "tier": "S",
-        "rate": 4.6
-      }
-    },
-    {
       "id": "eruption",
       "name": "Eruption",
       "role": "killer",
@@ -30,7 +14,94 @@
       "meta": {
         "owner": "Nemesis",
         "tier": "S",
-        "rate": 4.56
+        "rate": 4.55,
+        "topForKillers": [
+          {
+            "slug": "singularity",
+            "rank": 11
+          },
+          {
+            "slug": "animatronic",
+            "rank": 7
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 7
+          },
+          {
+            "slug": "mastermind",
+            "rank": 10
+          },
+          {
+            "slug": "good_guy",
+            "rank": 8
+          },
+          {
+            "slug": "onryo",
+            "rank": 11
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "mindbreaker",
+      "name": "Mindbreaker",
+      "role": "killer",
+      "tags": [
+        "exhaustion",
+        "generator"
+      ],
+      "desc": "Your distressing presence drains and weakens your prey. All Survivors repairing a Generator suffer from the following afflictions: Incurs the Blindness and Exhausted Status Effects for the duration of the Repair action. If a Survivor was already suffering from Exhausted prior to Mindbreaker affecting them, the Status Effect's timer will be paused and not recover for the duration of the Repair action. Both Status Effects linger for another 3/4/5 seconds after a Survivor stops repairing. \"The specimen's apparent telepathic ability can evoke feelings of dread and fatigue in nearby individuals.\" - Hawkins National Laboratory",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_mindbreaker.webp",
+      "meta": {
+        "owner": "Demogorgon",
+        "tier": "S",
+        "rate": 4.5,
+        "topForKillers": [
+          {
+            "slug": "knight",
+            "rank": 3
+          },
+          {
+            "slug": "mastermind",
+            "rank": 12
+          },
+          {
+            "slug": "onryo",
+            "rank": 6
+          },
+          {
+            "slug": "wraith",
+            "rank": 11
+          }
+        ]
+      }
+    },
+    {
+      "id": "hubris",
+      "name": "Hubris",
+      "role": "killer",
+      "tags": [],
+      "desc": "You show no mercy, especially to those foolish enough to resist. Whenever you are stunned by a Survivor, that Survivor suffers from the Exposed Status Effect for 10/15/20 seconds. Hubris has a cool-down of 20 seconds. \"You have made a grave mistake, standing in opposition to me this day.\" - Tarhos KovÃ¡cs",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_hubris.webp",
+      "meta": {
+        "owner": "Knight",
+        "tier": "S",
+        "rate": 4.5,
+        "topForKillers": [
+          {
+            "slug": "singularity",
+            "rank": 7
+          },
+          {
+            "slug": "wraith",
+            "rank": 10
+          }
+        ]
       }
     },
     {
@@ -47,37 +118,134 @@
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_scourgeHookPainResonance.webp",
       "meta": {
         "owner": "Artist",
-        "tier": "S",
-        "rate": 4.51
-      }
-    },
-    {
-      "id": "mindbreaker",
-      "name": "Mindbreaker",
-      "role": "killer",
-      "tags": [
-        "exhaustion",
-        "generator"
-      ],
-      "desc": "Your distressing presence drains and weakens your prey. All Survivors repairing a Generator suffer from the following afflictions: Incurs the Blindness and Exhausted Status Effects for the duration of the Repair action. If a Survivor was already suffering from Exhausted prior to Mindbreaker affecting them, the Status Effect's timer will be paused and not recover for the duration of the Repair action. Both Status Effects linger for another 3/4/5 seconds after a Survivor stops repairing. \"The specimen's apparent telepathic ability can evoke feelings of dread and fatigue in nearby individuals.\" - Hawkins National Laboratory",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_mindbreaker.webp",
-      "meta": {
-        "owner": "Demogorgon",
-        "tier": "S",
-        "rate": 4.5
-      }
-    },
-    {
-      "id": "hubris",
-      "name": "Hubris",
-      "role": "killer",
-      "tags": [],
-      "desc": "You show no mercy, especially to those foolish enough to resist. Whenever you are stunned by a Survivor, that Survivor suffers from the Exposed Status Effect for 10/15/20 seconds. Hubris has a cool-down of 20 seconds. \"You have made a grave mistake, standing in opposition to me this day.\" - Tarhos KovÃ¡cs",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_hubris.webp",
-      "meta": {
-        "owner": "Knight",
-        "tier": "S",
-        "rate": 4.5
+        "tier": "A",
+        "rate": 4.49,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 7
+          },
+          {
+            "slug": "blight",
+            "rank": 3
+          },
+          {
+            "slug": "dark_lord",
+            "rank": 1
+          },
+          {
+            "slug": "singularity",
+            "rank": 4
+          },
+          {
+            "slug": "lich",
+            "rank": 7
+          },
+          {
+            "slug": "animatronic",
+            "rank": 5
+          },
+          {
+            "slug": "ghoul",
+            "rank": 11
+          },
+          {
+            "slug": "oni",
+            "rank": 3
+          },
+          {
+            "slug": "unknown",
+            "rank": 4
+          },
+          {
+            "slug": "spirit",
+            "rank": 2
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 4
+          },
+          {
+            "slug": "plague",
+            "rank": 11
+          },
+          {
+            "slug": "mastermind",
+            "rank": 1
+          },
+          {
+            "slug": "nemesis",
+            "rank": 3
+          },
+          {
+            "slug": "clown",
+            "rank": 10
+          },
+          {
+            "slug": "shape",
+            "rank": 9
+          },
+          {
+            "slug": "cenobite",
+            "rank": 8
+          },
+          {
+            "slug": "huntress",
+            "rank": 9
+          },
+          {
+            "slug": "good_guy",
+            "rank": 12
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 4
+          },
+          {
+            "slug": "cannibal",
+            "rank": 10
+          },
+          {
+            "slug": "legion",
+            "rank": 6
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 5
+          },
+          {
+            "slug": "onryo",
+            "rank": 5
+          },
+          {
+            "slug": "dredge",
+            "rank": 7
+          },
+          {
+            "slug": "wraith",
+            "rank": 7
+          },
+          {
+            "slug": "trickster",
+            "rank": 6
+          },
+          {
+            "slug": "twins",
+            "rank": 9
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 5
+          },
+          {
+            "slug": "trapper",
+            "rank": 9
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 4
+          }
+        ]
       }
     },
     {
@@ -93,7 +261,49 @@
       "meta": {
         "owner": "Deathslinger",
         "tier": "A",
-        "rate": 4.47
+        "rate": 4.47,
+        "topForKillers": [
+          {
+            "slug": "dark_lord",
+            "rank": 5
+          },
+          {
+            "slug": "animatronic",
+            "rank": 6
+          },
+          {
+            "slug": "artist",
+            "rank": 2
+          },
+          {
+            "slug": "ghoul",
+            "rank": 3
+          },
+          {
+            "slug": "knight",
+            "rank": 2
+          },
+          {
+            "slug": "nightmare",
+            "rank": 6
+          },
+          {
+            "slug": "mastermind",
+            "rank": 8
+          },
+          {
+            "slug": "nemesis",
+            "rank": 11
+          },
+          {
+            "slug": "cenobite",
+            "rank": 6
+          },
+          {
+            "slug": "doctor",
+            "rank": 3
+          }
+        ]
       }
     },
     {
@@ -108,7 +318,125 @@
       "meta": {
         "owner": "Plague",
         "tier": "A",
-        "rate": 4.47
+        "rate": 4.47,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 11
+          },
+          {
+            "slug": "blight",
+            "rank": 12
+          },
+          {
+            "slug": "executioner",
+            "rank": 8
+          },
+          {
+            "slug": "singularity",
+            "rank": 3
+          },
+          {
+            "slug": "ghoul",
+            "rank": 7
+          },
+          {
+            "slug": "oni",
+            "rank": 2
+          },
+          {
+            "slug": "knight",
+            "rank": 6
+          },
+          {
+            "slug": "unknown",
+            "rank": 8
+          },
+          {
+            "slug": "spirit",
+            "rank": 7
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 5
+          },
+          {
+            "slug": "nightmare",
+            "rank": 7
+          },
+          {
+            "slug": "plague",
+            "rank": 6
+          },
+          {
+            "slug": "mastermind",
+            "rank": 5
+          },
+          {
+            "slug": "nemesis",
+            "rank": 1
+          },
+          {
+            "slug": "clown",
+            "rank": 6
+          },
+          {
+            "slug": "shape",
+            "rank": 3
+          },
+          {
+            "slug": "huntress",
+            "rank": 11
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 1
+          },
+          {
+            "slug": "cannibal",
+            "rank": 6
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 9
+          },
+          {
+            "slug": "onryo",
+            "rank": 12
+          },
+          {
+            "slug": "pig",
+            "rank": 1
+          },
+          {
+            "slug": "trickster",
+            "rank": 4
+          },
+          {
+            "slug": "doctor",
+            "rank": 10
+          },
+          {
+            "slug": "twins",
+            "rank": 3
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 11
+          },
+          {
+            "slug": "hag",
+            "rank": 2
+          },
+          {
+            "slug": "trapper",
+            "rank": 1
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 3
+          }
+        ]
       }
     },
     {
@@ -123,7 +451,93 @@
       "meta": {
         "owner": "Nemesis",
         "tier": "A",
-        "rate": 4.45
+        "rate": 4.45,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 4
+          },
+          {
+            "slug": "blight",
+            "rank": 2
+          },
+          {
+            "slug": "dark_lord",
+            "rank": 6
+          },
+          {
+            "slug": "executioner",
+            "rank": 12
+          },
+          {
+            "slug": "animatronic",
+            "rank": 1
+          },
+          {
+            "slug": "artist",
+            "rank": 9
+          },
+          {
+            "slug": "ghoul",
+            "rank": 10
+          },
+          {
+            "slug": "oni",
+            "rank": 11
+          },
+          {
+            "slug": "knight",
+            "rank": 4
+          },
+          {
+            "slug": "unknown",
+            "rank": 11
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 2
+          },
+          {
+            "slug": "plague",
+            "rank": 10
+          },
+          {
+            "slug": "mastermind",
+            "rank": 7
+          },
+          {
+            "slug": "shape",
+            "rank": 6
+          },
+          {
+            "slug": "cenobite",
+            "rank": 7
+          },
+          {
+            "slug": "huntress",
+            "rank": 10
+          },
+          {
+            "slug": "good_guy",
+            "rank": 4
+          },
+          {
+            "slug": "dredge",
+            "rank": 4
+          },
+          {
+            "slug": "wraith",
+            "rank": 4
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 4
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 8
+          }
+        ]
       }
     },
     {
@@ -139,7 +553,153 @@
       "meta": {
         "owner": "Cannibal",
         "tier": "A",
-        "rate": 4.44
+        "rate": 4.44,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 1
+          },
+          {
+            "slug": "blight",
+            "rank": 1
+          },
+          {
+            "slug": "dark_lord",
+            "rank": 2
+          },
+          {
+            "slug": "singularity",
+            "rank": 2
+          },
+          {
+            "slug": "lich",
+            "rank": 1
+          },
+          {
+            "slug": "animatronic",
+            "rank": 3
+          },
+          {
+            "slug": "artist",
+            "rank": 1
+          },
+          {
+            "slug": "oni",
+            "rank": 6
+          },
+          {
+            "slug": "knight",
+            "rank": 1
+          },
+          {
+            "slug": "unknown",
+            "rank": 1
+          },
+          {
+            "slug": "spirit",
+            "rank": 1
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 1
+          },
+          {
+            "slug": "nightmare",
+            "rank": 1
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 1
+          },
+          {
+            "slug": "plague",
+            "rank": 4
+          },
+          {
+            "slug": "mastermind",
+            "rank": 11
+          },
+          {
+            "slug": "nemesis",
+            "rank": 5
+          },
+          {
+            "slug": "clown",
+            "rank": 5
+          },
+          {
+            "slug": "shape",
+            "rank": 4
+          },
+          {
+            "slug": "cenobite",
+            "rank": 10
+          },
+          {
+            "slug": "huntress",
+            "rank": 1
+          },
+          {
+            "slug": "good_guy",
+            "rank": 3
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 2
+          },
+          {
+            "slug": "cannibal",
+            "rank": 3
+          },
+          {
+            "slug": "legion",
+            "rank": 2
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 6
+          },
+          {
+            "slug": "onryo",
+            "rank": 7
+          },
+          {
+            "slug": "dredge",
+            "rank": 3
+          },
+          {
+            "slug": "pig",
+            "rank": 5
+          },
+          {
+            "slug": "wraith",
+            "rank": 2
+          },
+          {
+            "slug": "trickster",
+            "rank": 3
+          },
+          {
+            "slug": "doctor",
+            "rank": 5
+          },
+          {
+            "slug": "twins",
+            "rank": 8
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 1
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 7
+          },
+          {
+            "slug": "trapper",
+            "rank": 12
+          }
+        ]
       }
     },
     {
@@ -155,7 +715,105 @@
       "meta": {
         "owner": "Knight",
         "tier": "A",
-        "rate": 4.43
+        "rate": 4.43,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 3
+          },
+          {
+            "slug": "blight",
+            "rank": 4
+          },
+          {
+            "slug": "dark_lord",
+            "rank": 7
+          },
+          {
+            "slug": "executioner",
+            "rank": 4
+          },
+          {
+            "slug": "singularity",
+            "rank": 12
+          },
+          {
+            "slug": "lich",
+            "rank": 3
+          },
+          {
+            "slug": "animatronic",
+            "rank": 9
+          },
+          {
+            "slug": "artist",
+            "rank": 8
+          },
+          {
+            "slug": "oni",
+            "rank": 7
+          },
+          {
+            "slug": "unknown",
+            "rank": 2
+          },
+          {
+            "slug": "spirit",
+            "rank": 10
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 9
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 6
+          },
+          {
+            "slug": "mastermind",
+            "rank": 4
+          },
+          {
+            "slug": "nemesis",
+            "rank": 4
+          },
+          {
+            "slug": "shape",
+            "rank": 7
+          },
+          {
+            "slug": "cenobite",
+            "rank": 12
+          },
+          {
+            "slug": "huntress",
+            "rank": 5
+          },
+          {
+            "slug": "good_guy",
+            "rank": 2
+          },
+          {
+            "slug": "cannibal",
+            "rank": 2
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 10
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 12
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 9
+          },
+          {
+            "slug": "trapper",
+            "rank": 5
+          }
+        ]
       }
     },
     {
@@ -172,7 +830,33 @@
       "meta": {
         "owner": "Artist",
         "tier": "A",
-        "rate": 4.41
+        "rate": 4.41,
+        "topForKillers": [
+          {
+            "slug": "dark_lord",
+            "rank": 10
+          },
+          {
+            "slug": "ghoul",
+            "rank": 1
+          },
+          {
+            "slug": "oni",
+            "rank": 4
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 12
+          },
+          {
+            "slug": "good_guy",
+            "rank": 7
+          },
+          {
+            "slug": "twins",
+            "rank": 2
+          }
+        ]
       }
     },
     {
@@ -185,7 +869,13 @@
       "meta": {
         "owner": "Trickster",
         "tier": "A",
-        "rate": 4.33
+        "rate": 4.33,
+        "topForKillers": [
+          {
+            "slug": "ghoul",
+            "rank": 6
+          }
+        ]
       }
     },
     {
@@ -201,7 +891,101 @@
       "meta": {
         "owner": "Cenobite",
         "tier": "A",
-        "rate": 4.33
+        "rate": 4.33,
+        "topForKillers": [
+          {
+            "slug": "blight",
+            "rank": 5
+          },
+          {
+            "slug": "singularity",
+            "rank": 6
+          },
+          {
+            "slug": "lich",
+            "rank": 10
+          },
+          {
+            "slug": "animatronic",
+            "rank": 12
+          },
+          {
+            "slug": "artist",
+            "rank": 11
+          },
+          {
+            "slug": "knight",
+            "rank": 9
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 11
+          },
+          {
+            "slug": "plague",
+            "rank": 3
+          },
+          {
+            "slug": "nemesis",
+            "rank": 6
+          },
+          {
+            "slug": "clown",
+            "rank": 4
+          },
+          {
+            "slug": "cenobite",
+            "rank": 9
+          },
+          {
+            "slug": "good_guy",
+            "rank": 9
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 3
+          },
+          {
+            "slug": "cannibal",
+            "rank": 5
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 2
+          },
+          {
+            "slug": "onryo",
+            "rank": 10
+          },
+          {
+            "slug": "pig",
+            "rank": 4
+          },
+          {
+            "slug": "trickster",
+            "rank": 8
+          },
+          {
+            "slug": "twins",
+            "rank": 1
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 10
+          },
+          {
+            "slug": "hag",
+            "rank": 4
+          },
+          {
+            "slug": "trapper",
+            "rank": 4
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 10
+          }
+        ]
       }
     },
     {
@@ -216,7 +1000,77 @@
       "meta": {
         "owner": "Demogorgon",
         "tier": "A",
-        "rate": 4.3
+        "rate": 4.3,
+        "topForKillers": [
+          {
+            "slug": "singularity",
+            "rank": 5
+          },
+          {
+            "slug": "lich",
+            "rank": 5
+          },
+          {
+            "slug": "ghoul",
+            "rank": 2
+          },
+          {
+            "slug": "knight",
+            "rank": 11
+          },
+          {
+            "slug": "spirit",
+            "rank": 5
+          },
+          {
+            "slug": "clown",
+            "rank": 8
+          },
+          {
+            "slug": "shape",
+            "rank": 8
+          },
+          {
+            "slug": "cenobite",
+            "rank": 5
+          },
+          {
+            "slug": "legion",
+            "rank": 3
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 3
+          },
+          {
+            "slug": "onryo",
+            "rank": 3
+          },
+          {
+            "slug": "dredge",
+            "rank": 2
+          },
+          {
+            "slug": "wraith",
+            "rank": 9
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 6
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 3
+          },
+          {
+            "slug": "trapper",
+            "rank": 6
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 2
+          }
+        ]
       }
     },
     {
@@ -232,7 +1086,81 @@
       "meta": {
         "owner": "Legion",
         "tier": "A",
-        "rate": 4.28
+        "rate": 4.28,
+        "topForKillers": [
+          {
+            "slug": "dark_lord",
+            "rank": 9
+          },
+          {
+            "slug": "executioner",
+            "rank": 3
+          },
+          {
+            "slug": "artist",
+            "rank": 3
+          },
+          {
+            "slug": "knight",
+            "rank": 8
+          },
+          {
+            "slug": "unknown",
+            "rank": 12
+          },
+          {
+            "slug": "spirit",
+            "rank": 9
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 6
+          },
+          {
+            "slug": "nightmare",
+            "rank": 3
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 11
+          },
+          {
+            "slug": "plague",
+            "rank": 7
+          },
+          {
+            "slug": "nemesis",
+            "rank": 2
+          },
+          {
+            "slug": "good_guy",
+            "rank": 5
+          },
+          {
+            "slug": "legion",
+            "rank": 5
+          },
+          {
+            "slug": "onryo",
+            "rank": 2
+          },
+          {
+            "slug": "dredge",
+            "rank": 9
+          },
+          {
+            "slug": "pig",
+            "rank": 12
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 3
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 4
+          }
+        ]
       }
     },
     {
@@ -248,7 +1176,109 @@
       "meta": {
         "owner": "Clown",
         "tier": "A",
-        "rate": 4.27
+        "rate": 4.27,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 10
+          },
+          {
+            "slug": "blight",
+            "rank": 9
+          },
+          {
+            "slug": "dark_lord",
+            "rank": 3
+          },
+          {
+            "slug": "singularity",
+            "rank": 8
+          },
+          {
+            "slug": "animatronic",
+            "rank": 2
+          },
+          {
+            "slug": "oni",
+            "rank": 10
+          },
+          {
+            "slug": "spirit",
+            "rank": 4
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 3
+          },
+          {
+            "slug": "nightmare",
+            "rank": 2
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 5
+          },
+          {
+            "slug": "plague",
+            "rank": 8
+          },
+          {
+            "slug": "mastermind",
+            "rank": 2
+          },
+          {
+            "slug": "nemesis",
+            "rank": 7
+          },
+          {
+            "slug": "clown",
+            "rank": 11
+          },
+          {
+            "slug": "shape",
+            "rank": 10
+          },
+          {
+            "slug": "good_guy",
+            "rank": 1
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 7
+          },
+          {
+            "slug": "cannibal",
+            "rank": 7
+          },
+          {
+            "slug": "legion",
+            "rank": 8
+          },
+          {
+            "slug": "dredge",
+            "rank": 1
+          },
+          {
+            "slug": "wraith",
+            "rank": 6
+          },
+          {
+            "slug": "trickster",
+            "rank": 10
+          },
+          {
+            "slug": "doctor",
+            "rank": 4
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 8
+          },
+          {
+            "slug": "trapper",
+            "rank": 7
+          }
+        ]
       }
     },
     {
@@ -263,7 +1293,41 @@
       "meta": {
         "owner": "Trickster",
         "tier": "A",
-        "rate": 4.27
+        "rate": 4.27,
+        "topForKillers": [
+          {
+            "slug": "artist",
+            "rank": 5
+          },
+          {
+            "slug": "ghoul",
+            "rank": 5
+          },
+          {
+            "slug": "knight",
+            "rank": 7
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 8
+          },
+          {
+            "slug": "nemesis",
+            "rank": 8
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 8
+          },
+          {
+            "slug": "pig",
+            "rank": 8
+          },
+          {
+            "slug": "trapper",
+            "rank": 3
+          }
+        ]
       }
     },
     {
@@ -278,7 +1342,21 @@
       "meta": {
         "owner": "Pig",
         "tier": "A",
-        "rate": 4.25
+        "rate": 4.25,
+        "topForKillers": [
+          {
+            "slug": "onryo",
+            "rank": 8
+          },
+          {
+            "slug": "dredge",
+            "rank": 10
+          },
+          {
+            "slug": "hag",
+            "rank": 1
+          }
+        ]
       }
     },
     {
@@ -304,7 +1382,29 @@
       "meta": {
         "owner": "Blight",
         "tier": "A",
-        "rate": 4.25
+        "rate": 4.25,
+        "topForKillers": [
+          {
+            "slug": "animatronic",
+            "rank": 8
+          },
+          {
+            "slug": "ghoul",
+            "rank": 9
+          },
+          {
+            "slug": "unknown",
+            "rank": 7
+          },
+          {
+            "slug": "plague",
+            "rank": 9
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 12
+          }
+        ]
       }
     },
     {
@@ -332,7 +1432,37 @@
       "meta": {
         "owner": "Hillbilly",
         "tier": "A",
-        "rate": 4.2
+        "rate": 4.2,
+        "topForKillers": [
+          {
+            "slug": "blight",
+            "rank": 6
+          },
+          {
+            "slug": "executioner",
+            "rank": 5
+          },
+          {
+            "slug": "artist",
+            "rank": 4
+          },
+          {
+            "slug": "oni",
+            "rank": 5
+          },
+          {
+            "slug": "nightmare",
+            "rank": 5
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 7
+          },
+          {
+            "slug": "clown",
+            "rank": 9
+          }
+        ]
       }
     },
     {
@@ -347,7 +1477,49 @@
       "meta": {
         "owner": "Clown",
         "tier": "A",
-        "rate": 4.2
+        "rate": 4.2,
+        "topForKillers": [
+          {
+            "slug": "dark_lord",
+            "rank": 4
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 2
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 4
+          },
+          {
+            "slug": "mastermind",
+            "rank": 6
+          },
+          {
+            "slug": "shape",
+            "rank": 2
+          },
+          {
+            "slug": "good_guy",
+            "rank": 11
+          },
+          {
+            "slug": "cannibal",
+            "rank": 1
+          },
+          {
+            "slug": "legion",
+            "rank": 9
+          },
+          {
+            "slug": "wraith",
+            "rank": 8
+          },
+          {
+            "slug": "trickster",
+            "rank": 9
+          }
+        ]
       }
     },
     {
@@ -363,7 +1535,41 @@
       "meta": {
         "owner": "Cenobite",
         "tier": "A",
-        "rate": 4.15
+        "rate": 4.15,
+        "topForKillers": [
+          {
+            "slug": "lich",
+            "rank": 6
+          },
+          {
+            "slug": "unknown",
+            "rank": 6
+          },
+          {
+            "slug": "plague",
+            "rank": 1
+          },
+          {
+            "slug": "mastermind",
+            "rank": 3
+          },
+          {
+            "slug": "nemesis",
+            "rank": 12
+          },
+          {
+            "slug": "cenobite",
+            "rank": 3
+          },
+          {
+            "slug": "good_guy",
+            "rank": 10
+          },
+          {
+            "slug": "pig",
+            "rank": 2
+          }
+        ]
       }
     },
     {
@@ -379,7 +1585,13 @@
       "meta": {
         "owner": "Pig",
         "tier": "A",
-        "rate": 4.14
+        "rate": 4.14,
+        "topForKillers": [
+          {
+            "slug": "knight",
+            "rank": 5
+          }
+        ]
       }
     },
     {
@@ -394,7 +1606,29 @@
       "meta": {
         "owner": "Blight",
         "tier": "A",
-        "rate": 4.14
+        "rate": 4.14,
+        "topForKillers": [
+          {
+            "slug": "blight",
+            "rank": 8
+          },
+          {
+            "slug": "artist",
+            "rank": 12
+          },
+          {
+            "slug": "plague",
+            "rank": 12
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 10
+          },
+          {
+            "slug": "twins",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -407,7 +1641,29 @@
       "meta": {
         "owner": "Animatronic",
         "tier": "A",
-        "rate": 4.13
+        "rate": 4.13,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 2
+          },
+          {
+            "slug": "dark_lord",
+            "rank": 12
+          },
+          {
+            "slug": "ghoul",
+            "rank": 4
+          },
+          {
+            "slug": "huntress",
+            "rank": 8
+          },
+          {
+            "slug": "trapper",
+            "rank": 10
+          }
+        ]
       }
     },
     {
@@ -422,7 +1678,17 @@
       "meta": {
         "owner": "Twins",
         "tier": "A",
-        "rate": 4.07
+        "rate": 4.07,
+        "topForKillers": [
+          {
+            "slug": "lich",
+            "rank": 12
+          },
+          {
+            "slug": "clown",
+            "rank": 7
+          }
+        ]
       }
     },
     {
@@ -437,7 +1703,17 @@
       "meta": {
         "owner": "Artist",
         "tier": "A",
-        "rate": 4.07
+        "rate": 4.07,
+        "topForKillers": [
+          {
+            "slug": "plague",
+            "rank": 5
+          },
+          {
+            "slug": "dredge",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -452,7 +1728,37 @@
       "meta": {
         "owner": "Xenomorph",
         "tier": "A",
-        "rate": 4.07
+        "rate": 4.07,
+        "topForKillers": [
+          {
+            "slug": "singularity",
+            "rank": 1
+          },
+          {
+            "slug": "lich",
+            "rank": 9
+          },
+          {
+            "slug": "nightmare",
+            "rank": 4
+          },
+          {
+            "slug": "clown",
+            "rank": 1
+          },
+          {
+            "slug": "cenobite",
+            "rank": 2
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 11
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 2
+          }
+        ]
       }
     },
     {
@@ -469,7 +1775,13 @@
       "meta": {
         "owner": "Cenobite",
         "tier": "A",
-        "rate": 4.06
+        "rate": 4.06,
+        "topForKillers": [
+          {
+            "slug": "animatronic",
+            "rank": 4
+          }
+        ]
       }
     },
     {
@@ -482,7 +1794,61 @@
       "meta": {
         "owner": "Shape",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "singularity",
+            "rank": 9
+          },
+          {
+            "slug": "knight",
+            "rank": 10
+          },
+          {
+            "slug": "nightmare",
+            "rank": 8
+          },
+          {
+            "slug": "clown",
+            "rank": 3
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 5
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 7
+          },
+          {
+            "slug": "onryo",
+            "rank": 9
+          },
+          {
+            "slug": "pig",
+            "rank": 3
+          },
+          {
+            "slug": "doctor",
+            "rank": 9
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 6
+          },
+          {
+            "slug": "hag",
+            "rank": 3
+          },
+          {
+            "slug": "trapper",
+            "rank": 2
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 1
+          }
+        ]
       }
     },
     {
@@ -498,7 +1864,13 @@
       "meta": {
         "owner": "Spirit",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "pig",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -511,7 +1883,13 @@
       "meta": {
         "owner": "Spirit",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "hillbilly",
+            "rank": 10
+          }
+        ]
       }
     },
     {
@@ -537,7 +1915,29 @@
       "meta": {
         "owner": "Plague",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 6
+          },
+          {
+            "slug": "oni",
+            "rank": 1
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 3
+          },
+          {
+            "slug": "shape",
+            "rank": 5
+          },
+          {
+            "slug": "cannibal",
+            "rank": 4
+          }
+        ]
       }
     },
     {
@@ -553,7 +1953,13 @@
       "meta": {
         "owner": "Ghost",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "lich",
+            "rank": 2
+          }
+        ]
       }
     },
     {
@@ -581,7 +1987,13 @@
       "meta": {
         "owner": "Executioner",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "twins",
+            "rank": 7
+          }
+        ]
       }
     },
     {
@@ -613,7 +2025,57 @@
       "meta": {
         "owner": "Onryo",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "blight",
+            "rank": 7
+          },
+          {
+            "slug": "artist",
+            "rank": 6
+          },
+          {
+            "slug": "knight",
+            "rank": 12
+          },
+          {
+            "slug": "nemesis",
+            "rank": 9
+          },
+          {
+            "slug": "huntress",
+            "rank": 6
+          },
+          {
+            "slug": "cannibal",
+            "rank": 11
+          },
+          {
+            "slug": "dredge",
+            "rank": 8
+          },
+          {
+            "slug": "wraith",
+            "rank": 5
+          },
+          {
+            "slug": "trickster",
+            "rank": 7
+          },
+          {
+            "slug": "twins",
+            "rank": 10
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 7
+          },
+          {
+            "slug": "hag",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -626,7 +2088,25 @@
       "meta": {
         "owner": "Dredge",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "dark_lord",
+            "rank": 8
+          },
+          {
+            "slug": "ghoul",
+            "rank": 12
+          },
+          {
+            "slug": "spirit",
+            "rank": 3
+          },
+          {
+            "slug": "legion",
+            "rank": 4
+          }
+        ]
       }
     },
     {
@@ -639,7 +2119,21 @@
       "meta": {
         "owner": "Singularity",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "demogorgon",
+            "rank": 9
+          },
+          {
+            "slug": "twins",
+            "rank": 4
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -655,7 +2149,13 @@
       "meta": {
         "owner": "Singularity",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "spirit",
+            "rank": 12
+          }
+        ]
       }
     },
     {
@@ -671,7 +2171,17 @@
       "meta": {
         "owner": "Good",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "clown",
+            "rank": 2
+          },
+          {
+            "slug": "pig",
+            "rank": 9
+          }
+        ]
       }
     },
     {
@@ -701,6 +2211,22 @@
       }
     },
     {
+      "id": "languid_touch",
+      "name": "Languid Touch",
+      "role": "killer",
+      "tags": [
+        "exhaustion",
+        "aura-reading"
+      ],
+      "desc": "Your dreadful aura is so suffocating that even terrifying scenes tire your prey. When a Survivor scares off a Crow within 36 metres of your location, Languid Touch activates: Causes that Survivor to suffer from the Exhausted Status Effect for 6/8/10 seconds. Languid Touch has a cool-down of 5 seconds. \"Submit to me. It is inevitable.\" - Vecna",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_languidTouch.webp",
+      "meta": {
+        "owner": "Lich",
+        "tier": "A",
+        "rate": 4
+      }
+    },
+    {
       "id": "weave_attunement",
       "name": "Weave Attunement",
       "role": "killer",
@@ -712,7 +2238,13 @@
       "meta": {
         "owner": "Lich",
         "tier": "A",
-        "rate": 4
+        "rate": 4,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 8
+          }
+        ]
       }
     },
     {
@@ -728,7 +2260,17 @@
       "meta": {
         "owner": "All",
         "tier": "B",
-        "rate": 3.95
+        "rate": 3.95,
+        "topForKillers": [
+          {
+            "slug": "hag",
+            "rank": 12
+          },
+          {
+            "slug": "trapper",
+            "rank": 8
+          }
+        ]
       }
     },
     {
@@ -744,7 +2286,41 @@
       "meta": {
         "owner": "Good",
         "tier": "B",
-        "rate": 3.95
+        "rate": 3.95,
+        "topForKillers": [
+          {
+            "slug": "lich",
+            "rank": 8
+          },
+          {
+            "slug": "unknown",
+            "rank": 5
+          },
+          {
+            "slug": "spirit",
+            "rank": 6
+          },
+          {
+            "slug": "nightmare",
+            "rank": 10
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 8
+          },
+          {
+            "slug": "shape",
+            "rank": 11
+          },
+          {
+            "slug": "dredge",
+            "rank": 6
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 10
+          }
+        ]
       }
     },
     {
@@ -760,7 +2336,25 @@
       "meta": {
         "owner": "Onryo",
         "tier": "B",
-        "rate": 3.94
+        "rate": 3.94,
+        "topForKillers": [
+          {
+            "slug": "blight",
+            "rank": 11
+          },
+          {
+            "slug": "executioner",
+            "rank": 7
+          },
+          {
+            "slug": "nightmare",
+            "rank": 11
+          },
+          {
+            "slug": "cannibal",
+            "rank": 12
+          }
+        ]
       }
     },
     {
@@ -775,7 +2369,45 @@
       "meta": {
         "owner": "Hag",
         "tier": "B",
-        "rate": 3.92
+        "rate": 3.92,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 12
+          },
+          {
+            "slug": "blight",
+            "rank": 10
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 10
+          },
+          {
+            "slug": "nightmare",
+            "rank": 12
+          },
+          {
+            "slug": "nemesis",
+            "rank": 10
+          },
+          {
+            "slug": "shape",
+            "rank": 12
+          },
+          {
+            "slug": "legion",
+            "rank": 11
+          },
+          {
+            "slug": "doctor",
+            "rank": 12
+          },
+          {
+            "slug": "twins",
+            "rank": 12
+          }
+        ]
       }
     },
     {
@@ -790,7 +2422,29 @@
       "meta": {
         "owner": "Ghost",
         "tier": "B",
-        "rate": 3.89
+        "rate": 3.89,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 5
+          },
+          {
+            "slug": "executioner",
+            "rank": 1
+          },
+          {
+            "slug": "artist",
+            "rank": 7
+          },
+          {
+            "slug": "unknown",
+            "rank": 10
+          },
+          {
+            "slug": "huntress",
+            "rank": 12
+          }
+        ]
       }
     },
     {
@@ -803,7 +2457,17 @@
       "meta": {
         "owner": "Xenomorph",
         "tier": "B",
-        "rate": 3.86
+        "rate": 3.86,
+        "topForKillers": [
+          {
+            "slug": "huntress",
+            "rank": 4
+          },
+          {
+            "slug": "trickster",
+            "rank": 2
+          }
+        ]
       }
     },
     {
@@ -819,7 +2483,17 @@
       "meta": {
         "owner": "Hag",
         "tier": "B",
-        "rate": 3.83
+        "rate": 3.83,
+        "topForKillers": [
+          {
+            "slug": "demogorgon",
+            "rank": 6
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 8
+          }
+        ]
       }
     },
     {
@@ -834,7 +2508,25 @@
       "meta": {
         "owner": "Trickster",
         "tier": "B",
-        "rate": 3.83
+        "rate": 3.83,
+        "topForKillers": [
+          {
+            "slug": "ghoul",
+            "rank": 8
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 8
+          },
+          {
+            "slug": "doctor",
+            "rank": 6
+          },
+          {
+            "slug": "hag",
+            "rank": 8
+          }
+        ]
       }
     },
     {
@@ -847,7 +2539,13 @@
       "meta": {
         "owner": "Ghoul",
         "tier": "B",
-        "rate": 3.83
+        "rate": 3.83,
+        "topForKillers": [
+          {
+            "slug": "hag",
+            "rank": 9
+          }
+        ]
       }
     },
     {
@@ -862,7 +2560,29 @@
       "meta": {
         "owner": "Trapper",
         "tier": "B",
-        "rate": 3.82
+        "rate": 3.82,
+        "topForKillers": [
+          {
+            "slug": "animatronic",
+            "rank": 11
+          },
+          {
+            "slug": "mastermind",
+            "rank": 9
+          },
+          {
+            "slug": "pig",
+            "rank": 10
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 12
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 5
+          }
+        ]
       }
     },
     {
@@ -877,7 +2597,13 @@
       "meta": {
         "owner": "Trapper",
         "tier": "B",
-        "rate": 3.8
+        "rate": 3.8,
+        "topForKillers": [
+          {
+            "slug": "animatronic",
+            "rank": 10
+          }
+        ]
       }
     },
     {
@@ -922,7 +2648,13 @@
       "meta": {
         "owner": "Doctor",
         "tier": "B",
-        "rate": 3.8
+        "rate": 3.8,
+        "topForKillers": [
+          {
+            "slug": "skull_merchant",
+            "rank": 9
+          }
+        ]
       }
     },
     {
@@ -950,7 +2682,21 @@
       "meta": {
         "owner": "Dredge",
         "tier": "B",
-        "rate": 3.8
+        "rate": 3.8,
+        "topForKillers": [
+          {
+            "slug": "huntress",
+            "rank": 2
+          },
+          {
+            "slug": "dredge",
+            "rank": 12
+          },
+          {
+            "slug": "trickster",
+            "rank": 1
+          }
+        ]
       }
     },
     {
@@ -965,7 +2711,13 @@
       "meta": {
         "owner": "Skull",
         "tier": "B",
-        "rate": 3.8
+        "rate": 3.8,
+        "topForKillers": [
+          {
+            "slug": "oni",
+            "rank": 8
+          }
+        ]
       }
     },
     {
@@ -995,7 +2747,13 @@
       "meta": {
         "owner": "Blight",
         "tier": "B",
-        "rate": 3.75
+        "rate": 3.75,
+        "topForKillers": [
+          {
+            "slug": "wraith",
+            "rank": 12
+          }
+        ]
       }
     },
     {
@@ -1010,7 +2768,17 @@
       "meta": {
         "owner": "Knight",
         "tier": "B",
-        "rate": 3.75
+        "rate": 3.75,
+        "topForKillers": [
+          {
+            "slug": "onryo",
+            "rank": 4
+          },
+          {
+            "slug": "pig",
+            "rank": 7
+          }
+        ]
       }
     },
     {
@@ -1043,7 +2811,25 @@
       "meta": {
         "owner": "Ghost",
         "tier": "B",
-        "rate": 3.67
+        "rate": 3.67,
+        "topForKillers": [
+          {
+            "slug": "artist",
+            "rank": 10
+          },
+          {
+            "slug": "nightmare",
+            "rank": 9
+          },
+          {
+            "slug": "trickster",
+            "rank": 11
+          },
+          {
+            "slug": "twins",
+            "rank": 6
+          }
+        ]
       }
     },
     {
@@ -1075,7 +2861,17 @@
       "meta": {
         "owner": "Executioner",
         "tier": "B",
-        "rate": 3.67
+        "rate": 3.67,
+        "topForKillers": [
+          {
+            "slug": "executioner",
+            "rank": 11
+          },
+          {
+            "slug": "unknown",
+            "rank": 3
+          }
+        ]
       }
     },
     {
@@ -1090,7 +2886,17 @@
       "meta": {
         "owner": "Nurse",
         "tier": "B",
-        "rate": 3.64
+        "rate": 3.64,
+        "topForKillers": [
+          {
+            "slug": "plague",
+            "rank": 2
+          },
+          {
+            "slug": "legion",
+            "rank": 1
+          }
+        ]
       }
     },
     {
@@ -1121,7 +2927,21 @@
       "meta": {
         "owner": "Cannibal",
         "tier": "B",
-        "rate": 3.63
+        "rate": 3.63,
+        "topForKillers": [
+          {
+            "slug": "lich",
+            "rank": 11
+          },
+          {
+            "slug": "hag",
+            "rank": 10
+          },
+          {
+            "slug": "trapper",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -1136,7 +2956,13 @@
       "meta": {
         "owner": "Twins",
         "tier": "B",
-        "rate": 3.63
+        "rate": 3.63,
+        "topForKillers": [
+          {
+            "slug": "skull_merchant",
+            "rank": 7
+          }
+        ]
       }
     },
     {
@@ -1151,7 +2977,13 @@
       "meta": {
         "owner": "Onryo",
         "tier": "B",
-        "rate": 3.6
+        "rate": 3.6,
+        "topForKillers": [
+          {
+            "slug": "doctor",
+            "rank": 1
+          }
+        ]
       }
     },
     {
@@ -1183,7 +3015,49 @@
       "meta": {
         "owner": "Nurse",
         "tier": "B",
-        "rate": 3.57
+        "rate": 3.57,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 9
+          },
+          {
+            "slug": "executioner",
+            "rank": 2
+          },
+          {
+            "slug": "huntress",
+            "rank": 3
+          },
+          {
+            "slug": "legion",
+            "rank": 12
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 11
+          },
+          {
+            "slug": "pig",
+            "rank": 6
+          },
+          {
+            "slug": "wraith",
+            "rank": 1
+          },
+          {
+            "slug": "trickster",
+            "rank": 12
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 2
+          },
+          {
+            "slug": "hag",
+            "rank": 6
+          }
+        ]
       }
     },
     {
@@ -1196,7 +3070,13 @@
       "meta": {
         "owner": "All",
         "tier": "B",
-        "rate": 3.57
+        "rate": 3.57,
+        "topForKillers": [
+          {
+            "slug": "dark_lord",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -1254,7 +3134,53 @@
       "meta": {
         "owner": "All",
         "tier": "B",
-        "rate": 3.5
+        "rate": 3.5,
+        "topForKillers": [
+          {
+            "slug": "singularity",
+            "rank": 10
+          },
+          {
+            "slug": "spirit",
+            "rank": 8
+          },
+          {
+            "slug": "cenobite",
+            "rank": 4
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 12
+          },
+          {
+            "slug": "onryo",
+            "rank": 1
+          },
+          {
+            "slug": "dredge",
+            "rank": 5
+          },
+          {
+            "slug": "wraith",
+            "rank": 3
+          },
+          {
+            "slug": "twins",
+            "rank": 5
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 9
+          },
+          {
+            "slug": "hag",
+            "rank": 7
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 6
+          }
+        ]
       }
     },
     {
@@ -1267,7 +3193,13 @@
       "meta": {
         "owner": "Trapper",
         "tier": "B",
-        "rate": 3.5
+        "rate": 3.5,
+        "topForKillers": [
+          {
+            "slug": "doctor",
+            "rank": 7
+          }
+        ]
       }
     },
     {
@@ -1280,7 +3212,13 @@
       "meta": {
         "owner": "Clown",
         "tier": "B",
-        "rate": 3.5
+        "rate": 3.5,
+        "topForKillers": [
+          {
+            "slug": "doctor",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -1296,7 +3234,13 @@
       "meta": {
         "owner": "Oni",
         "tier": "B",
-        "rate": 3.5
+        "rate": 3.5,
+        "topForKillers": [
+          {
+            "slug": "legion",
+            "rank": 7
+          }
+        ]
       }
     },
     {
@@ -1311,7 +3255,21 @@
       "meta": {
         "owner": "Oni",
         "tier": "B",
-        "rate": 3.5
+        "rate": 3.5,
+        "topForKillers": [
+          {
+            "slug": "executioner",
+            "rank": 9
+          },
+          {
+            "slug": "clown",
+            "rank": 12
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 5
+          }
+        ]
       }
     },
     {
@@ -1380,7 +3338,13 @@
       "meta": {
         "owner": "Animatronic",
         "tier": "B",
-        "rate": 3.43
+        "rate": 3.43,
+        "topForKillers": [
+          {
+            "slug": "skull_merchant",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -1434,7 +3398,17 @@
       "meta": {
         "owner": "Hillbilly",
         "tier": "B",
-        "rate": 3.29
+        "rate": 3.29,
+        "topForKillers": [
+          {
+            "slug": "hillbilly",
+            "rank": 12
+          },
+          {
+            "slug": "legion",
+            "rank": 10
+          }
+        ]
       }
     },
     {
@@ -1477,7 +3451,29 @@
       "meta": {
         "owner": "Unknown",
         "tier": "B",
-        "rate": 3.25
+        "rate": 3.25,
+        "topForKillers": [
+          {
+            "slug": "executioner",
+            "rank": 6
+          },
+          {
+            "slug": "oni",
+            "rank": 9
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 9
+          },
+          {
+            "slug": "cannibal",
+            "rank": 9
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 1
+          }
+        ]
       }
     },
     {
@@ -1569,7 +3565,13 @@
       "meta": {
         "owner": "Huntress",
         "tier": "B",
-        "rate": 3
+        "rate": 3,
+        "topForKillers": [
+          {
+            "slug": "doctor",
+            "rank": 8
+          }
+        ]
       }
     },
     {
@@ -1582,7 +3584,41 @@
       "meta": {
         "owner": "Doctor",
         "tier": "B",
-        "rate": 3
+        "rate": 3,
+        "topForKillers": [
+          {
+            "slug": "executioner",
+            "rank": 10
+          },
+          {
+            "slug": "oni",
+            "rank": 12
+          },
+          {
+            "slug": "shape",
+            "rank": 1
+          },
+          {
+            "slug": "cenobite",
+            "rank": 11
+          },
+          {
+            "slug": "good_guy",
+            "rank": 6
+          },
+          {
+            "slug": "cannibal",
+            "rank": 8
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 4
+          },
+          {
+            "slug": "hag",
+            "rank": 5
+          }
+        ]
       }
     },
     {
@@ -1621,7 +3657,17 @@
       "meta": {
         "owner": "Legion",
         "tier": "B",
-        "rate": 3
+        "rate": 3,
+        "topForKillers": [
+          {
+            "slug": "huntress",
+            "rank": 7
+          },
+          {
+            "slug": "trickster",
+            "rank": 5
+          }
+        ]
       }
     },
     {
@@ -1696,7 +3742,13 @@
       "meta": {
         "owner": "Houndmaster",
         "tier": "B",
-        "rate": 3
+        "rate": 3,
+        "topForKillers": [
+          {
+            "slug": "lich",
+            "rank": 4
+          }
+        ]
       }
     },
     {
@@ -1739,7 +3791,17 @@
       "meta": {
         "owner": "Animatronic",
         "tier": "C",
-        "rate": 2.86
+        "rate": 2.86,
+        "topForKillers": [
+          {
+            "slug": "unknown",
+            "rank": 9
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 12
+          }
+        ]
       }
     },
     {
@@ -1765,7 +3827,13 @@
       "meta": {
         "owner": "All",
         "tier": "C",
-        "rate": 2.75
+        "rate": 2.75,
+        "topForKillers": [
+          {
+            "slug": "doctor",
+            "rank": 2
+          }
+        ]
       }
     },
     {
@@ -1778,7 +3846,13 @@
       "meta": {
         "owner": "Ghoul",
         "tier": "C",
-        "rate": 2.71
+        "rate": 2.71,
+        "topForKillers": [
+          {
+            "slug": "cenobite",
+            "rank": 1
+          }
+        ]
       }
     },
     {
@@ -1791,7 +3865,13 @@
       "meta": {
         "owner": "Nurse",
         "tier": "C",
-        "rate": 2.69
+        "rate": 2.69,
+        "topForKillers": [
+          {
+            "slug": "spirit",
+            "rank": 11
+          }
+        ]
       }
     },
     {
@@ -1956,6 +4036,21 @@
       }
     },
     {
+      "id": "soul_guard",
+      "name": "Soul Guard",
+      "role": "survivor",
+      "tags": [
+        "endurance"
+      ],
+      "desc": "You have been through immense hardship and you're stronger for it. After being healed from or having recovered from the Dying State, you benefit from the following effect: Grants the Endurance Status Effect for 4/6/8 seconds. Endurance is cancelled prematurely when performing a Conspicuous Action. While suffering from the Cursed Status Effect, you benefit from the following effects: Grants the ability to fully recover yourself from the Dying State. Soul Guard has a cool-down of 30 seconds.",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_soulGuard.webp",
+      "meta": {
+        "owner": "Cheryl",
+        "tier": "A",
+        "rate": 4.4
+      }
+    },
+    {
       "id": "lithe",
       "name": "Lithe",
       "role": "survivor",
@@ -2074,7 +4169,7 @@
       "meta": {
         "owner": "All",
         "tier": "A",
-        "rate": 4.23
+        "rate": 4.2
       }
     },
     {
@@ -2140,21 +4235,6 @@
       }
     },
     {
-      "id": "soul_guard",
-      "name": "Soul Guard",
-      "role": "survivor",
-      "tags": [
-        "endurance"
-      ],
-      "desc": "You have been through immense hardship and you're stronger for it. After being healed from or having recovered from the Dying State, you benefit from the following effect: Grants the Endurance Status Effect for 4/6/8 seconds. Endurance is cancelled prematurely when performing a Conspicuous Action. While suffering from the Cursed Status Effect, you benefit from the following effects: Grants the ability to fully recover yourself from the Dying State. Soul Guard has a cool-down of 30 seconds.",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_soulGuard.webp",
-      "meta": {
-        "owner": "Cheryl",
-        "tier": "A",
-        "rate": 4.17
-      }
-    },
-    {
       "id": "off_the_record",
       "name": "Off the Record",
       "role": "survivor",
@@ -2168,20 +4248,7 @@
       "meta": {
         "owner": "Zarina",
         "tier": "A",
-        "rate": 4.15
-      }
-    },
-    {
-      "id": "quick_quiet",
-      "name": "Quick & Quiet",
-      "role": "survivor",
-      "tags": [],
-      "desc": "You do not make as much noise as others when quickly vaulting over obstacles or hiding in Lockers. Suppresses both the Loud Noise Notification and the sound effects triggered by rushing to vault Windows, Pallets, or rushing to enter or exit Lockers. Quick & Quiet has a cool-down of 30/25/20 seconds.",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_quickAndQuiet.webp",
-      "meta": {
-        "owner": "Meg",
-        "tier": "A",
-        "rate": 4.14
+        "rate": 4.17
       }
     },
     {
@@ -2294,6 +4361,19 @@
       }
     },
     {
+      "id": "quick_quiet",
+      "name": "Quick & Quiet",
+      "role": "survivor",
+      "tags": [],
+      "desc": "You do not make as much noise as others when quickly vaulting over obstacles or hiding in Lockers. Suppresses both the Loud Noise Notification and the sound effects triggered by rushing to vault Windows, Pallets, or rushing to enter or exit Lockers. Quick & Quiet has a cool-down of 30/25/20 seconds.",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_quickAndQuiet.webp",
+      "meta": {
+        "owner": "Meg",
+        "tier": "A",
+        "rate": 4.08
+      }
+    },
+    {
       "id": "resilience",
       "name": "Resilience",
       "role": "survivor",
@@ -2336,6 +4416,19 @@
         "owner": "Laurie",
         "tier": "A",
         "rate": 4.02
+      }
+    },
+    {
+      "id": "unbreakable",
+      "name": "Unbreakable",
+      "role": "survivor",
+      "tags": [],
+      "desc": "Past battles have taught you a thing or two about survival. Once per Trial, you can completely recover from the Dying State. Your Recovery speed is increased by 25/30/35 %. \"Goddammit, I am seriously FUBAR!\" - Bill Overbeck",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_unbreakable.webp",
+      "meta": {
+        "owner": "Bill",
+        "tier": "A",
+        "rate": 4
       }
     },
     {
@@ -2399,19 +4492,6 @@
         "owner": "David",
         "tier": "B",
         "rate": 3.95
-      }
-    },
-    {
-      "id": "unbreakable",
-      "name": "Unbreakable",
-      "role": "survivor",
-      "tags": [],
-      "desc": "Past battles have taught you a thing or two about survival. Once per Trial, you can completely recover from the Dying State. Your Recovery speed is increased by 25/30/35 %. \"Goddammit, I am seriously FUBAR!\" - Bill Overbeck",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_unbreakable.webp",
-      "meta": {
-        "owner": "Bill",
-        "tier": "B",
-        "rate": 3.94
       }
     },
     {
