@@ -54,7 +54,17 @@ async function scrapePerks(role, url) {
 
     // Colonne minime
     const name = clean($tds.eq(1).text());       // Name
-    const desc = clean($tds.eq(2).text());       // Description
+    const descCell = $tds.eq(2).clone();
+    descCell.find(
+    '.dynamicTitle'
+    ).remove();
+
+    let desc = clean(descCell.text());
+
+    // Hardening: togli eventuali frasi “disclaimer” rimaste nel testo
+    desc = desc
+   .replace(/This description is based on[^.]*upcoming Patch[^.]*\.\s*/gi, '')
+  . replace(/^Patch\s*\d+(?:\.\d+)*[^.]*\.\s*/gi, '');     // Description
     if (!name) return;
 
     // Owner/Tier/Rate se presenti
