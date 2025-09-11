@@ -639,7 +639,7 @@ export default function App() {
             <h1 className="!text-xl lg:!text-3xl font-semibold tracking-tight leading-tight">
               DBD Build Optimizer
             </h1>
-            <p className="text-zinc-400 text-sm">Version: 0.9.1</p>
+            <p className="text-zinc-400 text-sm">Version: {__APP_VERSION__}</p>
 
             {/* Role under the mobile version */}
             <div className="mt-2 md:hidden flex gap-2">

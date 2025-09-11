@@ -7,10 +7,19 @@
     "dev": "vite",
     "make-perks": "node scripts/make_perks_from_dennisreep.mjs",
     "build": "tsc -b && vite build",
+    "postbuild": "node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
     "lint": "eslint .",
-    "predeploy": "npm run build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
-    "deploy": "gh-pages -d dist -b gh-pages",
-    "preview": "vite preview"
+    "predeploy": "npm run version:bump:patch && npm run version:push",
+    "deploy": "npm run build && npm run deploy:ghp",
+    "preview": "vite preview",
+    "version:bump:patch": "npm version patch -m \"chore(release): v%s\"",
+    "version:bump:minor": "npm version minor -m \"chore(release): v%s\"",
+    "version:bump:major": "npm version major -m \"chore(release): v%s\"",
+    "version:push": "git push && git push --follow-tags",
+    "deploy:ghp": "gh-pages -d dist -b gh-pages -m \"deploy v$(node -p \\\"require('./package.json').version\\\")\"",
+    "deploy:nobump": "npm run build && npm run deploy:ghp",
+    "deploy:minor": "npm run version:bump:minor && npm run version:push && npm run build && npm run deploy:ghp",
+    "deploy:major": "npm run version:bump:major && npm run version:push && npm run build && npm run deploy:ghp"
   },
   "dependencies": {
     "cheerio": "^1.1.2",
