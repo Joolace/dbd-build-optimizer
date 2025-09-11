@@ -771,7 +771,7 @@ export default function App() {
                 onClick={() => {
                   /* recompute */ setTimeout(runOptimize, 0);
                 }}
-                className="w-full px-3 py-2 rounded-xl bg-red-600 text-white font-medium hover:bg-red-500"
+                className="w-full px-3 py-2 rounded-xl bg-red-900 text-white font-medium hover:bg-red-500"
               >
                 Generate build
               </button>
@@ -795,7 +795,7 @@ export default function App() {
                       {/* Buttons on the right */}
                       <div className="ml-auto flex gap-2 shrink-0">
                         <button
-                          className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
+                          className="text-xs px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-700 border border-red-900/40"
                           onClick={() =>
                             setSettings((prev) => ({
                               ...prev,
@@ -813,7 +813,7 @@ export default function App() {
                           Lock
                         </button>
                         <button
-                          className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
+                          className="text-xs px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-700 border border-red-900/40"
                           onClick={() =>
                             setSettings((prev) => ({
                               ...prev,
