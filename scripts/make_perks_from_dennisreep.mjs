@@ -57,7 +57,7 @@ const KILLERS = [
   "skull_merchant",
 ];
 
-/** Normalizza testo (spazi multipli, NBSP) */
+/** Normalise text (multiple spaces, NBSP) */
 function clean(t) {
   return (t ?? "")
     .replace(/\u00A0/g, " ")
@@ -65,7 +65,7 @@ function clean(t) {
     .trim();
 }
 
-/** id stabile a partire dal nome */
+/** stable ID based on name */
 function toId(name) {
   return clean(name)
     .toLowerCase()
@@ -73,7 +73,7 @@ function toId(name) {
     .replace(/^_+|_+$/g, "");
 }
 
-/** estrae primo numero (intero/decimale) da una stringa */
+/** extracts the first number (integer/decimal) from a string */
 function parseFirstNumber(s) {
   const m = clean(s).match(/[0-9]+(?:[.,][0-9]+)?/);
   return m ? parseFloat(m[0].replace(",", ".")) : null;
@@ -88,7 +88,7 @@ async function scrapeKillerTopPerks(slug) {
   const html = await res.text();
   const $ = cheerio.load(html);
 
-  // Trova heading che contenga sia "Top" che "Perks" (es. "Top Artist Perks")
+  // Find headings that contain both ‘Top’ and “Perks” (e.g. ‘Top Artist Perks’)
   let start = null;
   $("h1,h2,h3,h4").each((_, el) => {
     const t = clean($(el).text()).toLowerCase();
@@ -96,11 +96,11 @@ async function scrapeKillerTopPerks(slug) {
   });
   if (!start) return { slug, perks: [] };
 
-  // Sezione tra questo heading e il prossimo
+  // Section between this heading and the next one
   const $section = $(start).nextUntil("h1,h2,h3,h4");
   const names = [];
 
-  // 1) prova a leggere la tabella Top Perks: Icon | Name | Description | Killer | Tier | Rate
+  // 1) Try reading the Top Perks table: Icon | Name | Description | Killer | Tier | Rate
   $section.find("table tbody tr").each((_, tr) => {
     const $td = $(tr).find("td");
     if ($td.length >= 2) {
@@ -109,7 +109,7 @@ async function scrapeKillerTopPerks(slug) {
     }
   });
 
-  // 2) fallback generico se non abbiamo trovato la tabella (prendi nomi da link/list/item)
+  // 2) generic fallback if we did not find the table (take names from link/list/item)
   if (names.length === 0) {
     $section
       .find("a, li, td, .perk, .perk-name, .card, .grid *")
@@ -126,7 +126,7 @@ async function scrapeKillerTopPerks(slug) {
       });
   }
 
-  // Dedup mantenendo l'ordine e limita
+  // Dedupe while maintaining order and limits
   const out = [];
   const seen = new Set();
   for (const n of names) {
@@ -140,8 +140,8 @@ async function scrapeKillerTopPerks(slug) {
 }
 
 /**
- * Parsiamo la tabella: Icon | Name | Description | Owner | Tier | Rate
- * Se il layout cambia, prova ad adattare i selettori qui.
+ * Let's break down the table: Icon | Name | Description | Owner | Tier | Rate
+ * If the layout changes, try adjusting the selectors here.
  */
 async function scrapePerks(role, url) {
   const res = await fetch(url, {
@@ -153,19 +153,19 @@ async function scrapePerks(role, url) {
 
   const perks = [];
 
-  // Righe tabella (salta header)
+  // Table rows (skip header)
   $("table tbody tr").each((_, tr) => {
     const $tds = $(tr).find("td");
     if ($tds.length < 3) return;
 
-    // Colonne minime
+    // Minimum columns
     const name = clean($tds.eq(1).text()); // Name
     const descCell = $tds.eq(2).clone();
     descCell.find(".dynamicTitle").remove();
 
     let desc = clean(descCell.text());
 
-    // Hardening: togli eventuali frasi “disclaimer” rimaste nel testo
+    // Hardening: remove any remaining disclaimer phrases from the text.
     desc = desc
       .replace(
         /This description is based on[^.]*upcoming Patch[^.]*\.\s*/gi,
@@ -183,7 +183,7 @@ async function scrapePerks(role, url) {
       : null;
     const rate = rateRaw ? parseFirstNumber(rateRaw) : null;
 
-    // Tag basilari dal testo (puoi estendere liberamente)
+    // Basic tags from the text (you can extend freely)
     const tags = [];
     const lower = (name + " " + desc).toLowerCase();
     if (lower.includes("exhaust")) tags.push("exhaustion");
@@ -194,16 +194,16 @@ async function scrapePerks(role, url) {
     if (lower.includes("endurance")) tags.push("endurance");
     if (lower.includes("stealth") || lower.includes("scratch"))
       tags.push("stealth");
-    // piccolo aiuto: tag per Scourge Hook
+    // small help: tag for Scourge Hook
     if (/^scourge hook/i.test(name)) tags.push("scourge_hook");
 
-    // Icona (se presente)
+    // Icon (if present)
     const iconEl = $tds.eq(0).find("img").first();
     const icon = iconEl.attr("src")
       ? new URL(iconEl.attr("src"), url).href
       : null;
 
-    // Costruisci il perk mantenendo la "struttura" esistente
+    // Build the perk while maintaining the existing ‘structure’
     const perk = {
       id: toId(name),
       name,
@@ -213,17 +213,17 @@ async function scrapePerks(role, url) {
       icon,
     };
 
-    // Aggiunte NON invasive in meta
+    // Non-invasive additions in meta
     const meta = {};
     if (owner) meta.owner = owner;
     if (tier) meta.tier = tier; // "S", "A", "B", ...
-    if (rate !== null) meta.rate = rate; // numero (float)
+    if (rate !== null) meta.rate = rate; // number (float)
     if (Object.keys(meta).length > 0) perk.meta = meta;
 
     perks.push(perk);
   });
 
-  // Dedupe per nome (case-insensitive)
+  // Dedupe by name (case-insensitive)
   const seen = new Set();
   const out = [];
   for (const p of perks) {
@@ -242,8 +242,8 @@ async function main() {
     results.push(...items);
   }
 
-  // Mappa per nome normalizzato -> perk
-  // Mappa per nome e per id
+  // Map by normalised name -> perk
+  // Map by name and by ID
   const byName = new Map();
   const byId = new Map();
   for (const p of results) {
@@ -251,14 +251,14 @@ async function main() {
     byId.set(p.id, p);
   }
 
-  // Per ogni killer, marca i top perks con { slug, rank }
+  // For each killer, mark the top perks with { slug, rank }
   for (const slug of KILLERS) {
     try {
       const { perks: topNames } = await scrapeKillerTopPerks(slug);
       topNames.forEach((nm, idx) => {
-        // 1) prova match per nome
+        // 1) match test by name
         let perk = byName.get(nm.toLowerCase());
-        // 2) fallback: prova per id normalizzato
+        // 2) fallback: try for normalised ID
         if (!perk) perk = byId.get(toId(nm));
         if (!perk) return;
 
@@ -279,7 +279,7 @@ async function main() {
     perks: results,
   };
 
-  // Scrivi in public/perks.json
+  // Write to public/perks.json
   const outDir = path.join(__dirname, "..", "public");
   await fs.mkdir(outDir, { recursive: true });
   const outPath = path.join(outDir, "perks.json");
