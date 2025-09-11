@@ -163,14 +163,14 @@ async function scrapePerks(role, url) {
     const descCell = $tds.eq(2).clone();
     descCell.find(".dynamicTitle").remove();
 
-    // Rimuovi wrapper inutili/duplicati (pc/mobile view, tooltip, ecc.)
+    // Remove unnecessary/duplicate wrappers (PC/mobile view, tooltip, etc.)
     descCell
       .find(
         ".pcView, .mobileView, .tooltip, .tooltipBaseText, .tooltiptext, .tooltipTextWrapper, .linkIncluded, .iconless, .borderless"
       )
       .remove();
 
-    // Mantieni SOLO il testo interno dei <span> colorati o con style
+    // Keep ONLY the internal text of coloured or styled <span> tags
     descCell.find("span.luaClr, span.clr, span[style]").each((_, el) => {
       const txt = $(el).text();
       $(el).replaceWith(txt); // un-wrap per tenere i numeri (es. 2/4/6)
@@ -178,7 +178,7 @@ async function scrapePerks(role, url) {
 
     let desc = clean(descCell.text());
 
-    // (Guardia finale) se per qualche motivo sono rimasti tag HTML in chiaro, toglili
+    // (Final check) if for some reason any HTML tags remain visible, remove them
     if (/<\/?[a-z][\s\S]*>/i.test(desc)) {
       desc = clean(desc.replace(/<\/?[^>]+>/g, ""));
     }
@@ -192,7 +192,7 @@ async function scrapePerks(role, url) {
       .replace(/^Patch\s*\d+(?:\.\d+)*[^.]*\.\s*/gi, ""); // Description
     if (!name) return;
 
-    // Owner/Tier/Rate se presenti
+    // Owner/Tier/Rate if applicable
     const owner = $tds.length >= 4 ? clean($tds.eq(3).text()) : null; // Killer/Survivor name
     const tierRaw = $tds.length >= 5 ? clean($tds.eq(4).text()) : null; // e.g. "S", "A"
     const rateRaw = $tds.length >= 6 ? clean($tds.eq(5).text()) : null; // e.g. "4.6"
