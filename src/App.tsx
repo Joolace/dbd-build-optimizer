@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 
 /**
  * Dead by Daylight – Build Optimizer (Read‑only, production-ready MVP)
@@ -11,7 +11,6 @@ import { useEffect, useMemo, useState } from "react";
  * - On load, fetch(`/perks.json`) → { version, perks: [...] }
  * - If the file is missing, it falls back to a tiny built‑in seed dataset
  * - End users can solo: scegliere ruolo, filtrare, lock/ban, generare build
- * - Nessuna possibilità di caricare o modificare JSON lato client
  */
 // ---- Types
 export type Role = "survivor" | "killer";
@@ -256,9 +255,31 @@ const MUTEX_TAGS: Record<Role, string[]> = {
   killer: ["scourge_hook"],
 };
 
+function useScrollLock(locked: boolean) {
+  useEffect(() => {
+    if (!locked) return;
+    const { body, documentElement } = document;
+    const prevOverflow = body.style.overflow;
+    const prevPadRight = body.style.paddingRight;
+
+    // evita il “layout shift” quando sparisce la scrollbar
+    const scrollbarW = window.innerWidth - documentElement.clientWidth;
+    body.style.overflow = "hidden";
+    if (scrollbarW > 0) body.style.paddingRight = `${scrollbarW}px`;
+
+    return () => {
+      body.style.overflow = prevOverflow;
+      body.style.paddingRight = prevPadRight;
+    };
+  }, [locked]);
+}
+
 function LoadingOverlay({ show }: { show: boolean }) {
   return (
     <div
+      role="status"
+      aria-live="polite"
+      aria-busy={show}
       aria-hidden={!show}
       className={`fixed inset-0 z-[60] bg-black flex items-center justify-center
                   transition-opacity duration-300
@@ -268,7 +289,8 @@ function LoadingOverlay({ show }: { show: boolean }) {
                       : "opacity-0 pointer-events-none"
                   }`}
     >
-      <img src="/loader.gif" alt="Loading…" className="h-50 w-50" />
+      <img src="/loader.gif" alt="" className="h-50 w-50" />
+      <span className="sr-only">Loading…</span>
     </div>
   );
 }
@@ -278,6 +300,9 @@ export default function App() {
   const [booting, setBooting] = useState(true);
   const [minElapsed, setMinElapsed] = useState(false);
   const [dataset, setDataset] = useState<DbdDataset | null>(null);
+  const [randOpen, setRandOpen] = useState(false);
+  const [randRole, setRandRole] = useState<Role>("survivor");
+  const [randBuild, setRandBuild] = useState<Perk[]>([]);
   const [settings, setSettings] = useLocalStorage<Settings>(SETTINGS_KEY, {
     role: "survivor" as Role,
     selectedTags: [],
@@ -289,6 +314,105 @@ export default function App() {
     filterTier: "" as string,
     filterRateMin: "" as string,
   });
+
+  const appShellRef = useRef<HTMLDivElement>(null);
+
+  const isBannedPerk = (p: Perk) =>
+    settings.banned.some(
+      (b) =>
+        normalize(b) === normalize(p.name) || normalize(b) === normalize(p.id)
+    );
+
+  function hasMutexConflict(candidate: Perk, picked: Perk[]) {
+    const mutex = new Set((MUTEX_TAGS[candidate.role] || []).map(normalize));
+    const cTags = new Set(candidate.tags.map(normalize));
+    const candidateHasMutex = [...cTags].some((t) => mutex.has(t));
+    if (!candidateHasMutex) return false;
+    return picked.some((x) =>
+      x.tags.map(normalize).some((t) => cTags.has(t) && mutex.has(t))
+    );
+  }
+
+  function shuffle<T>(arr: T[]) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = (Math.random() * (i + 1)) | 0;
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function makeRandomBuild(role: Role) {
+    const pool = dedupeByName(
+      perks.filter((p) => p.role === role && !isBannedPerk(p))
+    );
+    const rnd = shuffle(pool);
+
+    const chosen: Perk[] = [];
+    for (const p of rnd) {
+      if (chosen.length >= 4) break;
+      if (hasMutexConflict(p, chosen)) continue;
+      if (chosen.some((c) => normalize(c.name) === normalize(p.name))) continue;
+      chosen.push(p);
+    }
+
+    if (chosen.length < 4) {
+      for (const p of rnd) {
+        if (chosen.length >= 4) break;
+        if (chosen.some((c) => normalize(c.name) === normalize(p.name)))
+          continue;
+        chosen.push(p);
+      }
+    }
+    return chosen.slice(0, 4);
+  }
+
+  const openerRef = useRef<HTMLButtonElement | null>(null);
+
+  function openRandomiser(e?: React.MouseEvent<HTMLButtonElement>) {
+    openerRef.current = e?.currentTarget ?? null;
+    const startRole = settings.role;
+    setRandRole(startRole);
+    setRandBuild(makeRandomBuild(startRole));
+    setRandOpen(true);
+  }
+
+  function closeRandomiser() {
+    (document.activeElement as HTMLElement | null)?.blur?.();
+    setRandOpen(false);
+    setTimeout(() => openerRef.current?.focus(), 0);
+  }
+
+  function pickRandomFor(role: Role) {
+    setRandRole(role);
+    setRandBuild(makeRandomBuild(role));
+  }
+
+  useScrollLock(booting);
+  useEffect(() => {
+    const n = appShellRef.current;
+    if (!n) return;
+    if (booting) n.setAttribute("inert", "");
+    else n.removeAttribute("inert");
+  }, [booting]);
+
+  useEffect(() => {
+    if (!randOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeRandomiser();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [randOpen]);
+
+  useEffect(() => {
+    if (!randOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [randOpen]);
 
   // Fetch read-only dataset
   useEffect(() => {
@@ -500,14 +624,16 @@ export default function App() {
     return () => clearTimeout(t);
   }, []);
 
-  // chiudi il loader quando: dataset pronto + minimo trascorso
   useEffect(() => {
     if (dataset !== null && minElapsed) setBooting(false);
   }, [dataset, minElapsed]);
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 px-4 py-6 flex justify-center">
-      <div className="w-full max-w-none mx-auto px-4 py-6 space-y-6">
+      <div
+        ref={appShellRef}
+        className="w-full max-w-none mx-auto px-4 py-6 space-y-6"
+      >
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
             <h1 className="!text-xl lg:!text-3xl font-semibold tracking-tight leading-tight">
@@ -516,7 +642,7 @@ export default function App() {
             <p className="text-zinc-400 text-sm">Version: 0.9.0</p>
 
             {/* Role under the mobile version */}
-            <div className="mt-2 md:hidden">
+            <div className="mt-2 md:hidden flex gap-2">
               <button
                 onClick={() =>
                   setSettings({
@@ -524,12 +650,20 @@ export default function App() {
                     role: settings.role === "survivor" ? "killer" : "survivor",
                   })
                 }
-                className="w-full lg:w-auto px-3 py-2 rounded-xl bg-red-700/20 hover:bg-red-700/30 border border-red-900/40 text-sm"
+                className="flex-1 px-3 py-2 rounded-xl bg-red-700/20 hover:bg-red-700/30 border border-red-900/40 text-sm"
               >
                 Role:{" "}
                 <span className="font-semibold ml-1">
                   {settings.role === "survivor" ? "Survivor" : "Killer"}
                 </span>
+              </button>
+
+              {/* NEW */}
+              <button
+                onClick={(e) => openRandomiser(e)}
+                className="flex-1 px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-red-900/40 text-sm"
+              >
+                Randomiser
               </button>
             </div>
           </div>
@@ -549,6 +683,14 @@ export default function App() {
               <span className="font-semibold ml-1">
                 {settings.role === "survivor" ? "Survivor" : "Killer"}
               </span>
+            </button>
+
+            {/* NEW: anche su desktop */}
+            <button
+              onClick={(e) => openRandomiser(e)}
+              className="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-red-900/40 text-sm"
+            >
+              Perk Randomiser
             </button>
           </div>
         </header>
@@ -918,6 +1060,14 @@ export default function App() {
       </div>
       <FloatingBugButton href="https://discord.gg/mC7Eabu3QW" />
       <LoadingOverlay show={booting} />
+      <RandomiserModal
+        show={randOpen}
+        onClose={closeRandomiser}
+        role={randRole}
+        build={randBuild}
+        onPickRole={(r) => pickRandomFor(r)}
+        onReroll={() => setRandBuild(makeRandomBuild(randRole))}
+      />
     </div>
   );
 }
@@ -1073,6 +1223,151 @@ function FloatingBugButton({ href }: { href: string }) {
           🐞
         </span>
       </a>
+    </div>
+  );
+}
+
+function RandomiserModal({
+  show,
+  onClose,
+  role,
+  build,
+  onPickRole,
+  onReroll,
+}: {
+  show: boolean;
+  onClose: () => void;
+  role: Role;
+  build: Perk[];
+  onPickRole: (r: Role) => void;
+  onReroll: () => void;
+}) {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const n = rootRef.current;
+    if (!n) return;
+    if (!show) n.setAttribute("inert", "");
+    else n.removeAttribute("inert");
+  }, [show]);
+
+  useEffect(() => {
+    if (!show) return;
+    rootRef.current?.querySelector<HTMLButtonElement>("[data-close]")?.focus();
+  }, [show]);
+
+  return (
+    <div
+      ref={rootRef}
+      className={`fixed inset-0 z-[70] ${show ? "" : "pointer-events-none"}`}
+      {...(show
+        ? {
+            role: "dialog",
+            "aria-modal": true as const,
+            "aria-labelledby": "rand-title",
+          }
+        : { "aria-hidden": true as const })}
+    >
+      {/* backdrop */}
+      <div
+        className={`absolute inset-0 bg-black/70 transition-opacity duration-200 ${
+          show ? "opacity-100" : "opacity-0"
+        }`}
+        onClick={onClose}
+      />
+      {/* dialog */}
+      <div
+        className={`absolute inset-0 flex items-center justify-center p-4 transition-transform duration-200 ${
+          show ? "scale-100 opacity-100" : "scale-95 opacity-0"
+        }`}
+      >
+        <div className="w-full max-w-3xl rounded-2xl bg-zinc-950 border border-red-900/40 p-4">
+          <div className="flex items-center justify-between gap-3 mb-3">
+            <h3 id="rand-title" className="text-lg font-semibold">
+              Perk Randomiser
+            </h3>
+            <button
+              data-close
+              onClick={onClose}
+              className="px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-red-900/40 text-sm"
+            >
+              Close
+            </button>
+          </div>
+
+          {/* role switch */}
+          <div className="mb-4 flex items-center gap-2">
+            <span className="text-xs text-zinc-400">Role:</span>
+            <button
+              onClick={() => onPickRole("survivor")}
+              className={`px-3 py-1.5 rounded-xl border text-sm ${
+                role === "survivor"
+                  ? "bg-red-600 text-white border-red-600"
+                  : "bg-zinc-900 hover:bg-zinc-800 border-red-900/40"
+              }`}
+            >
+              Survivor
+            </button>
+            <button
+              onClick={() => onPickRole("killer")}
+              className={`px-3 py-1.5 rounded-xl border text-sm ${
+                role === "killer"
+                  ? "bg-red-600 text-white border-red-600"
+                  : "bg-zinc-900 hover:bg-zinc-800 border-red-900/40"
+              }`}
+            >
+              Killer
+            </button>
+
+            <div className="ml-auto">
+              <button
+                onClick={onReroll}
+                className="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-red-900/40 text-sm"
+              >
+                Reroll
+              </button>
+            </div>
+          </div>
+
+          {/* build grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {build.map((p) => (
+              <div
+                key={p.id}
+                className="p-3 rounded-xl bg-zinc-900 border border-red-900/40 flex items-center gap-3"
+              >
+                {p.icon ? (
+                  <img
+                    src={p.icon}
+                    alt=""
+                    className="w-16 h-16 rounded-lg border border-red-900/40 object-contain bg-black/40"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-lg border border-red-900/40 bg-black/40 flex items-center justify-center text-xs text-zinc-400">
+                    no icon
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <div className="font-medium truncate">{p.name}</div>
+                  <div className="text-xs text-zinc-400 capitalize">
+                    {p.role}
+                  </div>
+                  {p.meta?.owner && (
+                    <div className="text-xs text-zinc-400 normal-case">
+                      {p.meta.owner}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-4 text-[11px] text-zinc-500">
+            The build avoids duplicates and respects mutex tags (e.g. only one
+            Exhaustion/Scourge Hook). Banned perks are excluded.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
