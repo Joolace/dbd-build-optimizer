@@ -13,7 +13,6 @@ import { useEffect, useMemo, useState } from "react";
  * - End users can solo: scegliere ruolo, filtrare, lock/ban, generare build
  * - Nessuna possibilità di caricare o modificare JSON lato client
  */
-
 // ---- Types
 export type Role = "survivor" | "killer";
 
@@ -22,7 +21,7 @@ type Perk = {
   name: string;
   role: Role;
   tags: string[];
-  synergy?: string[]; 
+  synergy?: string[];
   anti_synergy?: string[];
   desc?: string;
   rarity?: string;
@@ -34,7 +33,6 @@ type DbdDataset = {
   version: string;
   perks: Perk[];
 };
-
 
 type Settings = {
   role: Role;
@@ -258,7 +256,27 @@ const MUTEX_TAGS: Record<Role, string[]> = {
   killer: ["scourge_hook"],
 };
 
+function LoadingOverlay({ show }: { show: boolean }) {
+  return (
+    <div
+      aria-hidden={!show}
+      className={`fixed inset-0 z-[60] bg-black flex items-center justify-center
+                  transition-opacity duration-300
+                  ${
+                    show
+                      ? "opacity-100 pointer-events-auto"
+                      : "opacity-0 pointer-events-none"
+                  }`}
+    >
+      <img src="/loader.gif" alt="Loading…" className="h-50 w-50" />
+    </div>
+  );
+}
+
 export default function App() {
+  const MIN_BOOT_MS = 2350;
+  const [booting, setBooting] = useState(true);
+  const [minElapsed, setMinElapsed] = useState(false);
   const [dataset, setDataset] = useState<DbdDataset | null>(null);
   const [settings, setSettings] = useLocalStorage<Settings>(SETTINGS_KEY, {
     role: "survivor" as Role,
@@ -386,7 +404,7 @@ export default function App() {
     settings.filterOwner,
     settings.filterTier,
     settings.filterRateMin,
-    JSON.stringify(allTags), 
+    JSON.stringify(allTags),
   ]);
 
   const [suggested, setSuggested] = useState<Perk[]>([]);
@@ -474,8 +492,18 @@ export default function App() {
     JSON.stringify(settings.selectedTags),
     JSON.stringify(settings.locked),
     JSON.stringify(settings.banned),
-    settings.killerFocus, 
+    settings.killerFocus,
   ]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMinElapsed(true), MIN_BOOT_MS);
+    return () => clearTimeout(t);
+  }, []);
+
+  // chiudi il loader quando: dataset pronto + minimo trascorso
+  useEffect(() => {
+    if (dataset !== null && minElapsed) setBooting(false);
+  }, [dataset, minElapsed]);
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 px-4 py-6 flex justify-center">
@@ -541,7 +569,7 @@ export default function App() {
                   setSettings({
                     ...settings,
                     search: "",
-                    selectedTags: [] as string[], 
+                    selectedTags: [] as string[],
                     filterOwner: "",
                     filterTier: "",
                     filterRateMin: "",
@@ -883,6 +911,7 @@ export default function App() {
         </footer>
       </div>
       <FloatingBugButton href="https://discord.gg/mC7Eabu3QW" />
+      <LoadingOverlay show={booting} />
     </div>
   );
 }
