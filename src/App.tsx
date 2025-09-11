@@ -22,7 +22,7 @@ type Perk = {
   name: string;
   role: Role;
   tags: string[];
-  synergy?: string[]; // related perk names or ids
+  synergy?: string[]; 
   anti_synergy?: string[];
   desc?: string;
   rarity?: string;
@@ -33,6 +33,19 @@ type Perk = {
 type DbdDataset = {
   version: string;
   perks: Perk[];
+};
+
+
+type Settings = {
+  role: Role;
+  selectedTags: string[];
+  locked: string[];
+  banned: string[];
+  search: string;
+  killerFocus: string;
+  filterOwner: string;
+  filterTier: string;
+  filterRateMin: string;
 };
 
 // ---- Minimal fallback dataset (only for first run / local dev)
@@ -152,7 +165,7 @@ function getRate(p: Perk): number | null {
   return null;
 }
 
-/** Trasforma un rate 0–5 in un bonus centrato su 2.5 (range ~[-7.5, +7.5]) */
+/** Transforms a rate of 0–5 into a bonus centred on 2.5 (range ~[-7.5, +7.5]) */
 function rateBonus(p: Perk) {
   const r = getRate(p);
   if (r == null) return 0;
@@ -160,7 +173,7 @@ function rateBonus(p: Perk) {
   return (rr - 2.5) * 3;
 }
 
-/** Punteggio da tier (S,A,B,...) */
+/** Tier score (S, A, B, ...) */
 function tierBonus(p: Perk) {
   const raw = (p.meta as any)?.tier;
   const key = typeof raw === "string" ? raw.toUpperCase() : "";
@@ -201,22 +214,22 @@ function scorePerk(
 
   let score = 0;
 
-  // 1) Match dei tag selezionati
+  // 1) Matches for selected tags
   for (const t of ctx.tags)
     if (p.tags.map(normalize).includes(normalize(t))) score += 10;
 
-  // 2) Bonus di sinergia con locked + scelti correnti
+  // 2) Synergy bonus with locked + current selections
   const related = new Set((p.synergy || []).map(normalize));
   const lockedNames = ctx.locked.map((n) => normalize(n));
   const currentNames = ctx.current.map((c) => normalize(c.name));
   for (const n of [...lockedNames, ...currentNames])
     if (related.has(n)) score += 8;
 
-  // 3) Penalità anti-sinergia dichiarata
+  // 3) Declared anti-synergy penalty
   const anti = new Set((p.anti_synergy || []).map(normalize));
   for (const n of currentNames) if (anti.has(n)) score -= 12;
 
-  // 4) Regole mutex (es. niente doppio exhaustion / scourge_hook)
+  // 4) Mutex rules (e.g. no double exhaustion / scourge_hook)
   const mutex = new Set((MUTEX_TAGS[p.role] || []).map(normalize));
   const pTags = new Set(p.tags.map(normalize));
   const hasMutexTag = [...pTags].some((t) => mutex.has(t));
@@ -229,17 +242,17 @@ function scorePerk(
 
   // 5) Meta: Tier + Rate (p.meta.tier / p.meta.rate)
   score += tierBonus(p); // S > A > B ...
-  score += rateBonus(p); // meglio se il rate è > 2.5
+  score += rateBonus(p); // preferably if the rate is > 2.5
 
   score += killerFocusBonus(p, ctx.killerFocus);
 
-  // 6) Tiebreaker leggero per stabilità
+  // 6) Lightweight tiebreaker for stability
   score += (100 - Math.min(100, p.name.length)) * 0.01;
 
   return score;
 }
 
-// ---- Mutex tags: non vogliamo più di 1 perk con questi tag (per ruolo)
+// ---- Mutex tags
 const MUTEX_TAGS: Record<Role, string[]> = {
   survivor: ["exhaustion"],
   killer: ["scourge_hook"],
@@ -247,13 +260,16 @@ const MUTEX_TAGS: Record<Role, string[]> = {
 
 export default function App() {
   const [dataset, setDataset] = useState<DbdDataset | null>(null);
-  const [settings, setSettings] = useLocalStorage(SETTINGS_KEY, {
+  const [settings, setSettings] = useLocalStorage<Settings>(SETTINGS_KEY, {
     role: "survivor" as Role,
-    selectedTags: ["chase", "stealth", "teamplay"],
+    selectedTags: [],
     locked: [] as string[],
     banned: [] as string[],
     search: "",
     killerFocus: "" as string,
+    filterOwner: "" as string,
+    filterTier: "" as string,
+    filterRateMin: "" as string,
   });
 
   // Fetch read-only dataset
@@ -293,23 +309,85 @@ export default function App() {
     return Array.from(s).sort();
   }, [perks]);
 
+  // Tags ONLY for the selected role
   const allTags = useMemo(() => {
     const s = new Set<string>();
-    perks.forEach((p) => p.tags.forEach((t) => s.add(t)));
+    perks
+      .filter((p) => p.role === settings.role)
+      .forEach((p) => p.tags.forEach((t) => s.add(t)));
     return Array.from(s).sort();
-  }, [perks]);
+  }, [perks, settings.role]);
 
   const visiblePerks = useMemo(() => {
     const q = normalize(settings.search);
+
+    // valid owner for the current role
+    const ownersForRole = new Set(
+      perks
+        .filter((p) => p.role === settings.role)
+        .map((p) => (p.meta as any)?.owner)
+        .filter(Boolean) as string[]
+    );
+    const ownerActive =
+      !!settings.filterOwner &&
+      Array.from(ownersForRole).some(
+        (o) => normalize(o) === normalize(settings.filterOwner)
+      );
+
+    // active tags, but only those that exist for the current role
+    const activeTags = settings.selectedTags.filter((t) => allTags.includes(t));
+
+    const tierActive = !!settings.filterTier;
+    const rateMin =
+      settings.filterRateMin && !isNaN(Number(settings.filterRateMin))
+        ? Number(settings.filterRateMin)
+        : null;
+
     return perks.filter((p) => {
       if (p.role !== settings.role) return false;
+
       if (q) {
-        const hay = `${p.name} ${p.tags.join(" ")}`.toLowerCase();
+        const hay = `${p.name} ${p.tags.join(" ")} ${
+          (p.meta as any)?.owner ?? ""
+        } ${(p.meta as any)?.tier ?? ""}`.toLowerCase();
         if (!hay.includes(q)) return false;
       }
+
+      if (activeTags.length > 0) {
+        const perkTagsNorm = p.tags.map(normalize);
+        const anyMatch = activeTags.some((t) =>
+          perkTagsNorm.includes(normalize(t))
+        );
+        if (!anyMatch) return false;
+      }
+
+      if (ownerActive) {
+        const owner = ((p.meta as any)?.owner ?? "").toString();
+        if (normalize(owner) !== normalize(settings.filterOwner)) return false;
+      }
+
+      if (tierActive) {
+        const tier = ((p.meta as any)?.tier ?? "").toString().toUpperCase();
+        if (tier !== settings.filterTier.toUpperCase()) return false;
+      }
+
+      if (rateMin !== null) {
+        const r = getRate(p);
+        if (r == null || r < rateMin) return false;
+      }
+
       return true;
     });
-  }, [perks, settings.search, settings.role]);
+  }, [
+    perks,
+    settings.role,
+    settings.search,
+    JSON.stringify(settings.selectedTags),
+    settings.filterOwner,
+    settings.filterTier,
+    settings.filterRateMin,
+    JSON.stringify(allTags), 
+  ]);
 
   const [suggested, setSuggested] = useState<Perk[]>([]);
   const runOptimize = () => {
@@ -322,7 +400,7 @@ export default function App() {
       );
     };
 
-    // locked effettivi = locked - banned
+    // actual locked = locked - banned
     const lockedPerks = perks.filter(
       (p) =>
         settings.locked.some(
@@ -338,7 +416,7 @@ export default function App() {
       return;
     }
 
-    // pool = solo stesso ruolo, non già scelti, NON bannati
+    // pool = same role only, not already chosen, NOT banned
     const pool = perks
       .filter((p) => p.role === settings.role)
       .filter(
@@ -369,7 +447,7 @@ export default function App() {
       );
 
       const pick = pool.shift()!;
-      // (il filtro sopra evita già i banned, questo è solo difensivo)
+      // (the filter above already avoids banned users, this is just defensive)
       if (
         scorePerk(pick, {
           role: settings.role,
@@ -396,7 +474,7 @@ export default function App() {
     JSON.stringify(settings.selectedTags),
     JSON.stringify(settings.locked),
     JSON.stringify(settings.banned),
-    settings.killerFocus, // 👈 aggiungi questa
+    settings.killerFocus, 
   ]);
 
   return (
@@ -409,7 +487,7 @@ export default function App() {
             </h1>
             <p className="text-zinc-400 text-sm">Version: 0.9.0</p>
 
-            {/* Role sotto la versione su mobile */}
+            {/* Role under the mobile version */}
             <div className="mt-2 md:hidden">
               <button
                 onClick={() =>
@@ -428,7 +506,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Role a destra su desktop */}
+          {/* Role on the right on desktop */}
           <div className="hidden md:flex gap-2">
             <button
               onClick={() =>
@@ -456,8 +534,94 @@ export default function App() {
                 onChange={(e) =>
                   setSettings({ ...settings, search: e.target.value })
                 }
-                className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none focus:ring-2 focus:ring-red-700/40"
+                className="flex-1 min-w-0 px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none focus:ring-2 focus:ring-red-700/40"
               />
+              <button
+                onClick={() =>
+                  setSettings({
+                    ...settings,
+                    search: "",
+                    selectedTags: [] as string[], 
+                    filterOwner: "",
+                    filterTier: "",
+                    filterRateMin: "",
+                  })
+                }
+                className="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-sm whitespace-nowrap shrink-0"
+              >
+                Reset filters
+              </button>
+            </div>
+
+            {/* Advanced filters (left column) */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {/* Owner (dynamic label) */}
+              <div>
+                <label className="text-xs text-zinc-400 block mb-1">
+                  {settings.role === "killer" ? "Killer" : "Survivor"}
+                </label>
+                <select
+                  value={settings.filterOwner}
+                  onChange={(e) =>
+                    setSettings({ ...settings, filterOwner: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none"
+                >
+                  <option value="">(any)</option>
+                  {Array.from(
+                    new Set(
+                      perks
+                        .filter((p) => p.role === settings.role)
+                        .map((p) => (p.meta as any)?.owner)
+                        .filter(Boolean) as string[]
+                    )
+                  )
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((o) => (
+                      <option key={o} value={o}>
+                        {o}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              {/* Tier */}
+              <div>
+                <label className="text-xs text-zinc-400 block mb-1">Tier</label>
+                <select
+                  value={settings.filterTier}
+                  onChange={(e) =>
+                    setSettings({ ...settings, filterTier: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none"
+                >
+                  <option value="">(any)</option>
+                  {["S", "A", "B", "C", "D", "E", "F"].map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Min Rate */}
+              <div>
+                <label className="text-xs text-zinc-400 block mb-1">
+                  Min rate
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={5}
+                  step={0.1}
+                  placeholder="e.g. 3.5"
+                  value={settings.filterRateMin}
+                  onChange={(e) =>
+                    setSettings({ ...settings, filterRateMin: e.target.value })
+                  }
+                  className="w-full px-3 py-2 rounded-xl bg-zinc-900 border border-red-900/40 outline-none"
+                />
+              </div>
             </div>
 
             {/* Tags filter */}
@@ -495,7 +659,6 @@ export default function App() {
                     setSettings((prev) => ({
                       ...prev,
                       locked: Array.from(new Set([...prev.locked, p.name])),
-                      // se era bannato, toglilo dai banned
                       banned: prev.banned.filter(
                         (i) =>
                           normalize(i) !== normalize(p.name) &&
@@ -592,7 +755,7 @@ export default function App() {
                     className="p-3 rounded-xl bg-zinc-800 border border-red-900/40"
                   >
                     <div className="flex items-center">
-                      {/* Icona a sinistra */}
+                      {/* Icon on the left */}
                       {p.icon && (
                         <img
                           src={p.icon}
@@ -601,7 +764,7 @@ export default function App() {
                         />
                       )}
 
-                      {/* Bottoni a destra */}
+                      {/* Buttons on the right */}
                       <div className="ml-auto flex gap-2 shrink-0">
                         <button
                           className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-red-900/40"
@@ -626,11 +789,11 @@ export default function App() {
                           onClick={() =>
                             setSettings((prev) => ({
                               ...prev,
-                              // aggiungi ai banned (senza duplicati)
+                              // add to banned (without duplicates)
                               banned: Array.from(
                                 new Set([...prev.banned, p.name])
                               ),
-                              // rimuovi dagli eventuali locked
+                              // remove from any locked items
                               locked: prev.locked.filter(
                                 (i) =>
                                   normalize(i) !== normalize(p.name) &&
@@ -661,7 +824,7 @@ export default function App() {
                           )}
                         </div>
 
-                        {/* Ruolo + Owner (killer/survivor) */}
+                        {/* Role + Owner (killer/survivor) */}
                         <div className="text-xs text-zinc-300 capitalize">
                           {p.role}
                           {p.meta?.owner && (
@@ -675,7 +838,7 @@ export default function App() {
                           )}
                         </div>
 
-                        {/* Tag (come prima) */}
+                        {/* Tag */}
                         <div className="text-xs text-zinc-300">
                           {p.tags.join(" · ")}
                         </div>
@@ -740,7 +903,7 @@ function PerkCard({
     <div className="p-3 rounded-2xl bg-zinc-900 border border-red-900/40 hover:border-red-900/40 transition">
       <div className="flex items-start justify-between gap-2">
         <div>
-          {/* Icona sopra al nome (se presente) */}
+          {/* Icon above the name (if present) */}
           {perk.icon && (
             <img
               src={perk.icon}
@@ -751,7 +914,7 @@ function PerkCard({
             />
           )}
 
-          {/* Nome */}
+          {/* Name */}
           <div className="font-medium">{perk.name}</div>
 
           {/* Tier / Rate */}
@@ -765,7 +928,7 @@ function PerkCard({
             {hasRate && <>Rate: {Number(perk.meta!.rate).toFixed(1)}</>}
           </div>
 
-          {/* Ruolo + Owner (per es. "survivor · Meg Thomas" o "killer · The Artist") */}
+          {/* Role + Owner (ex. "survivor · Meg Thomas" or "killer · The Artist") */}
           <div className="text-xs text-zinc-300 capitalize">
             {perk.role}
             {perk.meta?.owner && (
@@ -777,7 +940,7 @@ function PerkCard({
           </div>
         </div>
 
-        {/* Azioni */}
+        {/* Actions */}
         <div className="flex gap-2">
           <button
             onClick={onLock}
@@ -808,7 +971,7 @@ function PerkCard({
         </div>
       )}
 
-      {/* Descrizione */}
+      {/* Desc */}
       {perk.desc && <p className="text-xs text-zinc-400 mt-2">{perk.desc}</p>}
     </div>
   );
