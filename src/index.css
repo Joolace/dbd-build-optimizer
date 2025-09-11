@@ -55,6 +55,23 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+
+@keyframes rainbowShift {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+.rainbow {
+  background: linear-gradient(90deg,
+    #ff4d4d, #ffa64d, #fff94d, #4dff4d,
+    #4dd2ff, #b84dff, #ff4df0, #ff4d4d
+  );
+  background-size: 400% 100%;
+  animation: rainbowShift 6s linear infinite;
+  text-align: center !important;
+  color: black !important;
+}
+
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

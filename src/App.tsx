@@ -639,10 +639,22 @@ export default function App() {
             <h1 className="!text-xl lg:!text-3xl font-semibold tracking-tight leading-tight">
               DBD Build Optimizer
             </h1>
-            <p className="text-zinc-400 text-sm">Version: 0.9.0</p>
+            <p className="text-zinc-400 text-sm">Version: 0.9.1</p>
 
             {/* Role under the mobile version */}
             <div className="mt-2 md:hidden flex gap-2">
+              <a
+                href="https://github.com/Joolace/dbd-reshade"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 px-3 py-2 rounded-xl rainbow text-black font-medium
+               border border-red-900/40 hover:brightness-110 active:brightness-95
+               focus:outline-none focus:ring-2 focus:ring-red-600/40"
+                title="Open DBD Reshade on GitHub"
+              >
+                DBDReshade
+              </a>
+
               <button
                 onClick={() =>
                   setSettings({
@@ -670,6 +682,18 @@ export default function App() {
 
           {/* Role on the right on desktop */}
           <div className="hidden md:flex gap-2">
+            <a
+              href="https://github.com/Joolace/dbd-reshade"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-2 rounded-xl rainbow text-black font-medium
+               border border-red-900/40 hover:brightness-110 active:brightness-95
+               focus:outline-none focus:ring-2 focus:ring-red-600/40"
+              title="Open DBD Reshade on GitHub"
+            >
+              DBDReshade
+            </a>
+
             <button
               onClick={() =>
                 setSettings({
