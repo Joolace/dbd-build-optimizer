@@ -1,5 +1,5 @@
 {
-  "version": "2025-09-10",
+  "version": "2025-09-11",
   "perks": [
     {
       "id": "eruption",
@@ -13,8 +13,8 @@
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_eruption.webp",
       "meta": {
         "owner": "Nemesis",
-        "tier": "S",
-        "rate": 4.55,
+        "tier": "A",
+        "rate": 4.47,
         "topForKillers": [
           {
             "slug": "singularity",
@@ -43,207 +43,6 @@
           {
             "slug": "houndmaster",
             "rank": 1
-          }
-        ]
-      }
-    },
-    {
-      "id": "mindbreaker",
-      "name": "Mindbreaker",
-      "role": "killer",
-      "tags": [
-        "exhaustion",
-        "generator"
-      ],
-      "desc": "Your distressing presence drains and weakens your prey. All Survivors repairing a Generator suffer from the following afflictions: Incurs the Blindness and Exhausted Status Effects for the duration of the Repair action. If a Survivor was already suffering from Exhausted prior to Mindbreaker affecting them, the Status Effect's timer will be paused and not recover for the duration of the Repair action. Both Status Effects linger for another 3/4/5 seconds after a Survivor stops repairing. \"The specimen's apparent telepathic ability can evoke feelings of dread and fatigue in nearby individuals.\" - Hawkins National Laboratory",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_mindbreaker.webp",
-      "meta": {
-        "owner": "Demogorgon",
-        "tier": "S",
-        "rate": 4.5,
-        "topForKillers": [
-          {
-            "slug": "knight",
-            "rank": 3
-          },
-          {
-            "slug": "mastermind",
-            "rank": 12
-          },
-          {
-            "slug": "onryo",
-            "rank": 6
-          },
-          {
-            "slug": "wraith",
-            "rank": 11
-          }
-        ]
-      }
-    },
-    {
-      "id": "hubris",
-      "name": "Hubris",
-      "role": "killer",
-      "tags": [],
-      "desc": "You show no mercy, especially to those foolish enough to resist. Whenever you are stunned by a Survivor, that Survivor suffers from the Exposed Status Effect for 10/15/20 seconds. Hubris has a cool-down of 20 seconds. \"You have made a grave mistake, standing in opposition to me this day.\" - Tarhos KovÃ¡cs",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_hubris.webp",
-      "meta": {
-        "owner": "Knight",
-        "tier": "S",
-        "rate": 4.5,
-        "topForKillers": [
-          {
-            "slug": "singularity",
-            "rank": 7
-          },
-          {
-            "slug": "wraith",
-            "rank": 10
-          }
-        ]
-      }
-    },
-    {
-      "id": "scourge_hook_pain_resonance",
-      "name": "Scourge Hook: Pain Resonance",
-      "role": "killer",
-      "tags": [
-        "aura-reading",
-        "generator",
-        "hook",
-        "scourge_hook"
-      ],
-      "desc": "Overwhelming pain reverberates outwards. At the start of the Trial, 4 random Hooks are changed into Scourge Hooks: The Auras of Scourge Hooks are revealed to you in white. You start the Trial with 4 Tokens on Scourge Hook: Pain Resonance. Each time a Survivor is hooked on a Scourge Hook for the first time, 1 Token is consumed and the following effects apply: The Generator with the most Progression explodes and instantly regresses by 10/15/20 % of its total Progression. Normal Generator Regression applies afterwards. All Survivors repairing that Generator will scream, but not reveal their location. Scourge Hook: Pain Resonance is disabled for the remainder of the Trial once all Tokens are consumed. \"The pain spills beyond flesh/darkness staining the horizon.\" - Girl in the Shadow by Carmina Mora",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_scourgeHookPainResonance.webp",
-      "meta": {
-        "owner": "Artist",
-        "tier": "A",
-        "rate": 4.49,
-        "topForKillers": [
-          {
-            "slug": "nurse",
-            "rank": 7
-          },
-          {
-            "slug": "blight",
-            "rank": 3
-          },
-          {
-            "slug": "dark_lord",
-            "rank": 1
-          },
-          {
-            "slug": "singularity",
-            "rank": 4
-          },
-          {
-            "slug": "lich",
-            "rank": 7
-          },
-          {
-            "slug": "animatronic",
-            "rank": 5
-          },
-          {
-            "slug": "ghoul",
-            "rank": 11
-          },
-          {
-            "slug": "oni",
-            "rank": 3
-          },
-          {
-            "slug": "unknown",
-            "rank": 4
-          },
-          {
-            "slug": "spirit",
-            "rank": 2
-          },
-          {
-            "slug": "xenomorph",
-            "rank": 4
-          },
-          {
-            "slug": "plague",
-            "rank": 11
-          },
-          {
-            "slug": "mastermind",
-            "rank": 1
-          },
-          {
-            "slug": "nemesis",
-            "rank": 3
-          },
-          {
-            "slug": "clown",
-            "rank": 10
-          },
-          {
-            "slug": "shape",
-            "rank": 9
-          },
-          {
-            "slug": "cenobite",
-            "rank": 8
-          },
-          {
-            "slug": "huntress",
-            "rank": 9
-          },
-          {
-            "slug": "good_guy",
-            "rank": 12
-          },
-          {
-            "slug": "demogorgon",
-            "rank": 4
-          },
-          {
-            "slug": "cannibal",
-            "rank": 10
-          },
-          {
-            "slug": "legion",
-            "rank": 6
-          },
-          {
-            "slug": "deathslinger",
-            "rank": 5
-          },
-          {
-            "slug": "onryo",
-            "rank": 5
-          },
-          {
-            "slug": "dredge",
-            "rank": 7
-          },
-          {
-            "slug": "wraith",
-            "rank": 7
-          },
-          {
-            "slug": "trickster",
-            "rank": 6
-          },
-          {
-            "slug": "twins",
-            "rank": 9
-          },
-          {
-            "slug": "ghost_face",
-            "rank": 5
-          },
-          {
-            "slug": "trapper",
-            "rank": 9
-          },
-          {
-            "slug": "skull_merchant",
-            "rank": 4
           }
         ]
       }
@@ -307,6 +106,107 @@
       }
     },
     {
+      "id": "lethal_pursuer",
+      "name": "Lethal Pursuer",
+      "role": "killer",
+      "tags": [
+        "aura-reading"
+      ],
+      "desc": "You have been designed to track down and eliminate targets. At the start of the Trial, the Auras of all Survivors are revealed to you for 7/8/9 seconds. Extends the duration of all instances of a Survivor Aura being revealed to you by +2 seconds. Lethal Pursuer benefits from its own effect. \"...it knows what it wants and won't stop till it gets it.\" - Carlos Oliveira",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_lethalPursuer.webp",
+      "meta": {
+        "owner": "Nemesis",
+        "tier": "A",
+        "rate": 4.47,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 4
+          },
+          {
+            "slug": "blight",
+            "rank": 2
+          },
+          {
+            "slug": "dark_lord",
+            "rank": 6
+          },
+          {
+            "slug": "executioner",
+            "rank": 12
+          },
+          {
+            "slug": "animatronic",
+            "rank": 1
+          },
+          {
+            "slug": "artist",
+            "rank": 9
+          },
+          {
+            "slug": "ghoul",
+            "rank": 10
+          },
+          {
+            "slug": "oni",
+            "rank": 11
+          },
+          {
+            "slug": "knight",
+            "rank": 4
+          },
+          {
+            "slug": "unknown",
+            "rank": 11
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 2
+          },
+          {
+            "slug": "plague",
+            "rank": 10
+          },
+          {
+            "slug": "mastermind",
+            "rank": 7
+          },
+          {
+            "slug": "shape",
+            "rank": 6
+          },
+          {
+            "slug": "cenobite",
+            "rank": 7
+          },
+          {
+            "slug": "huntress",
+            "rank": 10
+          },
+          {
+            "slug": "good_guy",
+            "rank": 4
+          },
+          {
+            "slug": "dredge",
+            "rank": 4
+          },
+          {
+            "slug": "wraith",
+            "rank": 4
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 4
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 8
+          }
+        ]
+      }
+    },
+    {
       "id": "corrupt_intervention",
       "name": "Corrupt Intervention",
       "role": "killer",
@@ -318,7 +218,7 @@
       "meta": {
         "owner": "Plague",
         "tier": "A",
-        "rate": 4.47,
+        "rate": 4.46,
         "topForKillers": [
           {
             "slug": "nurse",
@@ -338,7 +238,7 @@
           },
           {
             "slug": "ghoul",
-            "rank": 7
+            "rank": 6
           },
           {
             "slug": "oni",
@@ -440,102 +340,145 @@
       }
     },
     {
-      "id": "lethal_pursuer",
-      "name": "Lethal Pursuer",
+      "id": "scourge_hook_pain_resonance",
+      "name": "Scourge Hook: Pain Resonance",
       "role": "killer",
       "tags": [
-        "aura-reading"
+        "aura-reading",
+        "generator",
+        "hook",
+        "scourge_hook"
       ],
-      "desc": "You have been designed to track down and eliminate targets. At the start of the Trial, the Auras of all Survivors are revealed to you for 7/8/9 seconds. Extends the duration of all instances of a Survivor Aura being revealed to you by +2 seconds. Lethal Pursuer benefits from its own effect. \"...it knows what it wants and won't stop till it gets it.\" - Carlos Oliveira",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_lethalPursuer.webp",
+      "desc": "Overwhelming pain reverberates outwards. At the start of the Trial, 4 random Hooks are changed into Scourge Hooks: The Auras of Scourge Hooks are revealed to you in white. You start the Trial with 4 Tokens on Scourge Hook: Pain Resonance. Each time a Survivor is hooked on a Scourge Hook for the first time, 1 Token is consumed and the following effects apply: The Generator with the most Progression explodes and instantly regresses by 10/15/20 % of its total Progression. Normal Generator Regression applies afterwards. All Survivors repairing that Generator will scream, but not reveal their location. Scourge Hook: Pain Resonance is disabled for the remainder of the Trial once all Tokens are consumed. \"The pain spills beyond flesh/darkness staining the horizon.\" - Girl in the Shadow by Carmina Mora",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_scourgeHookPainResonance.webp",
       "meta": {
-        "owner": "Nemesis",
+        "owner": "Artist",
         "tier": "A",
-        "rate": 4.45,
+        "rate": 4.46,
         "topForKillers": [
           {
             "slug": "nurse",
-            "rank": 4
+            "rank": 7
           },
           {
             "slug": "blight",
-            "rank": 2
+            "rank": 3
           },
           {
             "slug": "dark_lord",
-            "rank": 6
-          },
-          {
-            "slug": "executioner",
-            "rank": 12
-          },
-          {
-            "slug": "animatronic",
             "rank": 1
           },
           {
-            "slug": "artist",
-            "rank": 9
+            "slug": "singularity",
+            "rank": 4
+          },
+          {
+            "slug": "lich",
+            "rank": 7
+          },
+          {
+            "slug": "animatronic",
+            "rank": 5
           },
           {
             "slug": "ghoul",
-            "rank": 10
+            "rank": 11
           },
           {
             "slug": "oni",
-            "rank": 11
-          },
-          {
-            "slug": "knight",
-            "rank": 4
+            "rank": 3
           },
           {
             "slug": "unknown",
-            "rank": 11
+            "rank": 4
           },
           {
-            "slug": "hillbilly",
+            "slug": "spirit",
             "rank": 2
           },
           {
+            "slug": "xenomorph",
+            "rank": 4
+          },
+          {
             "slug": "plague",
-            "rank": 10
+            "rank": 11
           },
           {
             "slug": "mastermind",
-            "rank": 7
+            "rank": 1
           },
           {
-            "slug": "shape",
-            "rank": 6
+            "slug": "nemesis",
+            "rank": 3
           },
           {
-            "slug": "cenobite",
-            "rank": 7
-          },
-          {
-            "slug": "huntress",
+            "slug": "clown",
             "rank": 10
           },
           {
+            "slug": "shape",
+            "rank": 9
+          },
+          {
+            "slug": "cenobite",
+            "rank": 8
+          },
+          {
+            "slug": "huntress",
+            "rank": 9
+          },
+          {
             "slug": "good_guy",
+            "rank": 12
+          },
+          {
+            "slug": "demogorgon",
             "rank": 4
+          },
+          {
+            "slug": "cannibal",
+            "rank": 10
+          },
+          {
+            "slug": "legion",
+            "rank": 6
+          },
+          {
+            "slug": "deathslinger",
+            "rank": 5
+          },
+          {
+            "slug": "onryo",
+            "rank": 5
           },
           {
             "slug": "dredge",
-            "rank": 4
+            "rank": 7
           },
           {
             "slug": "wraith",
-            "rank": 4
+            "rank": 7
+          },
+          {
+            "slug": "trickster",
+            "rank": 6
+          },
+          {
+            "slug": "twins",
+            "rank": 9
           },
           {
             "slug": "ghost_face",
-            "rank": 4
+            "rank": 5
           },
           {
-            "slug": "houndmaster",
-            "rank": 8
+            "slug": "trapper",
+            "rank": 9
+          },
+          {
+            "slug": "skull_merchant",
+            "rank": 4
           }
         ]
       }
@@ -553,7 +496,7 @@
       "meta": {
         "owner": "Cannibal",
         "tier": "A",
-        "rate": 4.44,
+        "rate": 4.45,
         "topForKillers": [
           {
             "slug": "nurse",
@@ -593,7 +536,7 @@
           },
           {
             "slug": "unknown",
-            "rank": 1
+            "rank": 2
           },
           {
             "slug": "spirit",
@@ -703,6 +646,124 @@
       }
     },
     {
+      "id": "pop_goes_the_weasel",
+      "name": "Pop Goes The Weasel",
+      "role": "killer",
+      "tags": [
+        "generator",
+        "hook"
+      ],
+      "desc": "A deep bond with The Entity unlocks great strength. After hooking a Survivor, Pop Goes the Weasel activates for 35/40/45 seconds.Perform the Damage Generator action while Pop Goes the Weasel is active to benefit from the following effect: Instantly regresses the damaged Generator by -20 % of its current Progression. Pop Goes the Weasel deactivates after the Generator is damaged or once the timer runs out.",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_popGoesTheWeasel.webp",
+      "meta": {
+        "owner": "Clown",
+        "tier": "A",
+        "rate": 4.39,
+        "topForKillers": [
+          {
+            "slug": "nurse",
+            "rank": 10
+          },
+          {
+            "slug": "blight",
+            "rank": 9
+          },
+          {
+            "slug": "dark_lord",
+            "rank": 3
+          },
+          {
+            "slug": "singularity",
+            "rank": 8
+          },
+          {
+            "slug": "animatronic",
+            "rank": 2
+          },
+          {
+            "slug": "oni",
+            "rank": 10
+          },
+          {
+            "slug": "spirit",
+            "rank": 4
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 3
+          },
+          {
+            "slug": "nightmare",
+            "rank": 2
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 5
+          },
+          {
+            "slug": "plague",
+            "rank": 8
+          },
+          {
+            "slug": "mastermind",
+            "rank": 2
+          },
+          {
+            "slug": "nemesis",
+            "rank": 7
+          },
+          {
+            "slug": "clown",
+            "rank": 11
+          },
+          {
+            "slug": "shape",
+            "rank": 10
+          },
+          {
+            "slug": "good_guy",
+            "rank": 1
+          },
+          {
+            "slug": "demogorgon",
+            "rank": 7
+          },
+          {
+            "slug": "cannibal",
+            "rank": 7
+          },
+          {
+            "slug": "legion",
+            "rank": 8
+          },
+          {
+            "slug": "dredge",
+            "rank": 1
+          },
+          {
+            "slug": "wraith",
+            "rank": 6
+          },
+          {
+            "slug": "trickster",
+            "rank": 10
+          },
+          {
+            "slug": "doctor",
+            "rank": 4
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 8
+          },
+          {
+            "slug": "trapper",
+            "rank": 7
+          }
+        ]
+      }
+    },
+    {
       "id": "nowhere_to_hide",
       "name": "Nowhere to Hide",
       "role": "killer",
@@ -715,7 +776,7 @@
       "meta": {
         "owner": "Knight",
         "tier": "A",
-        "rate": 4.43,
+        "rate": 4.38,
         "topForKillers": [
           {
             "slug": "nurse",
@@ -755,7 +816,7 @@
           },
           {
             "slug": "unknown",
-            "rank": 2
+            "rank": 1
           },
           {
             "slug": "spirit",
@@ -817,49 +878,6 @@
       }
     },
     {
-      "id": "grim_embrace",
-      "name": "Grim Embrace",
-      "role": "killer",
-      "tags": [
-        "aura-reading",
-        "generator",
-        "hook"
-      ],
-      "desc": "Your act of servitude to The Entity has not gone unnoticed. Each time a Survivor is hooked for the first time, Grim Embrace gains +1 Token and activates once you are at least 16 metres away from the Hook: 1-3 Tokens: Blocks all Generators for 6/8/10 seconds. 4 Tokens: Blocks all Generators for 40 seconds and the Aura of the Obsession is revealed to you for 6 seconds. \"Are we nothing but prisoners to our sorrow?\" - Carmina Mora",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_grimEmbrace.webp",
-      "meta": {
-        "owner": "Artist",
-        "tier": "A",
-        "rate": 4.41,
-        "topForKillers": [
-          {
-            "slug": "dark_lord",
-            "rank": 10
-          },
-          {
-            "slug": "ghoul",
-            "rank": 1
-          },
-          {
-            "slug": "oni",
-            "rank": 4
-          },
-          {
-            "slug": "xenomorph",
-            "rank": 12
-          },
-          {
-            "slug": "good_guy",
-            "rank": 7
-          },
-          {
-            "slug": "twins",
-            "rank": 2
-          }
-        ]
-      }
-    },
-    {
       "id": "hex_crowd_control",
       "name": "Hex: Crowd Control",
       "role": "killer",
@@ -873,7 +891,7 @@
         "topForKillers": [
           {
             "slug": "ghoul",
-            "rank": 6
+            "rank": 5
           }
         ]
       }
@@ -989,6 +1007,49 @@
       }
     },
     {
+      "id": "grim_embrace",
+      "name": "Grim Embrace",
+      "role": "killer",
+      "tags": [
+        "aura-reading",
+        "generator",
+        "hook"
+      ],
+      "desc": "Your act of servitude to The Entity has not gone unnoticed. Each time a Survivor is hooked for the first time, Grim Embrace gains +1 Token and activates once you are at least 16 metres away from the Hook: 1-3 Tokens: Blocks all Generators for 6/8/10 seconds. 4 Tokens: Blocks all Generators for 40 seconds and the Aura of the Obsession is revealed to you for 6 seconds. \"Are we nothing but prisoners to our sorrow?\" - Carmina Mora",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_grimEmbrace.webp",
+      "meta": {
+        "owner": "Artist",
+        "tier": "A",
+        "rate": 4.31,
+        "topForKillers": [
+          {
+            "slug": "dark_lord",
+            "rank": 10
+          },
+          {
+            "slug": "ghoul",
+            "rank": 1
+          },
+          {
+            "slug": "oni",
+            "rank": 4
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 12
+          },
+          {
+            "slug": "good_guy",
+            "rank": 7
+          },
+          {
+            "slug": "twins",
+            "rank": 2
+          }
+        ]
+      }
+    },
+    {
       "id": "surge",
       "name": "Surge",
       "role": "killer",
@@ -1074,214 +1135,6 @@
       }
     },
     {
-      "id": "discordance",
-      "name": "Discordance",
-      "role": "killer",
-      "tags": [
-        "aura-reading",
-        "generator"
-      ],
-      "desc": "Any Generator within a range of 64/96/128 metres that is being repaired by 2 or more Survivors is marked by a yellow Aura. When the Generator is first highlighted, Discordance triggers a Loud Noise Notification on the Generator. After the Generator is no longer within range or is being repaired by just 1 Survivor, the highlighted Aura will linger for another 4 seconds. \"Smartasses get killed. We always see to that.\" - The Legion",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_discordance.webp",
-      "meta": {
-        "owner": "Legion",
-        "tier": "A",
-        "rate": 4.28,
-        "topForKillers": [
-          {
-            "slug": "dark_lord",
-            "rank": 9
-          },
-          {
-            "slug": "executioner",
-            "rank": 3
-          },
-          {
-            "slug": "artist",
-            "rank": 3
-          },
-          {
-            "slug": "knight",
-            "rank": 8
-          },
-          {
-            "slug": "unknown",
-            "rank": 12
-          },
-          {
-            "slug": "spirit",
-            "rank": 9
-          },
-          {
-            "slug": "xenomorph",
-            "rank": 6
-          },
-          {
-            "slug": "nightmare",
-            "rank": 3
-          },
-          {
-            "slug": "hillbilly",
-            "rank": 11
-          },
-          {
-            "slug": "plague",
-            "rank": 7
-          },
-          {
-            "slug": "nemesis",
-            "rank": 2
-          },
-          {
-            "slug": "good_guy",
-            "rank": 5
-          },
-          {
-            "slug": "legion",
-            "rank": 5
-          },
-          {
-            "slug": "onryo",
-            "rank": 2
-          },
-          {
-            "slug": "dredge",
-            "rank": 9
-          },
-          {
-            "slug": "pig",
-            "rank": 12
-          },
-          {
-            "slug": "ghost_face",
-            "rank": 3
-          },
-          {
-            "slug": "houndmaster",
-            "rank": 4
-          }
-        ]
-      }
-    },
-    {
-      "id": "pop_goes_the_weasel",
-      "name": "Pop Goes The Weasel",
-      "role": "killer",
-      "tags": [
-        "generator",
-        "hook"
-      ],
-      "desc": "A deep bond with The Entity unlocks great strength. After hooking a Survivor, Pop Goes the Weasel activates for 35/40/45 seconds.Perform the Damage Generator action while Pop Goes the Weasel is active to benefit from the following effect: Instantly regresses the damaged Generator by -20 % of its current Progression. Pop Goes the Weasel deactivates after the Generator is damaged or once the timer runs out.",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_popGoesTheWeasel.webp",
-      "meta": {
-        "owner": "Clown",
-        "tier": "A",
-        "rate": 4.27,
-        "topForKillers": [
-          {
-            "slug": "nurse",
-            "rank": 10
-          },
-          {
-            "slug": "blight",
-            "rank": 9
-          },
-          {
-            "slug": "dark_lord",
-            "rank": 3
-          },
-          {
-            "slug": "singularity",
-            "rank": 8
-          },
-          {
-            "slug": "animatronic",
-            "rank": 2
-          },
-          {
-            "slug": "oni",
-            "rank": 10
-          },
-          {
-            "slug": "spirit",
-            "rank": 4
-          },
-          {
-            "slug": "xenomorph",
-            "rank": 3
-          },
-          {
-            "slug": "nightmare",
-            "rank": 2
-          },
-          {
-            "slug": "hillbilly",
-            "rank": 5
-          },
-          {
-            "slug": "plague",
-            "rank": 8
-          },
-          {
-            "slug": "mastermind",
-            "rank": 2
-          },
-          {
-            "slug": "nemesis",
-            "rank": 7
-          },
-          {
-            "slug": "clown",
-            "rank": 11
-          },
-          {
-            "slug": "shape",
-            "rank": 10
-          },
-          {
-            "slug": "good_guy",
-            "rank": 1
-          },
-          {
-            "slug": "demogorgon",
-            "rank": 7
-          },
-          {
-            "slug": "cannibal",
-            "rank": 7
-          },
-          {
-            "slug": "legion",
-            "rank": 8
-          },
-          {
-            "slug": "dredge",
-            "rank": 1
-          },
-          {
-            "slug": "wraith",
-            "rank": 6
-          },
-          {
-            "slug": "trickster",
-            "rank": 10
-          },
-          {
-            "slug": "doctor",
-            "rank": 4
-          },
-          {
-            "slug": "ghost_face",
-            "rank": 8
-          },
-          {
-            "slug": "trapper",
-            "rank": 7
-          }
-        ]
-      }
-    },
-    {
       "id": "no_way_out",
       "name": "No Way Out",
       "role": "killer",
@@ -1301,7 +1154,7 @@
           },
           {
             "slug": "ghoul",
-            "rank": 5
+            "rank": 7
           },
           {
             "slug": "knight",
@@ -1523,6 +1376,63 @@
       }
     },
     {
+      "id": "mindbreaker",
+      "name": "Mindbreaker",
+      "role": "killer",
+      "tags": [
+        "exhaustion",
+        "generator"
+      ],
+      "desc": "Your distressing presence drains and weakens your prey. All Survivors repairing a Generator suffer from the following afflictions: Incurs the Blindness and Exhausted Status Effects for the duration of the Repair action. If a Survivor was already suffering from Exhausted prior to Mindbreaker affecting them, the Status Effect's timer will be paused and not recover for the duration of the Repair action. Both Status Effects linger for another 3/4/5 seconds after a Survivor stops repairing. \"The specimen's apparent telepathic ability can evoke feelings of dread and fatigue in nearby individuals.\" - Hawkins National Laboratory",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_mindbreaker.webp",
+      "meta": {
+        "owner": "Demogorgon",
+        "tier": "A",
+        "rate": 4.18,
+        "topForKillers": [
+          {
+            "slug": "knight",
+            "rank": 3
+          },
+          {
+            "slug": "mastermind",
+            "rank": 12
+          },
+          {
+            "slug": "onryo",
+            "rank": 6
+          },
+          {
+            "slug": "wraith",
+            "rank": 11
+          }
+        ]
+      }
+    },
+    {
+      "id": "hubris",
+      "name": "Hubris",
+      "role": "killer",
+      "tags": [],
+      "desc": "You show no mercy, especially to those foolish enough to resist. Whenever you are stunned by a Survivor, that Survivor suffers from the Exposed Status Effect for 10/15/20 seconds. Hubris has a cool-down of 20 seconds. \"You have made a grave mistake, standing in opposition to me this day.\" - Tarhos KovÃ¡cs",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_hubris.webp",
+      "meta": {
+        "owner": "Knight",
+        "tier": "A",
+        "rate": 4.18,
+        "topForKillers": [
+          {
+            "slug": "singularity",
+            "rank": 7
+          },
+          {
+            "slug": "wraith",
+            "rank": 10
+          }
+        ]
+      }
+    },
+    {
       "id": "hex_plaything",
       "name": "Hex: Plaything",
       "role": "killer",
@@ -1662,6 +1572,96 @@
           {
             "slug": "trapper",
             "rank": 10
+          }
+        ]
+      }
+    },
+    {
+      "id": "discordance",
+      "name": "Discordance",
+      "role": "killer",
+      "tags": [
+        "aura-reading",
+        "generator"
+      ],
+      "desc": "Any Generator within a range of 64/96/128 metres that is being repaired by 2 or more Survivors is marked by a yellow Aura. When the Generator is first highlighted, Discordance triggers a Loud Noise Notification on the Generator. After the Generator is no longer within range or is being repaired by just 1 Survivor, the highlighted Aura will linger for another 4 seconds. \"Smartasses get killed. We always see to that.\" - The Legion",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_discordance.webp",
+      "meta": {
+        "owner": "Legion",
+        "tier": "A",
+        "rate": 4.07,
+        "topForKillers": [
+          {
+            "slug": "dark_lord",
+            "rank": 9
+          },
+          {
+            "slug": "executioner",
+            "rank": 3
+          },
+          {
+            "slug": "artist",
+            "rank": 3
+          },
+          {
+            "slug": "knight",
+            "rank": 8
+          },
+          {
+            "slug": "unknown",
+            "rank": 12
+          },
+          {
+            "slug": "spirit",
+            "rank": 9
+          },
+          {
+            "slug": "xenomorph",
+            "rank": 6
+          },
+          {
+            "slug": "nightmare",
+            "rank": 3
+          },
+          {
+            "slug": "hillbilly",
+            "rank": 11
+          },
+          {
+            "slug": "plague",
+            "rank": 7
+          },
+          {
+            "slug": "nemesis",
+            "rank": 2
+          },
+          {
+            "slug": "good_guy",
+            "rank": 5
+          },
+          {
+            "slug": "legion",
+            "rank": 5
+          },
+          {
+            "slug": "onryo",
+            "rank": 2
+          },
+          {
+            "slug": "dredge",
+            "rank": 9
+          },
+          {
+            "slug": "pig",
+            "rank": 12
+          },
+          {
+            "slug": "ghost_face",
+            "rank": 3
+          },
+          {
+            "slug": "houndmaster",
+            "rank": 4
           }
         ]
       }
@@ -3116,7 +3116,7 @@
       "tags": [
         "hook"
       ],
-      "desc": "Your fervent care of the Hooks found in the Basement has aroused The Entity's interest. <p>The Basement Hooks possess the following benefits: *'''Accelerates''' Sacrifice Progression by '''<span class=\"luaClr clr clr2\" style=\"color: #e8c252;\">3</span>'''/'''<span class=\"luaClr clr clr3\" style=\"color: #199b1e;\">6</span>'''/'''<span class=\"luaClr clr clr4\" style=\"color: #ac3ee3;\">9</span>''' '''&#37;'''. *'''Increases''' Self-Unhook difficulty by '''<span class=\"luaClr clr clr2\" style=\"color: #e8c252;\">5</span>'''/'''<span class=\"luaClr clr clr3\" style=\"color: #199b1e;\">10</span>'''/'''<span class=\"luaClr clr clr4\" style=\"color: #ac3ee3;\">15</span>''' '''&#37;'''. *'''Increases''' Self-Unhook penalty by '''<span class=\"luaClr clr clr2\" style=\"color: #e8c252;\">3</span>'''/'''<span class=\"luaClr clr clr3\" style=\"color: #199b1e;\">6</span>'''/'''<span class=\"luaClr clr clr4\" style=\"color: #ac3ee3;\">9</span>''' '''&#37;'''. Your fervent care of the Hooks found in the Basement has aroused The Entity's interest. The Basement Hooks possess the following benefits: Accelerates Sacrifice Progression by 3/6/9 %. Increases Self-Unhook difficulty by 5/10/15 %. Increases Self-Unhook penalty by 3/6/9 %. \"Then you will know that there is no escape. When hanging in the depths, you face the dark one.\"",
+      "desc": "Your fervent care of the Hooks found in the Basement has aroused The Entity's interest. The Basement Hooks possess the following benefits: *'''Accelerates''' Sacrifice Progression by '''3'''/'''6'''/'''9''' '''&#37;'''. *'''Increases''' Self-Unhook difficulty by '''5'''/'''10'''/'''15''' '''&#37;'''. *'''Increases''' Self-Unhook penalty by '''3'''/'''6'''/'''9''' '''&#37;'''. Your fervent care of the Hooks found in the Basement has aroused The Entity's interest. The Basement Hooks possess the following benefits: Accelerates Sacrifice Progression by 3/6/9 %. Increases Self-Unhook difficulty by 5/10/15 %. Increases Self-Unhook penalty by 3/6/9 %. \"Then you will know that there is no escape. When hanging in the depths, you face the dark one.\"",
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_monstrousShrine.webp",
       "meta": {
         "owner": "All",
@@ -3760,7 +3760,7 @@
         "generator",
         "hook"
       ],
-      "desc": "Unlocks potential in your Aura-reading ability and your ingenious modifications to Hooks<span style = \"padding: 0 0 0 0\"><span style = \"display:none\" class = \"pcView\"><span class = \"tooltip linkIncluded iconless borderless\"><span class=\"tooltipBaseText\"></span><span class = \"tooltiptext\"><span class=\"tooltipTextWrapper\"></span></span></span></span><span class = \"mobileView\"></span></span> alert you of tampering. * Gain a ''Loud Noise Notification'' whenever a Survivor<span style = \"padding: 0 0 0 5px\"><span style = \"display:none\" class = \"pcView\"><span class = \"tooltip linkIncluded iconless borderless\"><span class=\"tooltipBaseText\"></span><span class = \"tooltiptext\"><span class=\"tooltipTextWrapper\"></span></span></span></span><span class = \"mobileView\"></span></span> begins sabotaging a Hook. * While carrying a Survivor, see the Aura<span style = \"padding: 0 0 0 0\"><span style = \"display:none\" class = \"pcView\"><span class = \"tooltip linkIncluded iconless borderless\"><span class=\"tooltipBaseText\"></span><span class = \"tooltiptext\"><span class=\"tooltipTextWrapper\"></span></span></span></span><span class = \"mobileView\"></span></span> of any Survivor within '''<span class=\"luaClr clr clr2\" style=\"color: #e8c252;\">2</span>'''/'''<span class=\"luaClr clr clr3\" style=\"color: #199b1e;\">4</span>'''/'''<span class=\"luaClr clr clr4\" style=\"color: #ac3ee3;\">6</span>''' '''metres''' of any Hook. Unlocks potential in your Aura-reading ability and your ingenious modifications to Hooks alert you of tampering. Gain a Loud Noise Notification whenever a Survivor begins sabotaging a Hook. While carrying a Survivor, see the Aura of any Survivor within 2/4/6 metres of any Hook. \"No excuses, no equivocations... No crying.\" - Amanda Young",
+      "desc": "Unlocks potential in your Aura-reading ability and your ingenious modifications to Hooks alert you of tampering. * Gain a ''Loud Noise Notification'' whenever a Survivor begins sabotaging a Hook. * While carrying a Survivor, see the Aura of any Survivor within '''2'''/'''4'''/'''6''' '''metres''' of any Hook. Unlocks potential in your Aura-reading ability and your ingenious modifications to Hooks alert you of tampering. Gain a Loud Noise Notification whenever a Survivor begins sabotaging a Hook. While carrying a Survivor, see the Aura of any Survivor within 2/4/6 metres of any Hook. \"No excuses, no equivocations... No crying.\" - Amanda Young",
       "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_hangmansTrick.webp",
       "meta": {
         "owner": "Pig",
@@ -4006,21 +4006,6 @@
       }
     },
     {
-      "id": "shattered_hope",
-      "name": "Shattered Hope",
-      "role": "killer",
-      "tags": [
-        "aura-reading"
-      ],
-      "desc": "To capture your prey, you must first extinguish their hope. Instead of snuffing Boon Totems you destroy them. Destroying a Boon Totem this way reveals the Auras of all Survivors that were within its range at that moment for 6/7/8 seconds. \"Nothing is permanent here. Nothing except our endless perdition.\" - Unknown, Notebook",
-      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_shatteredHope.webp",
-      "meta": {
-        "owner": "All",
-        "tier": "D",
-        "rate": 1.57
-      }
-    },
-    {
       "id": "territorial_imperative",
       "name": "Territorial Imperative",
       "role": "killer",
@@ -4036,18 +4021,18 @@
       }
     },
     {
-      "id": "soul_guard",
-      "name": "Soul Guard",
-      "role": "survivor",
+      "id": "shattered_hope",
+      "name": "Shattered Hope",
+      "role": "killer",
       "tags": [
-        "endurance"
+        "aura-reading"
       ],
-      "desc": "You have been through immense hardship and you're stronger for it. After being healed from or having recovered from the Dying State, you benefit from the following effect: Grants the Endurance Status Effect for 4/6/8 seconds. Endurance is cancelled prematurely when performing a Conspicuous Action. While suffering from the Cursed Status Effect, you benefit from the following effects: Grants the ability to fully recover yourself from the Dying State. Soul Guard has a cool-down of 30 seconds.",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_soulGuard.webp",
+      "desc": "To capture your prey, you must first extinguish their hope. Instead of snuffing Boon Totems you destroy them. Destroying a Boon Totem this way reveals the Auras of all Survivors that were within its range at that moment for 6/7/8 seconds. \"Nothing is permanent here. Nothing except our endless perdition.\" - Unknown, Notebook",
+      "icon": "https://dennisreep.nl/dbd/images/KillerPerks/64px-IconPerks_shatteredHope.webp",
       "meta": {
-        "owner": "Cheryl",
-        "tier": "A",
-        "rate": 4.4
+        "owner": "All",
+        "tier": "D",
+        "rate": 1.54
       }
     },
     {
@@ -4063,22 +4048,7 @@
       "meta": {
         "owner": "Feng",
         "tier": "A",
-        "rate": 4.39
-      }
-    },
-    {
-      "id": "windows_of_opportunity",
-      "name": "Windows Of Opportunity",
-      "role": "survivor",
-      "tags": [
-        "aura-reading"
-      ],
-      "desc": "Unlocks potential in your Aura-reading ability. The Auras of Breakable Walls, Pallets, and Windows are revealed to you within 24/28/32 metres. \"Rise and shine, work hard, carve out your name,Take aim, pull the trigger, hit the bulls eye for fame,Know the value of faith, an' family, and don't you complain,Open wide, your windows of opportunity\" - Kate Denson's \"Windows of Opportunity\"",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_windowsOfOpportunity.webp",
-      "meta": {
-        "owner": "Kate",
-        "tier": "A",
-        "rate": 4.35
+        "rate": 4.4
       }
     },
     {
@@ -4094,38 +4064,39 @@
       "meta": {
         "owner": "Meg",
         "tier": "A",
+        "rate": 4.34
+      }
+    },
+    {
+      "id": "windows_of_opportunity",
+      "name": "Windows Of Opportunity",
+      "role": "survivor",
+      "tags": [
+        "aura-reading"
+      ],
+      "desc": "Unlocks potential in your Aura-reading ability. The Auras of Breakable Walls, Pallets, and Windows are revealed to you within 24/28/32 metres. \"Rise and shine, work hard, carve out your name,Take aim, pull the trigger, hit the bulls eye for fame,Know the value of faith, an' family, and don't you complain,Open wide, your windows of opportunity\" - Kate Denson's \"Windows of Opportunity\"",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_windowsOfOpportunity.webp",
+      "meta": {
+        "owner": "Kate",
+        "tier": "A",
         "rate": 4.32
       }
     },
     {
-      "id": "kindred",
-      "name": "Kindred",
+      "id": "no_one_left_behind",
+      "name": "No One Left Behind",
       "role": "survivor",
       "tags": [
+        "speed",
         "aura-reading",
         "hook"
       ],
-      "desc": "Unlocks potential in your Aura-reading ability. Whenever any Survivor is hooked, Kindred activates and applies the following effects: The Aura of the Killer is revealed to all Survivors whenever the Killer comes within 8/12/16 metres of the Hook. If you are the Hooked Survivor, the Auras of all Survivors are revealed to each other. If you are not the Hooked Survivor, the Auras of all other Survivors are only revealed to you. \"Be kind to one another, We're all in this together\" - Sujan, The Lost Tapes",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_kindred.webp",
+      "desc": "It is inconceivable to leave someone behind. Once the Exit Gates are powered, No One Left Behind activates: Increases your Action speeds for Healing and Unhooking by 30/40/50 %. Increases the Haste Status Effect of Survivors unhooked by you by +7 %. The Auras of the other Survivors are revealed to you. Grants 50/75/100 % bonus Bloodpoints for actions in the Altruism Category. \"Yeah, no shit.But I believe we can outsmart and overthrow him if we work together.Don't be predictable and selfish!\" - Clyde, The Lost Tapes",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_noOneLeftBehind.webp",
       "meta": {
         "owner": "All",
         "tier": "A",
-        "rate": 4.27
-      }
-    },
-    {
-      "id": "lightweight",
-      "name": "Lightweight",
-      "role": "survivor",
-      "tags": [
-        "stealth"
-      ],
-      "desc": "Your running is light and soft, making your tracks harder to follow. Reduces the Lifetime of your Scratch Marks by 3/4/5 seconds. Reduces the Spawn chance of patches of Scratch Marks by -60 %, making their spacing inconsistent. \"Take it slow, he knows where you have been... just like I have always said:'live slow and die old'.\" - Dylan, The Lost Tapes",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_lightweight.webp",
-      "meta": {
-        "owner": "All",
-        "tier": "A",
-        "rate": 4.26
+        "rate": 4.29
       }
     },
     {
@@ -4153,7 +4124,23 @@
       "meta": {
         "owner": "Quentin",
         "tier": "A",
-        "rate": 4.23
+        "rate": 4.25
+      }
+    },
+    {
+      "id": "kindred",
+      "name": "Kindred",
+      "role": "survivor",
+      "tags": [
+        "aura-reading",
+        "hook"
+      ],
+      "desc": "Unlocks potential in your Aura-reading ability. Whenever any Survivor is hooked, Kindred activates and applies the following effects: The Aura of the Killer is revealed to all Survivors whenever the Killer comes within 8/12/16 metres of the Hook. If you are the Hooked Survivor, the Auras of all Survivors are revealed to each other. If you are not the Hooked Survivor, the Auras of all other Survivors are only revealed to you. \"Be kind to one another, We're all in this together\" - Sujan, The Lost Tapes",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_kindred.webp",
+      "meta": {
+        "owner": "All",
+        "tier": "A",
+        "rate": 4.21
       }
     },
     {
@@ -4166,6 +4153,21 @@
       ],
       "desc": "Unlocks potential in one's Aura-reading ability. Paranoia paired with your horror of failure helps prepare you from repeating the same mistakes. The Auras of 3 Generators in closest proximity to each other are revealed to you for 30/45/60 seconds, at the start of the Trial and each time a Generator is completed. If you are holding a Map that can track Objectives, Generators revealed by Déjà Vu are added to the Map.",
       "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_dejaVu.webp",
+      "meta": {
+        "owner": "All",
+        "tier": "A",
+        "rate": 4.2
+      }
+    },
+    {
+      "id": "lightweight",
+      "name": "Lightweight",
+      "role": "survivor",
+      "tags": [
+        "stealth"
+      ],
+      "desc": "Your running is light and soft, making your tracks harder to follow. Reduces the Lifetime of your Scratch Marks by 3/4/5 seconds. Reduces the Spawn chance of patches of Scratch Marks by -60 %, making their spacing inconsistent. \"Take it slow, he knows where you have been... just like I have always said:'live slow and die old'.\" - Dylan, The Lost Tapes",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_lightweight.webp",
       "meta": {
         "owner": "All",
         "tier": "A",
@@ -4263,7 +4265,7 @@
       "meta": {
         "owner": "Leon",
         "tier": "A",
-        "rate": 4.14
+        "rate": 4.15
       }
     },
     {
@@ -4290,23 +4292,6 @@
       "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_reassurance.webp",
       "meta": {
         "owner": "Rebecca",
-        "tier": "A",
-        "rate": 4.13
-      }
-    },
-    {
-      "id": "no_one_left_behind",
-      "name": "No One Left Behind",
-      "role": "survivor",
-      "tags": [
-        "speed",
-        "aura-reading",
-        "hook"
-      ],
-      "desc": "It is inconceivable to leave someone behind. Once the Exit Gates are powered, No One Left Behind activates: Increases your Action speeds for Healing and Unhooking by 30/40/50 %. Increases the Haste Status Effect of Survivors unhooked by you by +7 %. The Auras of the other Survivors are revealed to you. Grants 50/75/100 % bonus Bloodpoints for actions in the Altruism Category. \"Yeah, no shit.But I believe we can outsmart and overthrow him if we work together.Don't be predictable and selfish!\" - Clyde, The Lost Tapes",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_noOneLeftBehind.webp",
-      "meta": {
-        "owner": "All",
         "tier": "A",
         "rate": 4.13
       }
@@ -4389,6 +4374,34 @@
       }
     },
     {
+      "id": "unbreakable",
+      "name": "Unbreakable",
+      "role": "survivor",
+      "tags": [],
+      "desc": "Past battles have taught you a thing or two about survival. Once per Trial, you can completely recover from the Dying State. Your Recovery speed is increased by 25/30/35 %. \"Goddammit, I am seriously FUBAR!\" - Bill Overbeck",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_unbreakable.webp",
+      "meta": {
+        "owner": "Bill",
+        "tier": "A",
+        "rate": 4.07
+      }
+    },
+    {
+      "id": "bond",
+      "name": "Bond",
+      "role": "survivor",
+      "tags": [
+        "aura-reading"
+      ],
+      "desc": "Unlocks potential in your Aura-reading ability: The Auras of all other Survivors are revealed to you within 20/28/36 metres. \"We have to work as a team, I need you to survive so that I can survive!\" - Dwight Fairfield",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_bond.webp",
+      "meta": {
+        "owner": "Dwight",
+        "tier": "A",
+        "rate": 4.03
+      }
+    },
+    {
       "id": "we_ll_make_it",
       "name": "We'll Make It",
       "role": "survivor",
@@ -4401,34 +4414,6 @@
         "owner": "All",
         "tier": "A",
         "rate": 4.03
-      }
-    },
-    {
-      "id": "decisive_strike",
-      "name": "Decisive Strike",
-      "role": "survivor",
-      "tags": [
-        "hook"
-      ],
-      "desc": "Using whatever is at hand, you stab your aggressor in an ultimate attempt to escape. After being unhooked or unhooking yourself, Decisive Strike activates for the next 40/50/60 seconds: When grabbed or picked up by the Killer, succeed a Skill Check to stab the Killer and escape from their grasp. Stuns the Killer for 4 seconds. Causes you to become the next Obsession. Decisive Strike is deactivated once the Exit Gates are powered.Decisive Strike is disabled for the remainder of the Trial after use. Decisive Strike is deactivated prematurely when performing a Conspicuous Action and remains disabled for the remainder of the Trial. Increases your chance of becoming the initial Obsession by increasing the default value by +100 %.The Killer can only be obsessed with one Survivor at a time. \"There is nothing to be scared of.\" - Laurie Strode",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_decisiveStrike.webp",
-      "meta": {
-        "owner": "Laurie",
-        "tier": "A",
-        "rate": 4.02
-      }
-    },
-    {
-      "id": "unbreakable",
-      "name": "Unbreakable",
-      "role": "survivor",
-      "tags": [],
-      "desc": "Past battles have taught you a thing or two about survival. Once per Trial, you can completely recover from the Dying State. Your Recovery speed is increased by 25/30/35 %. \"Goddammit, I am seriously FUBAR!\" - Bill Overbeck",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_unbreakable.webp",
-      "meta": {
-        "owner": "Bill",
-        "tier": "A",
-        "rate": 4
       }
     },
     {
@@ -4495,31 +4480,16 @@
       }
     },
     {
-      "id": "hope",
-      "name": "Hope",
+      "id": "decisive_strike",
+      "name": "Decisive Strike",
       "role": "survivor",
       "tags": [
-        "speed"
+        "hook"
       ],
-      "desc": "The growing odds of a successful escape fill you with hope and give you wings. Once the Exit Gates are powered, Hope activates: Grants a permanent 5/6/7 % Haste Status Effect. \"Buckle up, fuckos! Let's roll.\" - Nikki, The Lost Tapes",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_hope.webp",
+      "desc": "Using whatever is at hand, you stab your aggressor in an ultimate attempt to escape. After being unhooked or unhooking yourself, Decisive Strike activates for the next 40/50/60 seconds: When grabbed or picked up by the Killer, succeed a Skill Check to stab the Killer and escape from their grasp. Stuns the Killer for 4 seconds. Causes you to become the next Obsession. Decisive Strike is deactivated once the Exit Gates are powered.Decisive Strike is disabled for the remainder of the Trial after use. Decisive Strike is deactivated prematurely when performing a Conspicuous Action and remains disabled for the remainder of the Trial. Increases your chance of becoming the initial Obsession by increasing the default value by +100 %.The Killer can only be obsessed with one Survivor at a time. \"There is nothing to be scared of.\" - Laurie Strode",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_decisiveStrike.webp",
       "meta": {
-        "owner": "All",
-        "tier": "B",
-        "rate": 3.93
-      }
-    },
-    {
-      "id": "bond",
-      "name": "Bond",
-      "role": "survivor",
-      "tags": [
-        "aura-reading"
-      ],
-      "desc": "Unlocks potential in your Aura-reading ability: The Auras of all other Survivors are revealed to you within 20/28/36 metres. \"We have to work as a team, I need you to survive so that I can survive!\" - Dwight Fairfield",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_bond.webp",
-      "meta": {
-        "owner": "Dwight",
+        "owner": "Laurie",
         "tier": "B",
         "rate": 3.93
       }
@@ -4600,6 +4570,21 @@
       }
     },
     {
+      "id": "hope",
+      "name": "Hope",
+      "role": "survivor",
+      "tags": [
+        "speed"
+      ],
+      "desc": "The growing odds of a successful escape fill you with hope and give you wings. Once the Exit Gates are powered, Hope activates: Grants a permanent 5/6/7 % Haste Status Effect. \"Buckle up, fuckos! Let's roll.\" - Nikki, The Lost Tapes",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_hope.webp",
+      "meta": {
+        "owner": "All",
+        "tier": "B",
+        "rate": 3.86
+      }
+    },
+    {
       "id": "hyperfocus",
       "name": "Hyperfocus",
       "role": "survivor",
@@ -4608,6 +4593,21 @@
       "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_hyperfocus.webp",
       "meta": {
         "owner": "Rebecca",
+        "tier": "B",
+        "rate": 3.86
+      }
+    },
+    {
+      "id": "strength_in_shadows",
+      "name": "Strength in Shadows",
+      "role": "survivor",
+      "tags": [
+        "aura-reading"
+      ],
+      "desc": "A chance for renewed power down where danger calls home. When you are in the Basement, Strength in Shadows activates: Unlocks the Strength in Shadows ability, allowing you to self-heal without needing a Med-Kit at 70 % of the normal Healing speed. Upon finishing a heal in the Basement, the Aura of the Killer is revealed to you for 6/8/10 seconds. \"I'm getting out of here, if it's the last thing I do.\" - Sable",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_strengthInShadows.webp",
+      "meta": {
+        "owner": "Sable",
         "tier": "B",
         "rate": 3.86
       }
@@ -4651,6 +4651,21 @@
       "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_fixated.webp",
       "meta": {
         "owner": "Nancy",
+        "tier": "B",
+        "rate": 3.83
+      }
+    },
+    {
+      "id": "soul_guard",
+      "name": "Soul Guard",
+      "role": "survivor",
+      "tags": [
+        "endurance"
+      ],
+      "desc": "You have been through immense hardship and you're stronger for it. After being healed from or having recovered from the Dying State, you benefit from the following effect: Grants the Endurance Status Effect for 4/6/8 seconds. Endurance is cancelled prematurely when performing a Conspicuous Action. While suffering from the Cursed Status Effect, you benefit from the following effects: Grants the ability to fully recover yourself from the Dying State. Soul Guard has a cool-down of 30 seconds.",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_soulGuard.webp",
+      "meta": {
+        "owner": "Cheryl",
         "tier": "B",
         "rate": 3.83
       }
@@ -4744,6 +4759,21 @@
       }
     },
     {
+      "id": "shoulder_the_burden",
+      "name": "Shoulder the Burden",
+      "role": "survivor",
+      "tags": [
+        "hook"
+      ],
+      "desc": "Born to be a disciple. Ready to submit to a greater cause. This is your calling. Once per Trial, and while you are not on Death Hook, press the Active Ability button while standing in front of a Hooked Survivor to unhook them and trigger the following effects: Trade 1 Hook State with the other Survivor to their benefit. Causes you to scream. Causes you to suffer from the Exposed Status Effect for 60/50/40 seconds. \"It's not your time yet. Now go on!\" - Taurie Cain",
+      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_shoulderTheBurden.webp",
+      "meta": {
+        "owner": "Taurie",
+        "tier": "B",
+        "rate": 3.8
+      }
+    },
+    {
       "id": "empathy",
       "name": "Empathy",
       "role": "survivor",
@@ -4756,21 +4786,6 @@
         "owner": "Claudette",
         "tier": "B",
         "rate": 3.78
-      }
-    },
-    {
-      "id": "shoulder_the_burden",
-      "name": "Shoulder the Burden",
-      "role": "survivor",
-      "tags": [
-        "hook"
-      ],
-      "desc": "Born to be a disciple. Ready to submit to a greater cause. This is your calling. Once per Trial, and while you are not on Death Hook, press the Active Ability button while standing in front of a Hooked Survivor to unhook them and trigger the following effects: Trade 1 Hook State with the other Survivor to their benefit. Causes you to scream. Causes you to suffer from the Exposed Status Effect for 60/50/40 seconds. \"It's not your time yet. Now go on!\" - Taurie Cain",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_shoulderTheBurden.webp",
-      "meta": {
-        "owner": "Taurie",
-        "tier": "B",
-        "rate": 3.77
       }
     },
     {
@@ -5074,21 +5089,6 @@
         "owner": "Aestri",
         "tier": "B",
         "rate": 3.56
-      }
-    },
-    {
-      "id": "strength_in_shadows",
-      "name": "Strength in Shadows",
-      "role": "survivor",
-      "tags": [
-        "aura-reading"
-      ],
-      "desc": "A chance for renewed power down where danger calls home. When you are in the Basement, Strength in Shadows activates: Unlocks the Strength in Shadows ability, allowing you to self-heal without needing a Med-Kit at 70 % of the normal Healing speed. Upon finishing a heal in the Basement, the Aura of the Killer is revealed to you for 6/8/10 seconds. \"I'm getting out of here, if it's the last thing I do.\" - Sable",
-      "icon": "https://dennisreep.nl/dbd/images/SurvivorPerks/64px-IconPerks_strengthInShadows.webp",
-      "meta": {
-        "owner": "Sable",
-        "tier": "B",
-        "rate": 3.55
       }
     },
     {
@@ -6229,7 +6229,7 @@
       "meta": {
         "owner": "Feng",
         "tier": "D",
-        "rate": 2.09
+        "rate": 2.08
       }
     },
     {

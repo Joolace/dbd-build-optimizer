@@ -163,7 +163,25 @@ async function scrapePerks(role, url) {
     const descCell = $tds.eq(2).clone();
     descCell.find(".dynamicTitle").remove();
 
+    // Rimuovi wrapper inutili/duplicati (pc/mobile view, tooltip, ecc.)
+    descCell
+      .find(
+        ".pcView, .mobileView, .tooltip, .tooltipBaseText, .tooltiptext, .tooltipTextWrapper, .linkIncluded, .iconless, .borderless"
+      )
+      .remove();
+
+    // Mantieni SOLO il testo interno dei <span> colorati o con style
+    descCell.find("span.luaClr, span.clr, span[style]").each((_, el) => {
+      const txt = $(el).text();
+      $(el).replaceWith(txt); // un-wrap per tenere i numeri (es. 2/4/6)
+    });
+
     let desc = clean(descCell.text());
+
+    // (Guardia finale) se per qualche motivo sono rimasti tag HTML in chiaro, toglili
+    if (/<\/?[a-z][\s\S]*>/i.test(desc)) {
+      desc = clean(desc.replace(/<\/?[^>]+>/g, ""));
+    }
 
     // Hardening: remove any remaining disclaimer phrases from the text.
     desc = desc
