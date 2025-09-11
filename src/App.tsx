@@ -907,7 +907,13 @@ export default function App() {
         </section>
 
         <footer className="text-center text-xs text-zinc-500 pt-4 border-t border-neutral-900">
-          <p>Dataset: {dataset?.version ?? "fallback"}</p>
+          <p className="inline-flex items-center gap-2">
+            <span>Dataset: {dataset?.version ?? "fallback"}</span>
+            <span aria-hidden>·</span>
+            <a href="/privacy.html" className="underline hover:text-zinc-300">
+              Privacy Policy
+            </a>
+          </p>
         </footer>
       </div>
       <FloatingBugButton href="https://discord.gg/mC7Eabu3QW" />
