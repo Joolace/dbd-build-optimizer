@@ -642,7 +642,7 @@ export default function App() {
             <p className="text-zinc-400 text-sm">Version: {__APP_VERSION__}</p>
 
             {/* Role under the mobile version */}
-            <div className="mt-2 md:hidden flex gap-2">
+            <div className="mt-2 md:hidden flex flex-col gap-2">
               <a
                 href="https://github.com/Joolace/dbd-reshade"
                 target="_blank"
