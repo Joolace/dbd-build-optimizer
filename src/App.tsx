@@ -164,7 +164,7 @@ function getPerkDescription(raw: any): string | undefined {
 
 function mapSurvivorPerk(raw: any): Perk {
   const name = String(raw.PerkName ?? raw.name ?? raw.perkName ?? "");
-  const desc = getPerkDescription(raw); // 👈 pulita
+  const desc = getPerkDescription(raw); 
   return {
     id: String(raw.id ?? slugifyId(name)),
     name,
@@ -506,7 +506,6 @@ function ellipsize(
 }
 
 function lineHeight(px: number) {
-  // fallback robusto per la canvas
   return Math.round(px * 1.25);
 }
 
@@ -536,12 +535,12 @@ function drawRoundedImage(
 function loadImageExt(
   url: string,
   useCors: boolean,
-  referrer?: RequestCredentials | "no-referrer"
+  referrer?: "no-referrer"
 ) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
     if (useCors) img.crossOrigin = "anonymous";
-    if (referrer) (img as any).referrerPolicy = referrer; // "no-referrer"
+    if (referrer) (img as any).referrerPolicy = referrer;
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error("img load failed"));
     img.src = url;
@@ -549,10 +548,10 @@ function loadImageExt(
 }
 
 const ICON_PROXY_BASE = "https://images.weserv.nl/?url=";
-// converte https://host/path.png -> https://images.weserv.nl/?url=host/path.png
+// https://host/path.png -> https://images.weserv.nl/?url=host/path.png
 function proxify(url: string) {
   try {
-    const u = new URL(url);
+    const u = new URL(url, location.href);
     const noProto = u.host + u.pathname + (u.search || "");
     return ICON_PROXY_BASE + encodeURIComponent(noProto);
   } catch {
@@ -560,23 +559,29 @@ function proxify(url: string) {
   }
 }
 
-async function tryLoadIcon(
-  url?: string | null
-): Promise<HTMLImageElement | null> {
+function isCrossOrigin(u: string) {
+  try {
+    const x = new URL(u, location.href);
+    return x.origin !== location.origin;
+  } catch {
+    return true;
+  }
+}
+
+async function tryLoadIcon(url?: string | null): Promise<HTMLImageElement | null> {
   if (!url) return null;
-  // 1) CORS “normale”
-  try {
-    return await loadImageExt(url, true);
-  } catch {}
-  // 2) Senza referrer
-  try {
-    return await loadImageExt(url, true, "no-referrer");
-  } catch {}
-  // 3) Proxy pubblico (o rimpiazza con il tuo)
-  try {
-    return await loadImageExt(proxify(url), true);
-  } catch {}
-  return null; // niente icona -> disegna solo testo
+  const abs = new URL(url, location.href).toString();
+
+  const candidates: string[] = isCrossOrigin(abs)
+    ? [proxify(abs)]                
+    : [abs, proxify(abs)];          
+
+  for (const u of candidates) {
+    try {
+      return await loadImageExt(u, true, "no-referrer");
+    } catch {}
+  }
+  return null;
 }
 
 function measurePerkCardHeight(
@@ -590,14 +595,12 @@ function measurePerkCardHeight(
   const META = 16;
   const TAG = 14;
 
-  // baseline “top” come nel draw
   ctx.textBaseline = "top";
 
   let innerH = 0;
-  // titolo
+
   innerH += Math.round(TITLE * 1.25) + 6;
 
-  // meta 1 (Tier · Rate) se presente
   const r = getRate(perk);
   const tierStr = perk.meta?.tier ? `Tier: ${perk.meta.tier}` : "";
   const rateStr = r != null ? `Rate: ${r.toFixed(1)}` : "";
@@ -605,14 +608,12 @@ function measurePerkCardHeight(
     tierStr && rateStr ? `${tierStr} · ${rateStr}` : tierStr || rateStr;
   if (meta1) innerH += Math.round(META * 1.25);
 
-  // meta 2 (role · owner)
   innerH += Math.round(META * 1.25);
 
-  // tags (una riga)
   if (perk.tags?.length) innerH += Math.round(TAG * 1.25);
 
   const contentH = Math.max(hasIcon ? ICON : 0, innerH);
-  return P * 2 + contentH; // padding sopra+ sotto
+  return P * 2 + contentH; 
 }
 
 function drawPerkCard(
@@ -624,9 +625,9 @@ function drawPerkCard(
   w: number,
   h: number
 ) {
-  const P = 22; // padding
-  const R = 20; // radius
-  const ICON = 76; // icona più piccola
+  const P = 22; 
+  const R = 20; 
+  const ICON = 76; 
   const GAP = 18;
 
   // card
@@ -656,18 +657,16 @@ function drawPerkCard(
   const textX = cursorX + (icon ? ICON + GAP : 0);
   const textMaxW = innerW - (textX - innerX);
 
-  // imposta baseline e allineamento coerenti per tutto
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
 
-  // TITOLO (1 riga con ellissi)
   const TITLE = 28;
   setFont(ctx, 700, TITLE);
   ctx.fillStyle = "#fff";
   const nameLine = ellipsize(ctx, perk.name, textMaxW);
   ctx.fillText(nameLine, textX, cursorY);
 
-  let lineY = cursorY + lineHeight(TITLE) + 6; // spazio sotto il titolo
+  let lineY = cursorY + lineHeight(TITLE) + 6; 
 
   // META 1: Tier · Rate
   const META = 16;
@@ -691,7 +690,7 @@ function drawPerkCard(
   ctx.fillText(ownerStr, textX, lineY);
   lineY += lineHeight(META);
 
-  // TAG (clamp a una riga)
+  // TAG 
   if (perk.tags?.length) {
     const TAG = 14;
     setFont(ctx, 500, TAG);
@@ -1215,25 +1214,21 @@ export default function App() {
 
       const top4 = suggested.slice(0, 4);
       const icons = await Promise.all(top4.map((p) => tryLoadIcon(p.icon)));
+  
+      const PAD_X = 48; 
+      const COL_GAP = 56; 
+      const ROW_GAP = 28; 
+      const Y_TOP = 140; 
 
-      // Layout: margini simmetrici e gap colonne più stretto
-      const PAD_X = 48; // margine sinistra/destra (aumenta per più aria ai lati)
-      const COL_GAP = 56; // spazio tra le due colonne (ridotto)
-      const ROW_GAP = 28; // spazio tra le righe
-      const Y_TOP = 140; // y di partenza dei box
-
-      // larghezza card calcolata per avere lo stesso margine a sx e dx
       const cardW = Math.floor((width - PAD_X * 2 - COL_GAP) / 2);
       const x0 = PAD_X;
       const x1 = PAD_X + cardW + COL_GAP;
 
-      // riga 1 (altezze dinamiche in base al contenuto)
       const h0 = measurePerkCardHeight(ctx, top4[0], !!icons[0]);
       const h1 = measurePerkCardHeight(ctx, top4[1], !!icons[1]);
       drawPerkCard(ctx, top4[0], icons[0], x0, Y_TOP, cardW, h0);
       drawPerkCard(ctx, top4[1], icons[1], x1, Y_TOP, cardW, h1);
 
-      // riga 2 allineata sotto la card più alta della riga 1
       const row2Y = Math.max(Y_TOP + h0, Y_TOP + h1) + ROW_GAP;
       const h2 = measurePerkCardHeight(ctx, top4[2], !!icons[2]);
       const h3 = measurePerkCardHeight(ctx, top4[3], !!icons[3]);
