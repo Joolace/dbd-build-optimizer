@@ -128,7 +128,7 @@ const API_URLS = {
     `${API_BASE}/getKillerData?killer=${encodeURIComponent(slug)}`,
 };
 
-const API_CACHE_KEY = "dbd-api-cache-v4";  // bumpa se cambi formato cache
+const API_CACHE_KEY = "dbd-api-cache-v4"; // bumpa se cambi formato cache
 const API_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 
 function slugifyId(s: string) {
@@ -175,8 +175,8 @@ function mapSurvivorPerk(raw: any): Perk {
     desc: raw.Description ? String(raw.Description) : undefined, // HTML ok, la UI lo mostra come testo
     icon: raw.Image ? String(raw.Image).trim() : null,
     meta: {
-      owner: raw.Survivor ?? undefined,     // es. "Feng"
-      tier: raw.Tier ?? undefined,          // "A" / "S"...
+      owner: raw.Survivor ?? undefined, // es. "Feng"
+      tier: raw.Tier ?? undefined, // "A" / "S"...
       rate: typeof raw.Rating === "number" ? raw.Rating : undefined, // 0..5
     },
   };
@@ -192,7 +192,7 @@ function mapKillerPerk(raw: any): Perk {
     desc: undefined,
     icon: raw.PerkIcon ? String(raw.PerkIcon).trim() : null,
     meta: {
-      owner: raw.PerkKiller ?? undefined,   // es. "Cannibal"
+      owner: raw.PerkKiller ?? undefined, // es. "Cannibal"
       tier: raw.Tier ?? undefined,
       rate: typeof raw.Rating === "number" ? raw.Rating : undefined,
     },
@@ -215,20 +215,25 @@ function dedupeByName(perks: Perk[]) {
 type KillerTopPerk = { name: string; rank?: number; usage?: number };
 
 function extractTopPerksFromKillerData(raw: any): KillerTopPerk[] {
-  const list: any[] =
-    Array.isArray(raw?.Killers) ? raw.Killers :
-    Array.isArray(raw)          ? raw :
-    [];
+  const list: any[] = Array.isArray(raw?.Killers)
+    ? raw.Killers
+    : Array.isArray(raw)
+    ? raw
+    : [];
 
   return list
-    .map((x: any, i: number): KillerTopPerk => ({
-      name: String(x?.PerkName ?? x?.name ?? x?.perk ?? x?.perkName ?? ""),
-      rank: Number(x?.rank ?? x?.position ?? i + 1) || i + 1,
-      usage:
-        typeof x?.Rating === "number" ? x.Rating :
-        typeof x?.rate   === "number" ? x.rate   :
-        undefined,
-    }))
+    .map(
+      (x: any, i: number): KillerTopPerk => ({
+        name: String(x?.PerkName ?? x?.name ?? x?.perk ?? x?.perkName ?? ""),
+        rank: Number(x?.rank ?? x?.position ?? i + 1) || i + 1,
+        usage:
+          typeof x?.Rating === "number"
+            ? x.Rating
+            : typeof x?.rate === "number"
+            ? x.rate
+            : undefined,
+      })
+    )
     .filter((r: KillerTopPerk) => Boolean(r.name));
 }
 
@@ -551,78 +556,90 @@ export default function App() {
     } catch {}
   }
 
- // helper locali (mettile sopra o dentro la funzione)
-function asArray(x: any): any[] { return Array.isArray(x) ? x : []; }
-
-function pickFirstArray(...candidates: any[]): any[] {
-  for (const c of candidates) if (Array.isArray(c)) return c;
-  return [];
-}
-
- async function fetchDatasetFromAPI(): Promise<DbdDataset> {
-  const [sRes, kRes] = await Promise.all([
-    fetch(API_URLS.survivorPerks, { cache: "no-store", mode: "cors" }),
-    fetch(API_URLS.killerPerks,   { cache: "no-store", mode: "cors" }),
-  ]);
-  if (!sRes.ok || !kRes.ok) throw new Error("API not ok");
-
-  const sJson = await sRes.json();
-  const kJson = await kRes.json();
-
-  // ⬇️ QUI: chiavi reali degli endpoint
-  const sArr = pickFirstArray(
-    sJson?.Perks,      // ✅ survivors
-    sJson?.data,
-    sJson?.items,
-    sJson
-  );
-
-  const kArr = pickFirstArray(
-    kJson?.Killers,    // ✅ killers
-    kJson?.data,
-    kJson?.items,
-    kJson
-  );
-
-  const survivorPerks = asArray(sArr).map(mapSurvivorPerk).filter(p => p.name);
-  const killerPerks   = asArray(kArr).map(mapKillerPerk).filter(p => p.name);
-  const perks: Perk[] = [...survivorPerks, ...killerPerks];
-
-  if (perks.length === 0) {
-    console.warn("[DBD] API hanno risposto ma senza perks (shape non riconosciuto o vuoto). Forzo fallback.");
-    throw new Error("EMPTY_DATASET");
+  // helper locali (mettile sopra o dentro la funzione)
+  function asArray(x: any): any[] {
+    return Array.isArray(x) ? x : [];
   }
 
-  // Slug da owner per killerData
-  const killerOwners = Array.from(
-    new Set(killerPerks.map((p: Perk) => p.meta?.owner).filter(Boolean) as string[])
-  );
-  const killerSlugs = killerOwners.map(killerSlugFromOwner);
-
-  const kdMap = await fetchKillerDataForSlugs(killerSlugs);
-
-  const indexByName: Record<string, Perk> = {};
-  for (const p of perks) indexByName[normalize(p.name)] = p;
-
-  for (const [slug, list] of Object.entries(kdMap)) {
-    list.forEach((row) => {
-      const key = normalize(row.name);
-      const perk = indexByName[key];
-      if (!perk) return;
-      const prev = (perk.meta as any)?.topForKillers || [];
-      perk.meta = {
-        ...(perk.meta || {}),
-        topForKillers: [...prev, { slug, rank: row.rank, usage: row.usage }],
-      };
-    });
+  function pickFirstArray(...candidates: any[]): any[] {
+    for (const c of candidates) if (Array.isArray(c)) return c;
+    return [];
   }
 
-  console.log(`[DBD] Loaded perks: survivors=${survivorPerks.length}, killers=${killerPerks.length}`);
-  return {
-    version: `dennisreep:${new Date().toISOString().slice(0, 10)}`,
-    perks,
-  };
-}
+  async function fetchDatasetFromAPI(): Promise<DbdDataset> {
+    const [sRes, kRes] = await Promise.all([
+      fetch(API_URLS.survivorPerks, { cache: "no-store", mode: "cors" }),
+      fetch(API_URLS.killerPerks, { cache: "no-store", mode: "cors" }),
+    ]);
+    if (!sRes.ok || !kRes.ok) throw new Error("API not ok");
+
+    const sJson = await sRes.json();
+    const kJson = await kRes.json();
+
+    // ⬇️ QUI: chiavi reali degli endpoint
+    const sArr = pickFirstArray(
+      sJson?.Perks, // ✅ survivors
+      sJson?.data,
+      sJson?.items,
+      sJson
+    );
+
+    const kArr = pickFirstArray(
+      kJson?.Killers, // ✅ killers
+      kJson?.data,
+      kJson?.items,
+      kJson
+    );
+
+    const survivorPerks = asArray(sArr)
+      .map(mapSurvivorPerk)
+      .filter((p) => p.name);
+    const killerPerks = asArray(kArr)
+      .map(mapKillerPerk)
+      .filter((p) => p.name);
+    const perks: Perk[] = [...survivorPerks, ...killerPerks];
+
+    if (perks.length === 0) {
+      console.warn(
+        "[DBD] API hanno risposto ma senza perks (shape non riconosciuto o vuoto). Forzo fallback."
+      );
+      throw new Error("EMPTY_DATASET");
+    }
+
+    // Slug da owner per killerData
+    const killerOwners = Array.from(
+      new Set(
+        killerPerks.map((p: Perk) => p.meta?.owner).filter(Boolean) as string[]
+      )
+    );
+    const killerSlugs = killerOwners.map(killerSlugFromOwner);
+
+    const kdMap = await fetchKillerDataForSlugs(killerSlugs);
+
+    const indexByName: Record<string, Perk> = {};
+    for (const p of perks) indexByName[normalize(p.name)] = p;
+
+    for (const [slug, list] of Object.entries(kdMap)) {
+      list.forEach((row) => {
+        const key = normalize(row.name);
+        const perk = indexByName[key];
+        if (!perk) return;
+        const prev = (perk.meta as any)?.topForKillers || [];
+        perk.meta = {
+          ...(perk.meta || {}),
+          topForKillers: [...prev, { slug, rank: row.rank, usage: row.usage }],
+        };
+      });
+    }
+
+    console.log(
+      `[DBD] Loaded perks: survivors=${survivorPerks.length}, killers=${killerPerks.length}`
+    );
+    return {
+      version: `dennisreep:${new Date().toISOString().slice(0, 10)}`,
+      perks,
+    };
+  }
 
   // ---- EFFECT SOSTITUITO
   useEffect(() => {
@@ -657,6 +674,12 @@ function pickFirstArray(...candidates: any[]): any[] {
   }, []);
 
   const perks = dataset?.perks ?? FALLBACK.perks;
+
+  console.log("[DBD] counts", {
+    all: perks.length,
+    survivors: perks.filter((p) => p.role === "survivor").length,
+    killers: perks.filter((p) => p.role === "killer").length,
+  });
 
   function prettyKiller(slug: string) {
     const spaced = slug
@@ -856,6 +879,18 @@ function pickFirstArray(...candidates: any[]): any[] {
   useEffect(() => {
     if (dataset !== null && minElapsed) setBooting(false);
   }, [dataset, minElapsed]);
+
+  useEffect(() => {
+    setSettings((s) => ({
+      ...s,
+      search: "",
+      selectedTags: [],
+      filterOwner: "",
+      filterTier: "",
+      filterRateMin: "",
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings.role]);
 
   return (
     <div className="min-h-screen bg-black text-zinc-100 px-4 py-6 flex justify-center">
