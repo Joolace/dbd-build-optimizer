@@ -482,15 +482,22 @@ function setFont(ctx: CanvasRenderingContext2D, weight: number, size: number) {
   ctx.font = `${weight} ${size}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
 }
 
-function ellipsize(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
+function ellipsize(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number
+) {
   if (ctx.measureText(text).width <= maxWidth) return text;
   const E = "…";
-  let lo = 0, hi = text.length, fit = E;
+  let lo = 0,
+    hi = text.length,
+    fit = E;
   while (lo < hi) {
     const mid = (lo + hi) >> 1;
     const cand = text.slice(0, mid).trim() + E;
     if (ctx.measureText(cand).width <= maxWidth) {
-      fit = cand; lo = mid + 1;
+      fit = cand;
+      lo = mid + 1;
     } else {
       hi = mid;
     }
@@ -506,7 +513,11 @@ function lineHeight(px: number) {
 function drawRoundedImage(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
-  x: number, y: number, w: number, h: number, r = 12
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r = 12
 ) {
   ctx.save();
   const p = new Path2D();
@@ -522,7 +533,11 @@ function drawRoundedImage(
   ctx.restore();
 }
 
-function loadImageExt(url: string, useCors: boolean, referrer?: RequestCredentials | "no-referrer") {
+function loadImageExt(
+  url: string,
+  useCors: boolean,
+  referrer?: RequestCredentials | "no-referrer"
+) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
     if (useCors) img.crossOrigin = "anonymous";
@@ -545,27 +560,73 @@ function proxify(url: string) {
   }
 }
 
-async function tryLoadIcon(url?: string | null): Promise<HTMLImageElement | null> {
+async function tryLoadIcon(
+  url?: string | null
+): Promise<HTMLImageElement | null> {
   if (!url) return null;
   // 1) CORS “normale”
-  try { return await loadImageExt(url, true); } catch {}
+  try {
+    return await loadImageExt(url, true);
+  } catch {}
   // 2) Senza referrer
-  try { return await loadImageExt(url, true, "no-referrer"); } catch {}
+  try {
+    return await loadImageExt(url, true, "no-referrer");
+  } catch {}
   // 3) Proxy pubblico (o rimpiazza con il tuo)
-  try { return await loadImageExt(proxify(url), true); } catch {}
+  try {
+    return await loadImageExt(proxify(url), true);
+  } catch {}
   return null; // niente icona -> disegna solo testo
 }
 
+function measurePerkCardHeight(
+  ctx: CanvasRenderingContext2D,
+  perk: Perk,
+  hasIcon: boolean
+) {
+  const P = 22;
+  const ICON = 76;
+  const TITLE = 28;
+  const META = 16;
+  const TAG = 14;
+
+  // baseline “top” come nel draw
+  ctx.textBaseline = "top";
+
+  let innerH = 0;
+  // titolo
+  innerH += Math.round(TITLE * 1.25) + 6;
+
+  // meta 1 (Tier · Rate) se presente
+  const r = getRate(perk);
+  const tierStr = perk.meta?.tier ? `Tier: ${perk.meta.tier}` : "";
+  const rateStr = r != null ? `Rate: ${r.toFixed(1)}` : "";
+  const meta1 =
+    tierStr && rateStr ? `${tierStr} · ${rateStr}` : tierStr || rateStr;
+  if (meta1) innerH += Math.round(META * 1.25);
+
+  // meta 2 (role · owner)
+  innerH += Math.round(META * 1.25);
+
+  // tags (una riga)
+  if (perk.tags?.length) innerH += Math.round(TAG * 1.25);
+
+  const contentH = Math.max(hasIcon ? ICON : 0, innerH);
+  return P * 2 + contentH; // padding sopra+ sotto
+}
 
 function drawPerkCard(
   ctx: CanvasRenderingContext2D,
   perk: Perk,
   icon: HTMLImageElement | null,
-  x: number, y: number, w: number, h: number
+  x: number,
+  y: number,
+  w: number,
+  h: number
 ) {
-  const P = 22;      // padding
-  const R = 20;      // radius
-  const ICON = 76;   // icona più piccola
+  const P = 22; // padding
+  const R = 20; // radius
+  const ICON = 76; // icona più piccola
   const GAP = 18;
 
   // card
@@ -615,7 +676,8 @@ function drawPerkCard(
   const r = getRate(perk);
   const tierStr = perk.meta?.tier ? `Tier: ${perk.meta.tier}` : "";
   const rateStr = r != null ? `Rate: ${r.toFixed(1)}` : "";
-  const meta1 = tierStr && rateStr ? `${tierStr} · ${rateStr}` : (tierStr || rateStr);
+  const meta1 =
+    tierStr && rateStr ? `${tierStr} · ${rateStr}` : tierStr || rateStr;
   if (meta1) {
     ctx.fillText(meta1, textX, lineY);
     lineY += lineHeight(META);
@@ -623,7 +685,9 @@ function drawPerkCard(
 
   // META 2: role · owner
   setFont(ctx, 500, META);
-  const ownerStr = perk.meta?.owner ? `${perk.role} · ${perk.meta.owner}` : `${perk.role}`;
+  const ownerStr = perk.meta?.owner
+    ? `${perk.role} · ${perk.meta.owner}`
+    : `${perk.role}`;
   ctx.fillText(ownerStr, textX, lineY);
   lineY += lineHeight(META);
 
@@ -636,7 +700,6 @@ function drawPerkCard(
     ctx.fillText(tagsStr, textX, lineY);
   }
 }
-
 
 export default function App() {
   const MIN_BOOT_MS = 2350;
@@ -1154,19 +1217,24 @@ export default function App() {
       const icons = await Promise.all(top4.map((p) => tryLoadIcon(p.icon)));
 
       const cardW = 520;
-      const cardH = 200;
-      const slot = [
-        [40, 140],
-        [640, 140],
-        [40, 360],
-        [640, 360],
-      ] as const;
+      const colGap = 120;
+      const rowGap = 32;
+      const x0 = 40;
+      const x1 = x0 + cardW + colGap;
 
-      for (let i = 0; i < top4.length; i++) {
-        const p = top4[i];
-        const icon = icons[i];
-        drawPerkCard(ctx, p, icon, slot[i][0], slot[i][1], cardW, cardH);
-      }
+      const h0 = measurePerkCardHeight(ctx, top4[0], !!icons[0]);
+      const h1 = measurePerkCardHeight(ctx, top4[1], !!icons[1]);
+      const y0 = 140;
+      const y1 = 140;
+      drawPerkCard(ctx, top4[0], icons[0], x0, y0, cardW, h0);
+      drawPerkCard(ctx, top4[1], icons[1], x1, y1, cardW, h1);
+
+      const row2Y = Math.max(y0 + h0, y1 + h1) + rowGap;
+
+      const h2 = measurePerkCardHeight(ctx, top4[2], !!icons[2]);
+      const h3 = measurePerkCardHeight(ctx, top4[3], !!icons[3]);
+      drawPerkCard(ctx, top4[2], icons[2], x0, row2Y, cardW, h2);
+      drawPerkCard(ctx, top4[3], icons[3], x1, row2Y, cardW, h3);
 
       ctx.fillStyle = "rgba(255,255,255,0.55)";
       ctx.font =
@@ -1202,9 +1270,7 @@ export default function App() {
       }
     } catch (err) {
       console.error("[share] export failed", err);
-      alert(
-        "Unable to create the image. Please try again or try later."
-      );
+      alert("Unable to create the image. Please try again or try later.");
     } finally {
       setSharing(false);
     }
