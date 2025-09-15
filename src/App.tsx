@@ -1216,21 +1216,25 @@ export default function App() {
       const top4 = suggested.slice(0, 4);
       const icons = await Promise.all(top4.map((p) => tryLoadIcon(p.icon)));
 
-      const cardW = 520;
-      const colGap = 120;
-      const rowGap = 32;
-      const x0 = 40;
-      const x1 = x0 + cardW + colGap;
+      // Layout: margini simmetrici e gap colonne più stretto
+      const PAD_X = 48; // margine sinistra/destra (aumenta per più aria ai lati)
+      const COL_GAP = 56; // spazio tra le due colonne (ridotto)
+      const ROW_GAP = 28; // spazio tra le righe
+      const Y_TOP = 140; // y di partenza dei box
 
+      // larghezza card calcolata per avere lo stesso margine a sx e dx
+      const cardW = Math.floor((width - PAD_X * 2 - COL_GAP) / 2);
+      const x0 = PAD_X;
+      const x1 = PAD_X + cardW + COL_GAP;
+
+      // riga 1 (altezze dinamiche in base al contenuto)
       const h0 = measurePerkCardHeight(ctx, top4[0], !!icons[0]);
       const h1 = measurePerkCardHeight(ctx, top4[1], !!icons[1]);
-      const y0 = 140;
-      const y1 = 140;
-      drawPerkCard(ctx, top4[0], icons[0], x0, y0, cardW, h0);
-      drawPerkCard(ctx, top4[1], icons[1], x1, y1, cardW, h1);
+      drawPerkCard(ctx, top4[0], icons[0], x0, Y_TOP, cardW, h0);
+      drawPerkCard(ctx, top4[1], icons[1], x1, Y_TOP, cardW, h1);
 
-      const row2Y = Math.max(y0 + h0, y1 + h1) + rowGap;
-
+      // riga 2 allineata sotto la card più alta della riga 1
+      const row2Y = Math.max(Y_TOP + h0, Y_TOP + h1) + ROW_GAP;
       const h2 = measurePerkCardHeight(ctx, top4[2], !!icons[2]);
       const h3 = measurePerkCardHeight(ctx, top4[3], !!icons[3]);
       drawPerkCard(ctx, top4[2], icons[2], x0, row2Y, cardW, h2);
@@ -1239,7 +1243,7 @@ export default function App() {
       ctx.fillStyle = "rgba(255,255,255,0.55)";
       ctx.font =
         "600 16px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
-      ctx.fillText("dbd-build-optimizer", 40, height - 28);
+      ctx.fillText("dbd-build-optimizer", PAD_X, height - 28);
 
       const blob: Blob = await new Promise((res) =>
         canvas.toBlob((b) => res(b as Blob), "image/png", 1)
