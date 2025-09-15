@@ -128,7 +128,7 @@ const API_URLS = {
     `${API_BASE}/getKillerData?killer=${encodeURIComponent(slug)}`,
 };
 
-const API_CACHE_KEY = "dbd-api-cache-v2"; // bumpa se cambi formato cache
+const API_CACHE_KEY = "dbd-api-cache-v3";  // bumpa se cambi formato cache
 const API_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 
 function slugifyId(s: string) {
@@ -210,8 +210,6 @@ function dedupeByName(perks: Perk[]) {
   }
   return out;
 }
-
-type TopFor = { slug: string; rank?: number; usage?: number };
 
 type KillerTopPerk = { name: string; rank?: number; usage?: number };
 
@@ -557,71 +555,87 @@ export default function App() {
     } catch {}
   }
 
-  async function fetchDatasetFromAPI(): Promise<DbdDataset> {
-    // 1) Perks
-    const [sRes, kRes] = await Promise.all([
-      fetch(API_URLS.survivorPerks, { cache: "no-store" }),
-      fetch(API_URLS.killerPerks, { cache: "no-store" }),
-    ]);
-    if (!sRes.ok || !kRes.ok) throw new Error("API not ok");
+  function asArray(x: any): any[] {
+  return Array.isArray(x) ? x : [];
+}
 
-    const sJson = await sRes.json();
-    const kJson = await kRes.json();
-
-    const sArr = Array.isArray(sJson?.data)
-      ? sJson.data
-      : Array.isArray(sJson)
-      ? sJson
-      : [];
-    const kArr = Array.isArray(kJson?.data)
-      ? kJson.data
-      : Array.isArray(kJson)
-      ? kJson
-      : [];
-
-    const survivorPerks = sArr.map(mapSurvivorPerk);
-    const killerPerks: Perk[] = kArr.map(mapKillerPerk);
-    const perks: Perk[] = [...survivorPerks, ...killerPerks];
-
-    // 2) Slugs killer da owners (per chiamare killerData)
-    const killerOwners = Array.from(
-      new Set(
-        killerPerks
-          .map((p) => (p.meta as any)?.owner as string | undefined)
-          .filter((o): o is string => Boolean(o))
-      )
-    );
-
-    const killerSlugs = killerOwners.map(killerSlugFromOwner);
-
-    // 3) KillerData per ognuno (riempie topForKillers)
-    const kdMap = await fetchKillerDataForSlugs(killerSlugs); // { slug -> [{name, rank, usage}] }
-
-    // 4) Join su perk name normalizzato
-    const indexByName: Record<string, Perk> = {};
-    for (const p of perks) indexByName[normalize(p.name)] = p;
-
-    for (const [slug, list] of Object.entries(kdMap)) {
-      list.forEach((row) => {
-        const key = normalize(row.name);
-        const perk = indexByName[key];
-        if (!perk) return;
-        const prev = (perk.meta as any)?.topForKillers || [];
-        perk.meta = {
-          ...(perk.meta || {}),
-          topForKillers: [
-            ...prev,
-            { slug, rank: row.rank, usage: row.usage } as TopFor,
-          ],
-        };
-      });
-    }
-
-    return {
-      version: `dennisreep:${new Date().toISOString().slice(0, 10)}`,
-      perks,
-    };
+function pickFirstArray(...candidates: any[]): any[] {
+  for (const c of candidates) {
+    if (Array.isArray(c)) return c;
   }
+  return [];
+}
+
+  async function fetchDatasetFromAPI(): Promise<DbdDataset> {
+  // 1) Perks
+  const [sRes, kRes] = await Promise.all([
+    fetch(API_URLS.survivorPerks, { cache: "no-store", mode: "cors" }),
+    fetch(API_URLS.killerPerks,   { cache: "no-store", mode: "cors" }),
+  ]);
+  if (!sRes.ok || !kRes.ok) throw new Error("API not ok");
+
+  const sJson = await sRes.json();
+  const kJson = await kRes.json();
+
+  // Estrazione robusta (copre vari shape possibili)
+  const sArr = pickFirstArray(
+    sJson?.data,
+    sJson?.perks,
+    sJson?.survivorPerks,
+    sJson?.items,
+    sJson // nel caso l’endpoint ritorni direttamente un array
+  );
+
+  const kArr = pickFirstArray(
+    kJson?.data,
+    kJson?.perks,
+    kJson?.killerPerks,
+    kJson?.items,
+    kJson
+  );
+
+  const survivorPerks = asArray(sArr).map(mapSurvivorPerk).filter(p => p.name);
+  const killerPerks   = asArray(kArr).map(mapKillerPerk).filter(p => p.name);
+  const perks: Perk[] = [...survivorPerks, ...killerPerks];
+
+  // Se è vuoto, forza il fallback (così non salviamo in cache il vuoto)
+  if (perks.length === 0) {
+    console.warn("[DBD] API hanno risposto ma senza perks (shape non riconosciuto o vuoto). Forzo fallback.");
+    throw new Error("EMPTY_DATASET");
+  }
+
+  // 2) Slugs killer da owners (per chiamare killerData)
+  const killerOwners = Array.from(
+    new Set(killerPerks.map((p: Perk) => p.meta?.owner).filter(Boolean) as string[])
+  );
+  const killerSlugs = killerOwners.map(killerSlugFromOwner);
+
+  // 3) KillerData per ognuno (riempie topForKillers)
+  const kdMap = await fetchKillerDataForSlugs(killerSlugs); // { slug -> [{name, rank, usage}] }
+
+  // 4) Join su perk name normalizzato
+  const indexByName: Record<string, Perk> = {};
+  for (const p of perks) indexByName[normalize(p.name)] = p;
+
+  for (const [slug, list] of Object.entries(kdMap)) {
+    list.forEach((row) => {
+      const key = normalize(row.name);
+      const perk = indexByName[key];
+      if (!perk) return;
+      const prev = (perk.meta as any)?.topForKillers || [];
+      perk.meta = {
+        ...(perk.meta || {}),
+        topForKillers: [...prev, { slug, rank: row.rank, usage: row.usage }],
+      };
+    });
+  }
+
+  console.log(`[DBD] Loaded perks: survivors=${survivorPerks.length}, killers=${killerPerks.length}`);
+  return {
+    version: `dennisreep:${new Date().toISOString().slice(0, 10)}`,
+    perks,
+  };
+}
 
   // ---- EFFECT SOSTITUITO
   useEffect(() => {
