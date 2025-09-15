@@ -498,6 +498,11 @@ function ellipsize(ctx: CanvasRenderingContext2D, text: string, maxWidth: number
   return fit;
 }
 
+function lineHeight(px: number) {
+  // fallback robusto per la canvas
+  return Math.round(px * 1.25);
+}
+
 function drawRoundedImage(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
@@ -552,19 +557,18 @@ async function tryLoadIcon(url?: string | null): Promise<HTMLImageElement | null
 }
 
 
-// --- sostituisci la tua drawPerkCard per l'export con questa --- //
 function drawPerkCard(
   ctx: CanvasRenderingContext2D,
   perk: Perk,
   icon: HTMLImageElement | null,
   x: number, y: number, w: number, h: number
 ) {
-  const P = 22;           // padding interno
-  const R = 20;           // border radius
-  const ICON = 76;        // <<< icona più piccola
-  const GAP = 18;         // spazio tra icona e testo
+  const P = 22;      // padding
+  const R = 20;      // radius
+  const ICON = 76;   // icona più piccola
+  const GAP = 18;
 
-  // card bg + bordo
+  // card
   ctx.save();
   ctx.fillStyle = "#18181b";
   const card = new Path2D();
@@ -574,12 +578,11 @@ function drawPerkCard(
   card.arcTo(x, y + h, x, y, R);
   card.arcTo(x, y, x + w, y, R);
   ctx.fill(card);
-  ctx.strokeStyle = "rgba(220,38,38,.25)"; // bordo rosso scuro
+  ctx.strokeStyle = "rgba(220,38,38,.25)";
   ctx.lineWidth = 2;
   ctx.stroke(card);
   ctx.restore();
 
-  // contenuto
   const innerX = x + P;
   const innerY = y + P;
   const innerW = w - P * 2;
@@ -587,44 +590,47 @@ function drawPerkCard(
   let cursorX = innerX;
   let cursorY = innerY;
 
-  if (icon) {
-    drawRoundedImage(ctx, icon, cursorX, cursorY, ICON, ICON, 14);
-  }
+  if (icon) drawRoundedImage(ctx, icon, cursorX, cursorY, ICON, ICON, 14);
 
   const textX = cursorX + (icon ? ICON + GAP : 0);
   const textMaxW = innerW - (textX - innerX);
 
-  // TITOLO (una sola riga con ellissi)
-  setFont(ctx, 700, 28);
+  // imposta baseline e allineamento coerenti per tutto
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+
+  // TITOLO (1 riga con ellissi)
+  const TITLE = 28;
+  setFont(ctx, 700, TITLE);
   ctx.fillStyle = "#fff";
   const nameLine = ellipsize(ctx, perk.name, textMaxW);
-  const m = ctx.measureText(nameLine);
-  const nameH = Math.ceil(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent);
-  ctx.fillText(nameLine, textX, cursorY + nameH);
+  ctx.fillText(nameLine, textX, cursorY);
 
-  let lineY = cursorY + nameH + 8;
+  let lineY = cursorY + lineHeight(TITLE) + 6; // spazio sotto il titolo
 
-  // META riga 1: Tier · Rate
-  setFont(ctx, 600, 16);
+  // META 1: Tier · Rate
+  const META = 16;
+  setFont(ctx, 600, META);
   ctx.fillStyle = "rgba(244,244,244,.95)";
-  const rate = getRate(perk);
+  const r = getRate(perk);
   const tierStr = perk.meta?.tier ? `Tier: ${perk.meta.tier}` : "";
-  const rateStr = rate != null ? `Rate: ${rate.toFixed(1)}` : "";
+  const rateStr = r != null ? `Rate: ${r.toFixed(1)}` : "";
   const meta1 = tierStr && rateStr ? `${tierStr} · ${rateStr}` : (tierStr || rateStr);
   if (meta1) {
     ctx.fillText(meta1, textX, lineY);
-    lineY += 20;
+    lineY += lineHeight(META);
   }
 
-  // META riga 2: role · owner
-  setFont(ctx, 500, 16);
+  // META 2: role · owner
+  setFont(ctx, 500, META);
   const ownerStr = perk.meta?.owner ? `${perk.role} · ${perk.meta.owner}` : `${perk.role}`;
   ctx.fillText(ownerStr, textX, lineY);
-  lineY += 20;
+  lineY += lineHeight(META);
 
-  // TAG (clampati alla riga)
+  // TAG (clamp a una riga)
   if (perk.tags?.length) {
-    setFont(ctx, 500, 14);
+    const TAG = 14;
+    setFont(ctx, 500, TAG);
     ctx.fillStyle = "rgba(212,212,212,.9)";
     const tagsStr = ellipsize(ctx, perk.tags.join(" · "), textMaxW);
     ctx.fillText(tagsStr, textX, lineY);
