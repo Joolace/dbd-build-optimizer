@@ -195,7 +195,12 @@ function mapKillerPerk(raw: any): Perk {
     desc,
     icon: iconRaw ? String(iconRaw).trim() : null,
     meta: {
-      owner: raw.PerkKiller ?? raw.Killer ?? raw.KillerName ?? raw.Owner ?? undefined,
+      owner:
+        raw.PerkKiller ??
+        raw.Killer ??
+        raw.KillerName ??
+        raw.Owner ??
+        undefined,
       tier: raw.Tier ?? undefined,
       rate:
         typeof raw.Rating === "number"
@@ -221,8 +226,7 @@ function stripPatchNotices(text: string): string {
     const isAltNotice =
       /^information\s+in\s+(this\s+)?(article|description)\b.*(patch|ptb)/i.test(
         line
-      ) ||
-      /^subject\s+to\s+change\b.*(patch|ptb)/i.test(line);
+      ) || /^subject\s+to\s+change\b.*(patch|ptb)/i.test(line);
 
     return !(isNotice || isAltNotice);
   });
@@ -240,7 +244,6 @@ function stripPatchNotices(text: string): string {
     .replace(/\s{2,}/g, " ")
     .trim();
 }
-
 
 function cleanDescHtml(html: string): string {
   if (!html) return "";
@@ -324,8 +327,7 @@ async function fetchKillerDataForSlugs(slugs: string[]) {
         if (!res.ok) throw new Error("not ok");
         const json = await res.json();
         results[slug] = extractTopPerksFromKillerData(json);
-      } catch {
-      }
+      } catch {}
     })
   );
   return results;
@@ -422,9 +424,8 @@ function scorePerk(
     if (currentHasSameMutex) score -= 100;
   }
 
-
-  score += tierBonus(p); 
-  score += rateBonus(p); 
+  score += tierBonus(p);
+  score += rateBonus(p);
 
   score += killerFocusBonus(p, ctx.killerFocus);
 
@@ -635,12 +636,7 @@ export default function App() {
     const sJson = await sRes.json();
     const kJson = await kRes.json();
 
-    const sArr = pickFirstArray(
-      sJson?.Perks,
-      sJson?.data,
-      sJson?.items,
-      sJson
-    );
+    const sArr = pickFirstArray(sJson?.Perks, sJson?.data, sJson?.items, sJson);
 
     console.log(
       "[DBD] killer JSON keys:",
@@ -659,10 +655,9 @@ export default function App() {
         : null
     );
 
-
     const kArr = pickFirstArray(
       kJson?.Killers,
-      kJson?.Perks, 
+      kJson?.Perks,
       kJson?.perks,
       kJson?.data,
       kJson?.items,
@@ -1277,111 +1272,32 @@ export default function App() {
 
               <div className="mt-4 grid grid-cols-1 gap-3">
                 {suggested.map((p: Perk) => (
-                  <div
+                  <SuggestedPerkCard
                     key={p.id}
-                    className="p-3 rounded-xl bg-zinc-800 border border-red-900/40"
-                  >
-                    <div className="flex items-center">
-                      {/* Icon on the left */}
-                      {p.icon && (
-                        <img
-                          src={p.icon}
-                          alt=""
-                          className="w-16 h-16 mr-3 mb-2 rounded border border-red-900/40 bg-black/40"
-                        />
-                      )}
-
-                      {/* Buttons on the right */}
-                      <div className="ml-auto flex gap-2 shrink-0">
-                        <button
-                          className="text-xs px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-700 border border-red-900/40"
-                          onClick={() =>
-                            setSettings((prev) => ({
-                              ...prev,
-                              locked: Array.from(
-                                new Set([...prev.locked, p.name])
-                              ),
-                              banned: prev.banned.filter(
-                                (i) =>
-                                  normalize(i) !== normalize(p.name) &&
-                                  normalize(i) !== normalize(p.id)
-                              ),
-                            }))
-                          }
-                        >
-                          Lock
-                        </button>
-                        <button
-                          className="text-xs px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-700 border border-red-900/40"
-                          onClick={() =>
-                            setSettings((prev) => ({
-                              ...prev,
-                              // add to banned (without duplicates)
-                              banned: Array.from(
-                                new Set([...prev.banned, p.name])
-                              ),
-                              // remove from any locked items
-                              locked: prev.locked.filter(
-                                (i) =>
-                                  normalize(i) !== normalize(p.name) &&
-                                  normalize(i) !== normalize(p.id)
-                              ),
-                            }))
-                          }
-                        >
-                          Ban
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="font-medium">{p.name}</div>
-
-                        {/* Tier / Rate */}
-                        <div className="text-xs text-zinc-300">
-                          {p.meta?.tier && (
-                            <>
-                              Tier: {p.meta.tier}
-                              {typeof p.meta?.rate !== "undefined" ? " · " : ""}
-                            </>
-                          )}
-                          {(() => {
-                            const r = getRate(p);
-                            return r != null ? <>Rate: {r.toFixed(1)}</> : null;
-                          })()}
-                        </div>
-
-                        {/* Role + Owner (killer/survivor) */}
-                        <div className="text-xs text-zinc-300 capitalize">
-                          {p.role}
-                          {p.meta?.owner && (
-                            <>
-                              {" "}
-                              ·{" "}
-                              <span className="normal-case">
-                                {p.meta.owner}
-                              </span>
-                            </>
-                          )}
-                        </div>
-
-                        {/* Tag */}
-                        <div className="text-xs text-zinc-300">
-                          {p.tags.join(" · ")}
-                        </div>
-                      </div>
-                    </div>
-
-                    {p.synergy && p.synergy.length > 0 && (
-                      <div className="text-xs text-zinc-300 mt-1">
-                        Sinergie: {p.synergy.join(", ")}
-                      </div>
-                    )}
-                    {p.desc && (
-                      <p className="text-xs text-zinc-400 mt-1 whitespace-pre-line">{p.desc}</p>
-                    )}
-                  </div>
+                    perk={p}
+                    onLock={() =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        locked: Array.from(new Set([...prev.locked, p.name])),
+                        banned: prev.banned.filter(
+                          (i) =>
+                            normalize(i) !== normalize(p.name) &&
+                            normalize(i) !== normalize(p.id)
+                        ),
+                      }))
+                    }
+                    onBan={() =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        banned: Array.from(new Set([...prev.banned, p.name])),
+                        locked: prev.locked.filter(
+                          (i) =>
+                            normalize(i) !== normalize(p.name) &&
+                            normalize(i) !== normalize(p.id)
+                        ),
+                      }))
+                    }
+                  />
                 ))}
               </div>
             </div>
@@ -1449,12 +1365,22 @@ function PerkCard({
   return (
     <div
       className={`p-3 rounded-2xl bg-zinc-900 border transition
-                  ${open ? "border-red-600/60" : "border-red-900/40 hover:border-red-700/50"}`}
+                  ${
+                    open
+                      ? "border-red-600/60"
+                      : "border-red-900/40 hover:border-red-700/50"
+                  }`}
       role="button"
       tabIndex={0}
       aria-expanded={open}
       aria-controls={perk.desc ? descId : undefined}
-      title={perk.desc ? (open ? "Click again to hide" : "Click to see the description") : undefined}
+      title={
+        perk.desc
+          ? open
+            ? "Click again to hide"
+            : "Click to see the description"
+          : undefined
+      }
       onClick={toggle}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -1551,7 +1477,9 @@ function PerkCard({
           {open ? "Click again to hide" : "Click to see the description"}
           <span
             aria-hidden
-            className={`inline-block transition-transform ${open ? "rotate-180" : ""}`}
+            className={`inline-block transition-transform ${
+              open ? "rotate-180" : ""
+            }`}
           >
             ▾
           </span>
@@ -1560,7 +1488,10 @@ function PerkCard({
 
       {/* Desc: === true */}
       {open && perk.desc && (
-        <p id={descId} className="text-xs text-zinc-400 mt-2 whitespace-pre-line">
+        <p
+          id={descId}
+          className="text-xs text-zinc-400 mt-2 whitespace-pre-line"
+        >
           {perk.desc}
         </p>
       )}
@@ -1568,6 +1499,153 @@ function PerkCard({
   );
 }
 
+function SuggestedPerkCard({
+  perk,
+  onLock,
+  onBan,
+}: {
+  perk: Perk;
+  onLock: () => void;
+  onBan: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const hasRate =
+    typeof perk.meta?.rate !== "undefined" && perk.meta?.rate !== null;
+
+  const toggle = () => setOpen((v) => !v);
+  const descId = `opt-desc-${perk.id}`; 
+
+  return (
+    <div
+      className={`p-3 rounded-xl bg-zinc-800 border transition
+                  ${
+                    open
+                      ? "border-red-600/60"
+                      : "border-red-900/40 hover:border-red-700/50"
+                  }`}
+      role="button"
+      tabIndex={0}
+      aria-expanded={open}
+      aria-controls={perk.desc ? descId : undefined}
+      title={
+        perk.desc
+          ? open
+            ? "Click again to hide"
+            : "Click to see the description"
+          : undefined
+      }
+      onClick={toggle}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggle();
+        }
+      }}
+    >
+      <div className="flex items-center">
+        {/* Icon */}
+        {perk.icon && (
+          <img
+            src={perk.icon}
+            alt={perk.name}
+            className="w-16 h-16 mr-3 mb-2 rounded border border-red-900/40 bg-black/40"
+          />
+        )}
+
+        {/* Buttons */}
+        <div className="ml-auto flex gap-2 shrink-0">
+          <button
+            className="text-xs px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-700 border border-red-900/40"
+            onClick={(e) => {
+              e.stopPropagation();
+              onLock();
+            }}
+            type="button"
+          >
+            Lock
+          </button>
+          <button
+            className="text-xs px-2 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-700 border border-red-900/40"
+            onClick={(e) => {
+              e.stopPropagation();
+              onBan();
+            }}
+            type="button"
+          >
+            Ban
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="font-medium">{perk.name}</div>
+
+          {/* Tier / Rate */}
+          <div className="text-xs text-zinc-300">
+            {perk.meta?.tier && (
+              <>
+                Tier: {perk.meta.tier}
+                {hasRate ? " · " : ""}
+              </>
+            )}
+            {hasRate &&
+              (() => {
+                const r = getRate(perk);
+                return r != null ? <>Rate: {r.toFixed(1)}</> : null;
+              })()}
+          </div>
+
+          {/* Role + Owner */}
+          <div className="text-xs text-zinc-300 capitalize">
+            {perk.role}
+            {perk.meta?.owner && (
+              <>
+                {" "}
+                · <span className="normal-case">{perk.meta.owner}</span>
+              </>
+            )}
+          </div>
+
+          {/* Tag */}
+          <div className="text-xs text-zinc-300">{perk.tags.join(" · ")}</div>
+        </div>
+      </div>
+
+      {/* Sinergy */}
+      {perk.synergy && perk.synergy.length > 0 && (
+        <div className="text-xs text-zinc-300 mt-1">
+          Sinergie: {perk.synergy.join(", ")}
+        </div>
+      )}
+
+      {/* Hint */}
+      {perk.desc && (
+        <div className="mt-2 text-[11px] text-zinc-400/90 italic select-none flex items-center gap-1">
+          {open ? "Click again to hide" : "Click to see the description"}
+          <span
+            aria-hidden
+            className={`inline-block transition-transform ${
+              open ? "rotate-180" : ""
+            }`}
+          >
+            ▾
+          </span>
+        </div>
+      )}
+
+      {/* Descrizione a toggle */}
+      {open && perk.desc && (
+        <p
+          id={descId}
+          className="text-xs text-zinc-400 mt-1 whitespace-pre-line"
+        >
+          {perk.desc}
+        </p>
+      )}
+    </div>
+  );
+}
 
 function TokenList({
   items,
