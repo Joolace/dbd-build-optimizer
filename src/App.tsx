@@ -1042,7 +1042,7 @@ export default function App() {
               </span>
             </button>
 
-            {/* NEW: anche su desktop */}
+            {/* NEW: desktop */}
             <button
               onClick={(e) => openRandomiser(e)}
               className="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-red-900/40 text-sm"
@@ -1444,6 +1444,7 @@ function PerkCard({
     typeof perk.meta?.rate !== "undefined" && perk.meta?.rate !== null;
 
   const toggle = () => setOpen((v) => !v);
+  const descId = `perk-desc-${perk.id}`;
 
   return (
     <div
@@ -1452,6 +1453,8 @@ function PerkCard({
       role="button"
       tabIndex={0}
       aria-expanded={open}
+      aria-controls={perk.desc ? descId : undefined}
+      title={perk.desc ? (open ? "Click again to hide" : "Click to see the description") : undefined}
       onClick={toggle}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -1462,7 +1465,7 @@ function PerkCard({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          {/* Icon above the name (if present) */}
+          {/* Icon */}
           {perk.icon && (
             <img
               src={perk.icon}
@@ -1503,9 +1506,10 @@ function PerkCard({
           </div>
         </div>
 
-        {/* Actions (non propagano il click) */}
+        {/* Actions */}
         <div className="flex gap-2 shrink-0">
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onLock();
@@ -1515,6 +1519,7 @@ function PerkCard({
             Lock
           </button>
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onBan();
@@ -1540,15 +1545,29 @@ function PerkCard({
         </div>
       )}
 
-      {/* Desc: visibile solo quando open === true */}
+      {/* Hint */}
+      {perk.desc && (
+        <div className="mt-2 text-[11px] text-zinc-400/90 italic select-none flex items-center gap-1">
+          {open ? "Click again to hide" : "Click to see the description"}
+          <span
+            aria-hidden
+            className={`inline-block transition-transform ${open ? "rotate-180" : ""}`}
+          >
+            ▾
+          </span>
+        </div>
+      )}
+
+      {/* Desc: === true */}
       {open && perk.desc && (
-        <p className="text-xs text-zinc-400 mt-2 whitespace-pre-line">
+        <p id={descId} className="text-xs text-zinc-400 mt-2 whitespace-pre-line">
           {perk.desc}
         </p>
       )}
     </div>
   );
 }
+
 
 function TokenList({
   items,
