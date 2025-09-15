@@ -120,8 +120,82 @@ function useLocalStorage<T>(key: string, initial: T) {
   return [state, setState] as const;
 }
 
+const API_BASE = "https://dennisreep.nl/dbd/api/v3";
+const API_URLS = {
+  survivorPerks: `${API_BASE}/getSurvivorPerkData?description=true`,
+  killerPerks: `${API_BASE}/getKillerPerkData?description=true`,
+  killerData: (slug: string) =>
+    `${API_BASE}/getKillerData?killer=${encodeURIComponent(slug)}`,
+};
+
+const API_CACHE_KEY = "dbd-api-cache-v2"; // bumpa se cambi formato cache
+const API_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+
+function slugifyId(s: string) {
+  return (s || "")
+    .toLowerCase()
+    .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_]/g, "");
+}
+
+function killerSlugFromOwner(owner: string) {
+  return normalize(owner)
+    .replace(/^the\s+/, "")
+    .replace(/\s+/g, "");
+}
+
 function normalize(str: string) {
   return str.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+}
+
+function deriveTags(role: Role, raw: any): string[] {
+  const out = new Set<string>();
+  if (Array.isArray(raw.tags))
+    raw.tags.forEach((t: string) => out.add(String(t)));
+
+  const name = String(raw.name ?? raw.perkName ?? "");
+  const desc = String(raw.description ?? raw.desc ?? raw.text ?? "");
+
+  if (role === "survivor" && /exhaust(ed|ion)/i.test(name + " " + desc))
+    out.add("exhaustion");
+  if (role === "killer" && /scourge\s*hook/i.test(name))
+    out.add("scourge_hook");
+
+  return Array.from(out);
+}
+
+function mapSurvivorPerk(raw: any): Perk {
+  const name = String(raw.name ?? raw.perkName ?? "");
+  return {
+    id: String(raw.id ?? slugifyId(name)),
+    name,
+    role: "survivor",
+    tags: deriveTags("survivor", raw),
+    desc: String(raw.description ?? raw.desc ?? "") || undefined,
+    icon: (raw.iconUrl ?? raw.imageUrl ?? raw.icon ?? null) || null,
+    meta: {
+      owner: raw.owner ?? raw.character ?? raw.survivor ?? undefined,
+      tier: raw.tier ?? undefined,
+      rate: raw.usageRate ?? raw.rate ?? undefined,
+    },
+  };
+}
+
+function mapKillerPerk(raw: any): Perk {
+  const name = String(raw.name ?? raw.perkName ?? "");
+  return {
+    id: String(raw.id ?? slugifyId(name)),
+    name,
+    role: "killer",
+    tags: deriveTags("killer", raw),
+    desc: String(raw.description ?? raw.desc ?? "") || undefined,
+    icon: (raw.iconUrl ?? raw.imageUrl ?? raw.icon ?? null) || null,
+    meta: {
+      owner: raw.owner ?? raw.character ?? raw.killer ?? undefined,
+      tier: raw.tier ?? undefined,
+      rate: raw.usageRate ?? raw.rate ?? undefined,
+    },
+  };
 }
 
 function dedupeByName(perks: Perk[]) {
@@ -135,6 +209,54 @@ function dedupeByName(perks: Perk[]) {
     }
   }
   return out;
+}
+
+type TopFor = { slug: string; rank?: number; usage?: number };
+
+type KillerTopPerk = { name: string; rank?: number; usage?: number };
+
+function extractTopPerksFromKillerData(raw: any): KillerTopPerk[] {
+  const list =
+    (Array.isArray(raw?.topPerks) && raw.topPerks) ||
+    (Array.isArray(raw?.perks) && raw.perks) ||
+    (Array.isArray(raw?.data) && raw.data) ||
+    [];
+
+  return list
+    .map(
+      (x: any, i: number): KillerTopPerk => ({
+        name: String(x?.name ?? x?.perk ?? x?.perkName ?? ""),
+        rank: Number(x?.rank ?? x?.position ?? i + 1) || i + 1,
+        usage:
+          typeof x?.usage === "number"
+            ? x.usage
+            : typeof x?.rate === "number"
+            ? x.rate
+            : undefined,
+      })
+    )
+    .filter((p: KillerTopPerk) => Boolean(p.name));
+}
+
+async function fetchKillerDataForSlugs(slugs: string[]) {
+  type KillerTopPerk = { name: string; rank?: number; usage?: number };
+  const results: Record<string, KillerTopPerk[]> = {};
+
+  await Promise.all(
+    slugs.map(async (slug) => {
+      try {
+        const res = await fetch(API_URLS.killerData(slug), {
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error("not ok");
+        const json = await res.json();
+        results[slug] = extractTopPerksFromKillerData(json);
+      } catch {
+        // ignora errore singolo killer
+      }
+    })
+  );
+  return results;
 }
 
 // ---- Meta scoring (Tier + Rate)
@@ -415,35 +537,141 @@ export default function App() {
   }, [randOpen]);
 
   // Fetch read-only dataset
+  function readCache(): DbdDataset | null {
+    try {
+      const raw = localStorage.getItem(API_CACHE_KEY);
+      if (!raw) return null;
+      const { savedAt, dataset } = JSON.parse(raw);
+      if (Date.now() - Number(savedAt) > API_TTL_MS) return null;
+      return dataset as DbdDataset;
+    } catch {
+      return null;
+    }
+  }
+  function writeCache(dataset: DbdDataset) {
+    try {
+      localStorage.setItem(
+        API_CACHE_KEY,
+        JSON.stringify({ savedAt: Date.now(), dataset })
+      );
+    } catch {}
+  }
+
+  async function fetchDatasetFromAPI(): Promise<DbdDataset> {
+    // 1) Perks
+    const [sRes, kRes] = await Promise.all([
+      fetch(API_URLS.survivorPerks, { cache: "no-store" }),
+      fetch(API_URLS.killerPerks, { cache: "no-store" }),
+    ]);
+    if (!sRes.ok || !kRes.ok) throw new Error("API not ok");
+
+    const sJson = await sRes.json();
+    const kJson = await kRes.json();
+
+    const sArr = Array.isArray(sJson?.data)
+      ? sJson.data
+      : Array.isArray(sJson)
+      ? sJson
+      : [];
+    const kArr = Array.isArray(kJson?.data)
+      ? kJson.data
+      : Array.isArray(kJson)
+      ? kJson
+      : [];
+
+    const survivorPerks = sArr.map(mapSurvivorPerk);
+    const killerPerks: Perk[] = kArr.map(mapKillerPerk);
+    const perks: Perk[] = [...survivorPerks, ...killerPerks];
+
+    // 2) Slugs killer da owners (per chiamare killerData)
+    const killerOwners = Array.from(
+      new Set(
+        killerPerks
+          .map((p) => (p.meta as any)?.owner as string | undefined)
+          .filter((o): o is string => Boolean(o))
+      )
+    );
+
+    const killerSlugs = killerOwners.map(killerSlugFromOwner);
+
+    // 3) KillerData per ognuno (riempie topForKillers)
+    const kdMap = await fetchKillerDataForSlugs(killerSlugs); // { slug -> [{name, rank, usage}] }
+
+    // 4) Join su perk name normalizzato
+    const indexByName: Record<string, Perk> = {};
+    for (const p of perks) indexByName[normalize(p.name)] = p;
+
+    for (const [slug, list] of Object.entries(kdMap)) {
+      list.forEach((row) => {
+        const key = normalize(row.name);
+        const perk = indexByName[key];
+        if (!perk) return;
+        const prev = (perk.meta as any)?.topForKillers || [];
+        perk.meta = {
+          ...(perk.meta || {}),
+          topForKillers: [
+            ...prev,
+            { slug, rank: row.rank, usage: row.usage } as TopFor,
+          ],
+        };
+      });
+    }
+
+    return {
+      version: `dennisreep:${new Date().toISOString().slice(0, 10)}`,
+      perks,
+    };
+  }
+
+  // ---- EFFECT SOSTITUITO
   useEffect(() => {
-    let isMounted = true;
+    let alive = true;
     (async () => {
       try {
-        const res = await fetch("/perks.json", { cache: "no-store" });
-        if (!res.ok) throw new Error("perks.json non trovato");
-        const json = (await res.json()) as DbdDataset;
-        if (isMounted) setDataset(json);
+        const cached = readCache();
+        if (cached) {
+          if (alive) setDataset(cached);
+        } else {
+          const ds = await fetchDatasetFromAPI();
+          if (alive) {
+            setDataset(ds);
+            writeCache(ds);
+          }
+        }
       } catch {
-        if (isMounted) setDataset(FALLBACK);
+        // fallback al vecchio JSON statico (o al FALLBACK)
+        try {
+          const res = await fetch("/perks.json", { cache: "no-store" });
+          if (!res.ok) throw new Error("perks.json not found");
+          const json = (await res.json()) as DbdDataset;
+          if (alive) setDataset(json);
+        } catch {
+          if (alive) setDataset(FALLBACK);
+        }
       }
     })();
     return () => {
-      isMounted = false;
+      alive = false;
     };
   }, []);
 
   const perks = dataset?.perks ?? FALLBACK.perks;
 
   function prettyKiller(slug: string) {
-    return slug
-      .split("_")
-      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    const spaced = slug
+      .replace(/^the[_-]?/i, "")
+      .replace(/[_-]+/g, " ")
+      .replace(/([a-z])([A-Z])/g, "$1 $2");
+    return spaced
+      .split(" ")
+      .filter(Boolean)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
       .join(" ");
   }
 
   const killerOptions = useMemo(() => {
     const s = new Set<string>();
-    perks.forEach((p) => {
+    perks.forEach((p: Perk) => {
       const arr = (p.meta as any)?.topForKillers;
       if (Array.isArray(arr))
         arr.forEach((e: any) => e?.slug && s.add(String(e.slug)));
@@ -485,7 +713,7 @@ export default function App() {
         ? Number(settings.filterRateMin)
         : null;
 
-    return perks.filter((p) => {
+    return perks.filter((p: Perk) => {
       if (p.role !== settings.role) return false;
 
       if (q) {
@@ -845,7 +1073,7 @@ export default function App() {
 
             {/* Perk list */}
             <div className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
-              {visiblePerks.map((p) => (
+              {visiblePerks.map((p: Perk) => (
                 <PerkCard
                   key={p.id}
                   perk={p}
@@ -862,8 +1090,8 @@ export default function App() {
                   }
                   onBan={() =>
                     setSettings((prev) => ({
-                      ...settings,
-                      banned: Array.from(new Set([...settings.banned, p.name])),
+                      ...prev,
+                      banned: Array.from(new Set([...prev.banned, p.name])),
                       locked: prev.locked.filter(
                         (i) =>
                           normalize(i) !== normalize(p.name) &&
@@ -878,7 +1106,7 @@ export default function App() {
 
           {/* Right column: Optimizer */}
           <aside className="order-1 lg:order-2 lg:col-start-3 lg:row-start-1 space-y-4">
-            <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40 xl:sticky :top-4">
+            <div className="p-4 rounded-2xl bg-zinc-900 border border-red-900/40 xl:sticky xl:top-4">
               <h2 className="font-semibold mb-2">Optimizer</h2>
               <p className="text-sm text-zinc-400 mb-3">
                 Block or ban perks, choose tags, then generate. The algorithm
@@ -943,7 +1171,7 @@ export default function App() {
               </button>
 
               <div className="mt-4 grid grid-cols-1 gap-3">
-                {suggested.map((p) => (
+                {suggested.map((p: Perk) => (
                   <div
                     key={p.id}
                     className="p-3 rounded-xl bg-zinc-800 border border-red-900/40"
@@ -1013,9 +1241,10 @@ export default function App() {
                               {typeof p.meta?.rate !== "undefined" ? " · " : ""}
                             </>
                           )}
-                          {typeof p.meta?.rate !== "undefined" && (
-                            <>Rate: {Number(p.meta.rate).toFixed(1)}</>
-                          )}
+                          {(() => {
+                            const r = getRate(p);
+                            return r != null ? <>Rate: {r.toFixed(1)}</> : null;
+                          })()}
                         </div>
 
                         {/* Role + Owner (killer/survivor) */}
@@ -1133,8 +1362,12 @@ function PerkCard({
                 Tier: {perk.meta.tier}
                 {hasRate ? " · " : ""}
               </>
-            )}
-            {hasRate && <>Rate: {Number(perk.meta!.rate).toFixed(1)}</>}
+            )}{" "}
+            {hasRate &&
+              (() => {
+                const r = getRate(perk);
+                return r != null ? <>Rate: {r.toFixed(1)}</> : null;
+              })()}
           </div>
 
           {/* Role + Owner (ex. "survivor · Meg Thomas" or "killer · The Artist") */}
@@ -1355,7 +1588,7 @@ function RandomiserModal({
 
           {/* build grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {build.map((p) => (
+            {build.map((p: Perk) => (
               <div
                 key={p.id}
                 className="p-3 rounded-xl bg-zinc-900 border border-red-900/40 flex items-center gap-3"
