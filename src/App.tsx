@@ -478,62 +478,43 @@ function LoadingOverlay({ show }: { show: boolean }) {
   );
 }
 
-// ---- Share utilities (canvas)
-
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number
-) {
-  const radius = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.arcTo(x + w, y, x + w, y + h, radius);
-  ctx.arcTo(x + w, y + h, x, y + h, radius);
-  ctx.arcTo(x, y + h, x, y, radius);
-  ctx.arcTo(x, y, x + w, y, radius);
-  ctx.closePath();
+function setFont(ctx: CanvasRenderingContext2D, weight: number, size: number) {
+  ctx.font = `${weight} ${size}px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial`;
 }
 
-function wrapText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number,
-  maxLines: number
-) {
-  const words = (text || "").split(/\s+/);
-  let line = "";
-  let lineCount = 0;
-  for (let i = 0; i < words.length; i++) {
-    const test = line ? line + " " + words[i] : words[i];
-    const m = ctx.measureText(test);
-    if (m.width > maxWidth && i > 0) {
-      ctx.fillText(line, x, y);
-      line = words[i];
-      y += lineHeight;
-      lineCount++;
-      if (lineCount >= maxLines - 1) {
-        // ultima riga con ellissi
-        let clipped = "";
-        for (let j = i; j < words.length; j++) {
-          const next = (clipped ? clipped + " " : "") + words[j];
-          if (ctx.measureText(next + "…").width > maxWidth) break;
-          clipped = next;
-        }
-        ctx.fillText(clipped + "…", x, y);
-        return;
-      }
+function ellipsize(ctx: CanvasRenderingContext2D, text: string, maxWidth: number) {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  const E = "…";
+  let lo = 0, hi = text.length, fit = E;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    const cand = text.slice(0, mid).trim() + E;
+    if (ctx.measureText(cand).width <= maxWidth) {
+      fit = cand; lo = mid + 1;
     } else {
-      line = test;
+      hi = mid;
     }
   }
-  if (line) ctx.fillText(line, x, y);
+  return fit;
+}
+
+function drawRoundedImage(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  x: number, y: number, w: number, h: number, r = 12
+) {
+  ctx.save();
+  const p = new Path2D();
+  p.moveTo(x + r, y);
+  p.arcTo(x + w, y, x + w, y + h, r);
+  p.arcTo(x + w, y + h, x, y + h, r);
+  p.arcTo(x, y + h, x, y, r);
+  p.arcTo(x, y, x + w, y, r);
+  ctx.clip(p);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, x, y, w, h);
+  ctx.restore();
 }
 
 function loadImageExt(url: string, useCors: boolean, referrer?: RequestCredentials | "no-referrer") {
@@ -571,82 +552,85 @@ async function tryLoadIcon(url?: string | null): Promise<HTMLImageElement | null
 }
 
 
-type DrawIconResult = { ok: boolean };
-
+// --- sostituisci la tua drawPerkCard per l'export con questa --- //
 function drawPerkCard(
   ctx: CanvasRenderingContext2D,
   perk: Perk,
   icon: HTMLImageElement | null,
-  x: number,
-  y: number,
-  w: number,
-  h: number
-): DrawIconResult {
-  // card bg
-  roundRect(ctx, x, y, w, h, 16);
-  ctx.fillStyle = "#1b1b1b";
-  ctx.fill();
+  x: number, y: number, w: number, h: number
+) {
+  const P = 22;           // padding interno
+  const R = 20;           // border radius
+  const ICON = 76;        // <<< icona più piccola
+  const GAP = 18;         // spazio tra icona e testo
 
-  // border
-  ctx.strokeStyle = "rgba(255,0,0,0.25)";
-  ctx.lineWidth = 1;
-  ctx.stroke();
+  // card bg + bordo
+  ctx.save();
+  ctx.fillStyle = "#18181b";
+  const card = new Path2D();
+  card.moveTo(x + R, y);
+  card.arcTo(x + w, y, x + w, y + h, R);
+  card.arcTo(x + w, y + h, x, y + h, R);
+  card.arcTo(x, y + h, x, y, R);
+  card.arcTo(x, y, x + w, y, R);
+  ctx.fill(card);
+  ctx.strokeStyle = "rgba(220,38,38,.25)"; // bordo rosso scuro
+  ctx.lineWidth = 2;
+  ctx.stroke(card);
+  ctx.restore();
 
-  const pad = 14;
-  const iconSize = 170;
-  let left = x + pad;
-  let top = y + pad;
+  // contenuto
+  const innerX = x + P;
+  const innerY = y + P;
+  const innerW = w - P * 2;
 
-  // Icona (se disponibile)
+  let cursorX = innerX;
+  let cursorY = innerY;
+
   if (icon) {
-    roundRect(ctx, left, top, iconSize, iconSize, 10);
-    ctx.save();
-    ctx.clip();
-    ctx.drawImage(icon, left, top, iconSize, iconSize);
-    ctx.restore();
-
-    // piccola cornice sull’icona
-    ctx.strokeStyle = "rgba(255,0,0,0.2)";
-    ctx.lineWidth = 1;
-    roundRect(ctx, left, top, iconSize, iconSize, 10);
-    ctx.stroke();
-
-    left += iconSize + 16; // testo a destra dell’icona
+    drawRoundedImage(ctx, icon, cursorX, cursorY, ICON, ICON, 14);
   }
 
-  // Titolo
+  const textX = cursorX + (icon ? ICON + GAP : 0);
+  const textMaxW = innerW - (textX - innerX);
+
+  // TITOLO (una sola riga con ellissi)
+  setFont(ctx, 700, 28);
   ctx.fillStyle = "#fff";
-  ctx.font =
-    "700 26px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
-  wrapText(ctx, perk.name, left, top + 26, w - (left - x) - pad, 28, 2);
+  const nameLine = ellipsize(ctx, perk.name, textMaxW);
+  const m = ctx.measureText(nameLine);
+  const nameH = Math.ceil(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent);
+  ctx.fillText(nameLine, textX, cursorY + nameH);
 
-  // Tier / Rate
-  ctx.fillStyle = "rgba(255,255,255,0.9)";
-  ctx.font =
-    "500 18px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
-  const r = getRate(perk);
-  const tier = perk.meta?.tier ? `Tier: ${perk.meta.tier}` : "";
-  const rate = r != null ? `Rate: ${r.toFixed(1)}` : "";
-  const mid = [tier, rate].filter(Boolean).join(" · ");
-  if (mid) ctx.fillText(mid, left, top + 26 + 28 + 8);
+  let lineY = cursorY + nameH + 8;
 
-  // Role + Owner
-  ctx.fillStyle = "rgba(255,255,255,0.85)";
-  ctx.font =
-    "500 16px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
-  const ro = perk.role + (perk.meta?.owner ? ` · ${perk.meta.owner}` : "");
-  ctx.fillText(ro, left, top + 26 + 28 + 8 + 24);
+  // META riga 1: Tier · Rate
+  setFont(ctx, 600, 16);
+  ctx.fillStyle = "rgba(244,244,244,.95)";
+  const rate = getRate(perk);
+  const tierStr = perk.meta?.tier ? `Tier: ${perk.meta.tier}` : "";
+  const rateStr = rate != null ? `Rate: ${rate.toFixed(1)}` : "";
+  const meta1 = tierStr && rateStr ? `${tierStr} · ${rateStr}` : (tierStr || rateStr);
+  if (meta1) {
+    ctx.fillText(meta1, textX, lineY);
+    lineY += 20;
+  }
 
-  // Tags
-  ctx.fillStyle = "rgba(255,255,255,0.8)";
-  ctx.font =
-    "500 16px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
-  const tags = (perk.tags || []).join(" · ");
-  const tagsY = top + 26 + 28 + 8 + 24 + 24;
-  wrapText(ctx, tags, left, tagsY, w - (left - x) - pad, 20, 2);
+  // META riga 2: role · owner
+  setFont(ctx, 500, 16);
+  const ownerStr = perk.meta?.owner ? `${perk.role} · ${perk.meta.owner}` : `${perk.role}`;
+  ctx.fillText(ownerStr, textX, lineY);
+  lineY += 20;
 
-  return { ok: !!icon };
+  // TAG (clampati alla riga)
+  if (perk.tags?.length) {
+    setFont(ctx, 500, 14);
+    ctx.fillStyle = "rgba(212,212,212,.9)";
+    const tagsStr = ellipsize(ctx, perk.tags.join(" · "), textMaxW);
+    ctx.fillText(tagsStr, textX, lineY);
+  }
 }
+
 
 export default function App() {
   const MIN_BOOT_MS = 2350;
@@ -1138,14 +1122,12 @@ export default function App() {
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext("2d")!;
-      // sfondo
       const g = ctx.createLinearGradient(0, 0, width, height);
       g.addColorStop(0, "#0c0c0c");
       g.addColorStop(1, "#141414");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, width, height);
 
-      // titolo
       ctx.fillStyle = "#ffffff";
       ctx.font =
         "700 40px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
@@ -1154,7 +1136,6 @@ export default function App() {
       }`;
       ctx.fillText(title, 40, 70);
 
-      // sottotitolo (data + versione)
       ctx.fillStyle = "rgba(255,255,255,0.7)";
       ctx.font =
         "500 18px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
@@ -1163,11 +1144,9 @@ export default function App() {
       }`;
       ctx.fillText(sub, 40, 100);
 
-      // carica icone (best-effort, con fallback)
       const top4 = suggested.slice(0, 4);
       const icons = await Promise.all(top4.map((p) => tryLoadIcon(p.icon)));
 
-      // griglia 2x2
       const cardW = 520;
       const cardH = 200;
       const slot = [
@@ -1183,18 +1162,15 @@ export default function App() {
         drawPerkCard(ctx, p, icon, slot[i][0], slot[i][1], cardW, cardH);
       }
 
-      // watermark
       ctx.fillStyle = "rgba(255,255,255,0.55)";
       ctx.font =
         "600 16px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
       ctx.fillText("dbd-build-optimizer", 40, height - 28);
 
-      // salva
       const blob: Blob = await new Promise((res) =>
         canvas.toBlob((b) => res(b as Blob), "image/png", 1)
       );
 
-      // Web Share se disponibile, altrimenti download
       const file = new File([blob], `dbd-build-${settings.role}.png`, {
         type: "image/png",
       });
@@ -1221,7 +1197,7 @@ export default function App() {
     } catch (err) {
       console.error("[share] export failed", err);
       alert(
-        "Impossibile creare l’immagine. Prova a rigenerare o riprovare più tardi."
+        "Unable to create the image. Please try again or try later."
       );
     } finally {
       setSharing(false);
