@@ -128,7 +128,7 @@ const API_URLS = {
     `${API_BASE}/getKillerData?killer=${encodeURIComponent(slug)}`,
 };
 
-const API_CACHE_KEY = "dbd-api-cache-v5"; // bumpa se cambi formato cache
+const API_CACHE_KEY = "dbd-api-cache-v7"; // bumpa se cambi formato cache
 const API_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 
 function slugifyId(s: string) {
@@ -164,6 +164,18 @@ function deriveTags(role: Role, raw: any): string[] {
   return Array.from(out);
 }
 
+function getPerkDescription(raw: any): string | undefined {
+  const d =
+    raw?.Description ??
+    raw?.PerkDescription ??
+    raw?.Desc ??
+    raw?.Text ??
+    raw?.Details ??
+    null;
+  return d ? String(d).trim() : undefined;
+}
+
+
 function mapSurvivorPerk(raw: any): Perk {
   const name = String(raw.PerkName ?? raw.name ?? raw.perkName ?? "");
   return {
@@ -184,24 +196,37 @@ function mapSurvivorPerk(raw: any): Perk {
 
 // mapping killer più tollerante sui nomi campo
 function mapKillerPerk(raw: any): Perk {
-  // nomi possibili: PerkName | name | Perk
-  const name = String(raw.PerkName ?? raw.name ?? raw.Perk ?? raw.perkName ?? "").trim();
+  const name = String(
+    raw.PerkName ?? raw.name ?? raw.Perk ?? raw.perkName ?? ""
+  ).trim();
+
+  const desc = getPerkDescription(raw); // 👈 SOLO da killerPerkData
+
+  const iconRaw = raw.PerkIcon ?? raw.Image ?? raw.Icon ?? null;
+
   return {
     id: String(raw.id ?? slugifyId(name)),
     name,
     role: "killer",
-    tags: deriveTags("killer", { name }),
-    desc: undefined, // l’endpoint killer spesso non ha description
-    // possibili chiavi icona: PerkIcon | Image | Icon
-    icon: (raw.PerkIcon ?? raw.Image ?? raw.Icon ?? null) ? String(raw.PerkIcon ?? raw.Image ?? raw.Icon).trim() : null,
+    tags: deriveTags("killer", {
+      name,
+      description: desc ?? "",
+    }),
+    desc, // 👈 ora la salviamo
+    icon: iconRaw ? String(iconRaw).trim() : null,
     meta: {
-      // possibili owner: PerkKiller | Killer | KillerName | Owner
       owner: raw.PerkKiller ?? raw.Killer ?? raw.KillerName ?? raw.Owner ?? undefined,
       tier: raw.Tier ?? undefined,
-      rate: typeof raw.Rating === "number" ? raw.Rating : (typeof raw.rate === "number" ? raw.rate : undefined),
+      rate:
+        typeof raw.Rating === "number"
+          ? raw.Rating
+          : typeof raw.rate === "number"
+          ? raw.rate
+          : undefined,
     },
   };
 }
+
 
 function dedupeByName(perks: Perk[]) {
   const seen = new Set<string>();
@@ -588,28 +613,39 @@ export default function App() {
       sJson
     );
 
- 
-console.log("[DBD] killer JSON keys:", kJson && typeof kJson === "object" ? Object.keys(kJson) : "(non-object)");
-console.log("[DBD] sample killer row:", Array.isArray(kJson?.Killers) ? kJson.Killers[0]
-                               : Array.isArray(kJson?.Perks)   ? kJson.Perks[0]
-                               : Array.isArray(kJson?.data)    ? kJson.data[0]
-                               : Array.isArray(kJson)          ? kJson[0]
-                               : null);
+    console.log(
+      "[DBD] killer JSON keys:",
+      kJson && typeof kJson === "object" ? Object.keys(kJson) : "(non-object)"
+    );
+    console.log(
+      "[DBD] sample killer row:",
+      Array.isArray(kJson?.Killers)
+        ? kJson.Killers[0]
+        : Array.isArray(kJson?.Perks)
+        ? kJson.Perks[0]
+        : Array.isArray(kJson?.data)
+        ? kJson.data[0]
+        : Array.isArray(kJson)
+        ? kJson[0]
+        : null
+    );
 
-// ⬇️ prova più chiavi possibili per sicurezza
-const kArr = pickFirstArray(
-  kJson?.Killers,   // alcuni endpoint killer
-  kJson?.Perks,     // altri usano Perks anche per killer
-  kJson?.perks,
-  kJson?.data,
-  kJson?.items,
-  Array.isArray(kJson) ? kJson : undefined
-);
+    // ⬇️ prova più chiavi possibili per sicurezza
+    const kArr = pickFirstArray(
+      kJson?.Killers, // alcuni endpoint killer
+      kJson?.Perks, // altri usano Perks anche per killer
+      kJson?.perks,
+      kJson?.data,
+      kJson?.items,
+      Array.isArray(kJson) ? kJson : undefined
+    );
 
     const survivorPerks = asArray(sArr)
       .map(mapSurvivorPerk)
       .filter((p) => p.name);
-   const killerPerks = asArray(kArr).map(mapKillerPerk).filter(p => p.name);
+    const killerPerks = asArray(kArr)
+      .map(mapKillerPerk)
+      .filter((p) => p.name);
     const perks: Perk[] = [...survivorPerks, ...killerPerks];
 
     if (perks.length === 0) {
