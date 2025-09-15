@@ -116,7 +116,7 @@ const API_URLS = {
 };
 
 const API_CACHE_KEY = "dbd-api-cache-v8"; // bump
-const API_TTL_MS = 24 * 60 * 60 * 1000; // 24h
+const API_TTL_MS = 6 * 60 * 60 * 1000; // 6h
 
 function slugifyId(s: string) {
   return (s || "")
@@ -476,6 +476,152 @@ function LoadingOverlay({ show }: { show: boolean }) {
       <span className="sr-only">Loading…</span>
     </div>
   );
+}
+
+// ---- Share utilities (canvas)
+
+function roundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number
+) {
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + w, y, x + w, y + h, radius);
+  ctx.arcTo(x + w, y + h, x, y + h, radius);
+  ctx.arcTo(x, y + h, x, y, radius);
+  ctx.arcTo(x, y, x + w, y, radius);
+  ctx.closePath();
+}
+
+function wrapText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+  maxLines: number
+) {
+  const words = (text || "").split(/\s+/);
+  let line = "";
+  let lineCount = 0;
+  for (let i = 0; i < words.length; i++) {
+    const test = line ? line + " " + words[i] : words[i];
+    const m = ctx.measureText(test);
+    if (m.width > maxWidth && i > 0) {
+      ctx.fillText(line, x, y);
+      line = words[i];
+      y += lineHeight;
+      lineCount++;
+      if (lineCount >= maxLines - 1) {
+        // ultima riga con ellissi
+        let clipped = "";
+        for (let j = i; j < words.length; j++) {
+          const next = (clipped ? clipped + " " : "") + words[j];
+          if (ctx.measureText(next + "…").width > maxWidth) break;
+          clipped = next;
+        }
+        ctx.fillText(clipped + "…", x, y);
+        return;
+      }
+    } else {
+      line = test;
+    }
+  }
+  if (line) ctx.fillText(line, x, y);
+}
+
+function loadImageCors(url: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    // proviamo CORS; se il server non lo consente, l'immagine fallirà e useremo fallback
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("img load failed"));
+    img.src = url;
+  });
+}
+
+type DrawIconResult = { ok: boolean };
+
+function drawPerkCard(
+  ctx: CanvasRenderingContext2D,
+  perk: Perk,
+  icon: HTMLImageElement | null,
+  x: number,
+  y: number,
+  w: number,
+  h: number
+): DrawIconResult {
+  // card bg
+  roundRect(ctx, x, y, w, h, 16);
+  ctx.fillStyle = "#1b1b1b";
+  ctx.fill();
+
+  // border
+  ctx.strokeStyle = "rgba(255,0,0,0.25)";
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  const pad = 14;
+  const iconSize = 170;
+  let left = x + pad;
+  let top = y + pad;
+
+  // Icona (se disponibile)
+  if (icon) {
+    roundRect(ctx, left, top, iconSize, iconSize, 10);
+    ctx.save();
+    ctx.clip();
+    ctx.drawImage(icon, left, top, iconSize, iconSize);
+    ctx.restore();
+
+    // piccola cornice sull’icona
+    ctx.strokeStyle = "rgba(255,0,0,0.2)";
+    ctx.lineWidth = 1;
+    roundRect(ctx, left, top, iconSize, iconSize, 10);
+    ctx.stroke();
+
+    left += iconSize + 16; // testo a destra dell’icona
+  }
+
+  // Titolo
+  ctx.fillStyle = "#fff";
+  ctx.font =
+    "700 26px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+  wrapText(ctx, perk.name, left, top + 26, w - (left - x) - pad, 28, 2);
+
+  // Tier / Rate
+  ctx.fillStyle = "rgba(255,255,255,0.9)";
+  ctx.font =
+    "500 18px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+  const r = getRate(perk);
+  const tier = perk.meta?.tier ? `Tier: ${perk.meta.tier}` : "";
+  const rate = r != null ? `Rate: ${r.toFixed(1)}` : "";
+  const mid = [tier, rate].filter(Boolean).join(" · ");
+  if (mid) ctx.fillText(mid, left, top + 26 + 28 + 8);
+
+  // Role + Owner
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.font =
+    "500 16px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+  const ro = perk.role + (perk.meta?.owner ? ` · ${perk.meta.owner}` : "");
+  ctx.fillText(ro, left, top + 26 + 28 + 8 + 24);
+
+  // Tags
+  ctx.fillStyle = "rgba(255,255,255,0.8)";
+  ctx.font =
+    "500 16px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+  const tags = (perk.tags || []).join(" · ");
+  const tagsY = top + 26 + 28 + 8 + 24 + 24;
+  wrapText(ctx, tags, left, tagsY, w - (left - x) - pad, 20, 2);
+
+  return { ok: !!icon };
 }
 
 export default function App() {
@@ -956,6 +1102,117 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings.role]);
 
+  const [sharing, setSharing] = useState(false);
+
+  async function shareSuggestedAsImage() {
+    if (!suggested.length || sharing) return;
+    setSharing(true);
+    try {
+      const width = 1200;
+      const height = 628;
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d")!;
+      // sfondo
+      const g = ctx.createLinearGradient(0, 0, width, height);
+      g.addColorStop(0, "#0c0c0c");
+      g.addColorStop(1, "#141414");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, width, height);
+
+      // titolo
+      ctx.fillStyle = "#ffffff";
+      ctx.font =
+        "700 40px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+      const title = `DBD Build • ${
+        settings.role === "killer" ? "Killer" : "Survivor"
+      }`;
+      ctx.fillText(title, 40, 70);
+
+      // sottotitolo (data + versione)
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.font =
+        "500 18px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+      const sub = `${new Date().toLocaleDateString()} • dataset: ${
+        dataset?.version ?? "fallback"
+      }`;
+      ctx.fillText(sub, 40, 100);
+
+      // carica icone (best-effort, con fallback)
+      const top4 = suggested.slice(0, 4);
+      const icons = await Promise.all(
+        top4.map(async (p) => {
+          try {
+            if (!p.icon) return null;
+            return await loadImageCors(p.icon);
+          } catch {
+            return null; // niente icona -> non taintiamo il canvas
+          }
+        })
+      );
+
+      // griglia 2x2
+      const cardW = 520;
+      const cardH = 200;
+      const slot = [
+        [40, 140],
+        [640, 140],
+        [40, 360],
+        [640, 360],
+      ] as const;
+
+      for (let i = 0; i < top4.length; i++) {
+        const p = top4[i];
+        const icon = icons[i];
+        drawPerkCard(ctx, p, icon, slot[i][0], slot[i][1], cardW, cardH);
+      }
+
+      // watermark
+      ctx.fillStyle = "rgba(255,255,255,0.55)";
+      ctx.font =
+        "600 16px Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif";
+      ctx.fillText("dbd-build-optimizer", 40, height - 28);
+
+      // salva
+      const blob: Blob = await new Promise((res) =>
+        canvas.toBlob((b) => res(b as Blob), "image/png", 1)
+      );
+
+      // Web Share se disponibile, altrimenti download
+      const file = new File([blob], `dbd-build-${settings.role}.png`, {
+        type: "image/png",
+      });
+
+      if (
+        (navigator as any).canShare?.({ files: [file] }) &&
+        (navigator as any).share
+      ) {
+        await (navigator as any).share({
+          files: [file],
+          title: "DBD Build",
+          text: "My optimized build",
+        });
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `dbd-build-${settings.role}.png`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error("[share] export failed", err);
+      alert(
+        "Impossibile creare l’immagine. Prova a rigenerare o riprovare più tardi."
+      );
+    } finally {
+      setSharing(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-black text-zinc-100 px-4 py-6 flex justify-center">
       <div
@@ -1261,14 +1518,34 @@ export default function App() {
                 />
               </div>
 
-              <button
-                onClick={() => {
-                  /* recompute */ setTimeout(runOptimize, 0);
-                }}
-                className="w-full px-3 py-2 rounded-xl bg-red-900 text-white font-medium hover:bg-red-500"
-              >
-                Generate build
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    /* recompute */ setTimeout(runOptimize, 0);
+                  }}
+                  className="flex-1 px-3 py-2 rounded-xl bg-red-900 text-white font-medium hover:bg-red-500"
+                >
+                  Generate build
+                </button>
+
+                <button
+                  onClick={shareSuggestedAsImage}
+                  disabled={!suggested.length || sharing}
+                  className={`px-3 py-2 rounded-xl border border-red-900/40
+                ${
+                  !suggested.length || sharing
+                    ? "bg-zinc-800 text-zinc-500 cursor-not-allowed"
+                    : "bg-zinc-800 hover:bg-zinc-700 text-white"
+                }`}
+                  title={
+                    !suggested.length
+                      ? "Nessun perk suggerito da esportare"
+                      : "Crea immagine condivisibile"
+                  }
+                >
+                  {sharing ? "Exporting…" : "Share image"}
+                </button>
+              </div>
 
               <div className="mt-4 grid grid-cols-1 gap-3">
                 {suggested.map((p: Perk) => (
@@ -1513,7 +1790,7 @@ function SuggestedPerkCard({
     typeof perk.meta?.rate !== "undefined" && perk.meta?.rate !== null;
 
   const toggle = () => setOpen((v) => !v);
-  const descId = `opt-desc-${perk.id}`; 
+  const descId = `opt-desc-${perk.id}`;
 
   return (
     <div
