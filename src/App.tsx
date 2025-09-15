@@ -128,7 +128,7 @@ const API_URLS = {
     `${API_BASE}/getKillerData?killer=${encodeURIComponent(slug)}`,
 };
 
-const API_CACHE_KEY = "dbd-api-cache-v7"; // bumpa se cambi formato cache
+const API_CACHE_KEY = "dbd-api-cache-v8"; // bumpa se cambi formato cache
 const API_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 
 function slugifyId(s: string) {
@@ -172,24 +172,25 @@ function getPerkDescription(raw: any): string | undefined {
     raw?.Text ??
     raw?.Details ??
     null;
-  return d ? String(d).trim() : undefined;
+  return d ? cleanDescHtml(String(d)) : undefined;
 }
+
 
 
 function mapSurvivorPerk(raw: any): Perk {
   const name = String(raw.PerkName ?? raw.name ?? raw.perkName ?? "");
+  const desc = getPerkDescription(raw); // 👈 pulita
   return {
     id: String(raw.id ?? slugifyId(name)),
     name,
     role: "survivor",
-    // userò name+Description per deriveTags (Exhaustion ecc.)
-    tags: deriveTags("survivor", { name, description: raw.Description }),
-    desc: raw.Description ? String(raw.Description) : undefined, // HTML ok, la UI lo mostra come testo
+    tags: deriveTags("survivor", { name, description: desc ?? "" }),
+    desc,
     icon: raw.Image ? String(raw.Image).trim() : null,
     meta: {
-      owner: raw.Survivor ?? undefined, // es. "Feng"
-      tier: raw.Tier ?? undefined, // "A" / "S"...
-      rate: typeof raw.Rating === "number" ? raw.Rating : undefined, // 0..5
+      owner: raw.Survivor ?? undefined,
+      tier: raw.Tier ?? undefined,
+      rate: typeof raw.Rating === "number" ? raw.Rating : undefined,
     },
   };
 }
@@ -199,20 +200,15 @@ function mapKillerPerk(raw: any): Perk {
   const name = String(
     raw.PerkName ?? raw.name ?? raw.Perk ?? raw.perkName ?? ""
   ).trim();
-
-  const desc = getPerkDescription(raw); // 👈 SOLO da killerPerkData
-
+  const desc = getPerkDescription(raw); // 👈 pulita
   const iconRaw = raw.PerkIcon ?? raw.Image ?? raw.Icon ?? null;
 
   return {
     id: String(raw.id ?? slugifyId(name)),
     name,
     role: "killer",
-    tags: deriveTags("killer", {
-      name,
-      description: desc ?? "",
-    }),
-    desc, // 👈 ora la salviamo
+    tags: deriveTags("killer", { name, description: desc ?? "" }),
+    desc,
     icon: iconRaw ? String(iconRaw).trim() : null,
     meta: {
       owner: raw.PerkKiller ?? raw.Killer ?? raw.KillerName ?? raw.Owner ?? undefined,
@@ -227,6 +223,43 @@ function mapKillerPerk(raw: any): Perk {
   };
 }
 
+function cleanDescHtml(html: string): string {
+  if (!html) return "";
+  try {
+    // usa il DOM per una pulizia robusta
+    const wrap = document.createElement("div");
+    wrap.innerHTML = html;
+
+    // rimuovi wrapper/icone/tooltip superflui
+    wrap
+      .querySelectorAll(
+        '.iconLink, .pcView, .mobileView, .tooltip, .tooltiptext, .tooltipBaseText, .tooltipTextWrapper, [typeof="mw:File"]'
+      )
+      .forEach((el) => el.remove());
+
+    // <br> → newline
+    wrap.querySelectorAll("br").forEach((br) => br.replaceWith("\n"));
+
+    // separa i paragrafi con righe vuote
+    wrap.querySelectorAll("p").forEach((p, i) => {
+      if (i > 0) p.insertAdjacentText("beforebegin", "\n\n");
+    });
+
+    // prendi solo il testo “decodificato”
+    return (wrap.textContent || "")
+      .replace(/\u00A0/g, " ")       // nbsp → spazio
+      .replace(/[ \t]+\n/g, "\n")    // spazi a fine riga
+      .replace(/\n{3,}/g, "\n\n")    // compattazione eccessi
+      .trim();
+  } catch {
+    // fallback ultra-semplice se il DOM non è disponibile
+    return html
+      .replace(/<br\s*\/?>/gi, "\n")
+      .replace(/<[^>]+>/g, "")
+      .replace(/\u00A0/g, " ")
+      .trim();
+  }
+}
 
 function dedupeByName(perks: Perk[]) {
   const seen = new Set<string>();
@@ -1359,7 +1392,7 @@ export default function App() {
                       </div>
                     )}
                     {p.desc && (
-                      <p className="text-xs text-zinc-400 mt-1">{p.desc}</p>
+                      <p className="text-xs text-zinc-400 mt-1 whitespace-pre-line">{p.desc}</p>
                     )}
                   </div>
                 ))}
