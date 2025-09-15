@@ -162,8 +162,6 @@ function getPerkDescription(raw: any): string | undefined {
   return d ? cleanDescHtml(String(d)) : undefined;
 }
 
-
-
 function mapSurvivorPerk(raw: any): Perk {
   const name = String(raw.PerkName ?? raw.name ?? raw.perkName ?? "");
   const desc = getPerkDescription(raw); // 👈 pulita
@@ -209,6 +207,41 @@ function mapKillerPerk(raw: any): Perk {
   };
 }
 
+function stripPatchNotices(text: string): string {
+  if (!text) return "";
+
+  const lines = text.split(/\n+/);
+  const keep = lines.filter((rawLine) => {
+    const line = rawLine.trim().replace(/\s+/g, " ");
+
+    const isNotice =
+      /^(“|"|')?\s*(this|the)\s+description\b/i.test(line) &&
+      /(patch|ptb)/i.test(line);
+
+    const isAltNotice =
+      /^information\s+in\s+(this\s+)?(article|description)\b.*(patch|ptb)/i.test(
+        line
+      ) ||
+      /^subject\s+to\s+change\b.*(patch|ptb)/i.test(line);
+
+    return !(isNotice || isAltNotice);
+  });
+
+  let out = keep.join("\n\n");
+
+  out = out.replace(
+    /\(\s*(?:this|the)\s+description\b[\s\S]*?(?:patch|ptb)[\s\S]*?\)/gim,
+    ""
+  );
+
+  return out
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+
 function cleanDescHtml(html: string): string {
   if (!html) return "";
   try {
@@ -226,13 +259,9 @@ function cleanDescHtml(html: string): string {
       if (i > 0) p.insertAdjacentText("beforebegin", "\n\n");
     });
 
-    const text = (wrap.textContent || "")
-      .replace(/\u00A0/g, " ")
-      .replace(/[ \t]+\n/g, "\n")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
-
-    return stripPatchNotices(text); // 👈 rimuove le note patch/PTB
+    let text = (wrap.textContent || "").replace(/\u00A0/g, " ");
+    text = stripPatchNotices(text);
+    return text;
   } catch {
     return stripPatchNotices(
       html
@@ -243,25 +272,6 @@ function cleanDescHtml(html: string): string {
     );
   }
 }
-
-function stripPatchNotices(text: string): string {
-  const patterns = [
-    /^\s*\(*\s*(?:this|the)\s+description\s+is\s+based\s+on.*?(?:upcoming|ptb)?\s*patch\s+\d+(?:\.\d+){1,2}.*\)*\s*$/gim,
-    /^\s*\(*\s*information\s+in\s+this\s+article.*?(?:upcoming|ptb)?\s*patch\s+\d+(?:\.\d+){1,2}.*\)*\s*$/gim,
-    /^\s*\(*\s*subject\s+to\s+change.*?(?:patch|ptb).*\)*\s*$/gim,
-  ];
-
-  let out = text;
-  for (const re of patterns) out = out.replace(re, "");
-
-  out = out.replace(/\(\s*(?:this|the)\s+description\s+is\s+based\s+on.*?\)/gim, "");
-
-  return out
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
 
 function dedupeByName(perks: Perk[]) {
   const seen = new Set<string>();
@@ -669,7 +679,7 @@ export default function App() {
 
     if (perks.length === 0) {
       console.warn(
-        "[DBD] API hanno risposto ma senza perks (shape non riconosciuto o vuoto). Forzo fallback."
+        "[DBD] APIs responded but without perks (shape not recognised or empty). Forcing fallback."
       );
       throw new Error("EMPTY_DATASET");
     }
@@ -1398,7 +1408,7 @@ export default function App() {
 
         <footer className="text-center text-xs text-zinc-500 pt-4 border-t border-neutral-900">
           <p className="inline-flex items-center gap-2">
-            <span>Dataset Dnnisreep: {dataset?.version ?? "fallback"}</span>
+            <span>{dataset?.version ?? "fallback"}</span>
             <span aria-hidden>·</span>
             <a href="/privacy.html" className="underline hover:text-zinc-300">
               Privacy Policy
