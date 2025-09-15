@@ -536,16 +536,40 @@ function wrapText(
   if (line) ctx.fillText(line, x, y);
 }
 
-function loadImageCors(url: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
+function loadImageExt(url: string, useCors: boolean, referrer?: RequestCredentials | "no-referrer") {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image();
-    // proviamo CORS; se il server non lo consente, l'immagine fallirà e useremo fallback
-    img.crossOrigin = "anonymous";
+    if (useCors) img.crossOrigin = "anonymous";
+    if (referrer) (img as any).referrerPolicy = referrer; // "no-referrer"
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error("img load failed"));
     img.src = url;
   });
 }
+
+const ICON_PROXY_BASE = "https://images.weserv.nl/?url=";
+// converte https://host/path.png -> https://images.weserv.nl/?url=host/path.png
+function proxify(url: string) {
+  try {
+    const u = new URL(url);
+    const noProto = u.host + u.pathname + (u.search || "");
+    return ICON_PROXY_BASE + encodeURIComponent(noProto);
+  } catch {
+    return url;
+  }
+}
+
+async function tryLoadIcon(url?: string | null): Promise<HTMLImageElement | null> {
+  if (!url) return null;
+  // 1) CORS “normale”
+  try { return await loadImageExt(url, true); } catch {}
+  // 2) Senza referrer
+  try { return await loadImageExt(url, true, "no-referrer"); } catch {}
+  // 3) Proxy pubblico (o rimpiazza con il tuo)
+  try { return await loadImageExt(proxify(url), true); } catch {}
+  return null; // niente icona -> disegna solo testo
+}
+
 
 type DrawIconResult = { ok: boolean };
 
@@ -1141,16 +1165,7 @@ export default function App() {
 
       // carica icone (best-effort, con fallback)
       const top4 = suggested.slice(0, 4);
-      const icons = await Promise.all(
-        top4.map(async (p) => {
-          try {
-            if (!p.icon) return null;
-            return await loadImageCors(p.icon);
-          } catch {
-            return null; // niente icona -> non taintiamo il canvas
-          }
-        })
-      );
+      const icons = await Promise.all(top4.map((p) => tryLoadIcon(p.icon)));
 
       // griglia 2x2
       const cardW = 520;
@@ -1543,7 +1558,7 @@ export default function App() {
                       : "Crea immagine condivisibile"
                   }
                 >
-                  {sharing ? "Exporting…" : "Share image"}
+                  {sharing ? "Exporting…" : "Share build"}
                 </button>
               </div>
 
