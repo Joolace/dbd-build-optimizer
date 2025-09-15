@@ -1,18 +1,5 @@
 import { useRef, useEffect, useMemo, useState } from "react";
 
-/**
- * Dead by Daylight – Build Optimizer (Read‑only, production-ready MVP)
- * -------------------------------------------------------------------
- * ✅ Single-file React app that fetches a read‑only `/perks.json` at runtime
- * ✅ No import/export or dataset editing in the UI for end‑users
- * ✅ Ideal for static hosting (Vercel/Netlify/GitHub Pages)
- *
- * How it works
- * - On load, fetch(`/perks.json`) → { version, perks: [...] }
- * - If the file is missing, it falls back to a tiny built‑in seed dataset
- * - End users can solo: scegliere ruolo, filtrare, lock/ban, generare build
- */
-// ---- Types
 export type Role = "survivor" | "killer";
 
 type Perk = {
@@ -128,7 +115,7 @@ const API_URLS = {
     `${API_BASE}/getKillerData?killer=${encodeURIComponent(slug)}`,
 };
 
-const API_CACHE_KEY = "dbd-api-cache-v8"; // bumpa se cambi formato cache
+const API_CACHE_KEY = "dbd-api-cache-v8"; // bump
 const API_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 
 function slugifyId(s: string) {
@@ -195,12 +182,11 @@ function mapSurvivorPerk(raw: any): Perk {
   };
 }
 
-// mapping killer più tollerante sui nomi campo
 function mapKillerPerk(raw: any): Perk {
   const name = String(
     raw.PerkName ?? raw.name ?? raw.Perk ?? raw.perkName ?? ""
   ).trim();
-  const desc = getPerkDescription(raw); // 👈 pulita
+  const desc = getPerkDescription(raw);
   const iconRaw = raw.PerkIcon ?? raw.Image ?? raw.Icon ?? null;
 
   return {
@@ -226,40 +212,56 @@ function mapKillerPerk(raw: any): Perk {
 function cleanDescHtml(html: string): string {
   if (!html) return "";
   try {
-    // usa il DOM per una pulizia robusta
     const wrap = document.createElement("div");
     wrap.innerHTML = html;
 
-    // rimuovi wrapper/icone/tooltip superflui
     wrap
       .querySelectorAll(
         '.iconLink, .pcView, .mobileView, .tooltip, .tooltiptext, .tooltipBaseText, .tooltipTextWrapper, [typeof="mw:File"]'
       )
       .forEach((el) => el.remove());
 
-    // <br> → newline
     wrap.querySelectorAll("br").forEach((br) => br.replaceWith("\n"));
-
-    // separa i paragrafi con righe vuote
     wrap.querySelectorAll("p").forEach((p, i) => {
       if (i > 0) p.insertAdjacentText("beforebegin", "\n\n");
     });
 
-    // prendi solo il testo “decodificato”
-    return (wrap.textContent || "")
-      .replace(/\u00A0/g, " ")       // nbsp → spazio
-      .replace(/[ \t]+\n/g, "\n")    // spazi a fine riga
-      .replace(/\n{3,}/g, "\n\n")    // compattazione eccessi
-      .trim();
-  } catch {
-    // fallback ultra-semplice se il DOM non è disponibile
-    return html
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<[^>]+>/g, "")
+    const text = (wrap.textContent || "")
       .replace(/\u00A0/g, " ")
+      .replace(/[ \t]+\n/g, "\n")
+      .replace(/\n{3,}/g, "\n\n")
       .trim();
+
+    return stripPatchNotices(text); // 👈 rimuove le note patch/PTB
+  } catch {
+    return stripPatchNotices(
+      html
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<[^>]+>/g, "")
+        .replace(/\u00A0/g, " ")
+        .trim()
+    );
   }
 }
+
+function stripPatchNotices(text: string): string {
+  const patterns = [
+    /^\s*\(*\s*(?:this|the)\s+description\s+is\s+based\s+on.*?(?:upcoming|ptb)?\s*patch\s+\d+(?:\.\d+){1,2}.*\)*\s*$/gim,
+    /^\s*\(*\s*information\s+in\s+this\s+article.*?(?:upcoming|ptb)?\s*patch\s+\d+(?:\.\d+){1,2}.*\)*\s*$/gim,
+    /^\s*\(*\s*subject\s+to\s+change.*?(?:patch|ptb).*\)*\s*$/gim,
+  ];
+
+  let out = text;
+  for (const re of patterns) out = out.replace(re, "");
+
+  out = out.replace(/\(\s*(?:this|the)\s+description\s+is\s+based\s+on.*?\)/gim, "");
+
+  return out
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 
 function dedupeByName(perks: Perk[]) {
   const seen = new Set<string>();
@@ -313,14 +315,12 @@ async function fetchKillerDataForSlugs(slugs: string[]) {
         const json = await res.json();
         results[slug] = extractTopPerksFromKillerData(json);
       } catch {
-        // ignora errore singolo killer
       }
     })
   );
   return results;
 }
 
-// ---- Meta scoring (Tier + Rate)
 const TIER_BONUS: Record<string, number> = {
   S: 10,
   A: 6,
@@ -345,7 +345,6 @@ function getRate(p: Perk): number | null {
   return null;
 }
 
-/** Transforms a rate of 0–5 into a bonus centred on 2.5 (range ~[-7.5, +7.5]) */
 function rateBonus(p: Perk) {
   const r = getRate(p);
   if (r == null) return 0;
@@ -353,7 +352,6 @@ function rateBonus(p: Perk) {
   return (rr - 2.5) * 3;
 }
 
-/** Tier score (S, A, B, ...) */
 function tierBonus(p: Perk) {
   const raw = (p.meta as any)?.tier;
   const key = typeof raw === "string" ? raw.toUpperCase() : "";
@@ -367,11 +365,9 @@ function killerFocusBonus(p: Perk, slug: string | undefined | null): number {
   const hit = arr.find((x: any) => x?.slug === slug);
   if (!hit) return 0;
   const rank = Number(hit.rank ?? 99);
-  // Rank 1 = +14, 2 = +12, 3 = +10 ... min 0
   return Math.max(0, 14 - (rank - 1) * 2);
 }
 
-// Basic score: match tags, add synergy, penalize anti-synergy
 function scorePerk(
   p: Perk,
   ctx: {
@@ -394,22 +390,18 @@ function scorePerk(
 
   let score = 0;
 
-  // 1) Matches for selected tags
   for (const t of ctx.tags)
     if (p.tags.map(normalize).includes(normalize(t))) score += 10;
 
-  // 2) Synergy bonus with locked + current selections
   const related = new Set((p.synergy || []).map(normalize));
   const lockedNames = ctx.locked.map((n) => normalize(n));
   const currentNames = ctx.current.map((c) => normalize(c.name));
   for (const n of [...lockedNames, ...currentNames])
     if (related.has(n)) score += 8;
 
-  // 3) Declared anti-synergy penalty
   const anti = new Set((p.anti_synergy || []).map(normalize));
   for (const n of currentNames) if (anti.has(n)) score -= 12;
 
-  // 4) Mutex rules (e.g. no double exhaustion / scourge_hook)
   const mutex = new Set((MUTEX_TAGS[p.role] || []).map(normalize));
   const pTags = new Set(p.tags.map(normalize));
   const hasMutexTag = [...pTags].some((t) => mutex.has(t));
@@ -420,19 +412,17 @@ function scorePerk(
     if (currentHasSameMutex) score -= 100;
   }
 
-  // 5) Meta: Tier + Rate (p.meta.tier / p.meta.rate)
-  score += tierBonus(p); // S > A > B ...
-  score += rateBonus(p); // preferably if the rate is > 2.5
+
+  score += tierBonus(p); 
+  score += rateBonus(p); 
 
   score += killerFocusBonus(p, ctx.killerFocus);
 
-  // 6) Lightweight tiebreaker for stability
   score += (100 - Math.min(100, p.name.length)) * 0.01;
 
   return score;
 }
 
-// ---- Mutex tags
 const MUTEX_TAGS: Record<Role, string[]> = {
   survivor: ["exhaustion"],
   killer: ["scourge_hook"],
@@ -445,7 +435,6 @@ function useScrollLock(locked: boolean) {
     const prevOverflow = body.style.overflow;
     const prevPadRight = body.style.paddingRight;
 
-    // evita il “layout shift” quando sparisce la scrollbar
     const scrollbarW = window.innerWidth - documentElement.clientWidth;
     body.style.overflow = "hidden";
     if (scrollbarW > 0) body.style.paddingRight = `${scrollbarW}px`;
@@ -597,7 +586,6 @@ export default function App() {
     };
   }, [randOpen]);
 
-  // Fetch read-only dataset
   function readCache(): DbdDataset | null {
     try {
       const raw = localStorage.getItem(API_CACHE_KEY);
@@ -618,7 +606,6 @@ export default function App() {
     } catch {}
   }
 
-  // helper locali (mettile sopra o dentro la funzione)
   function asArray(x: any): any[] {
     return Array.isArray(x) ? x : [];
   }
@@ -638,9 +625,8 @@ export default function App() {
     const sJson = await sRes.json();
     const kJson = await kRes.json();
 
-    // ⬇️ QUI: chiavi reali degli endpoint
     const sArr = pickFirstArray(
-      sJson?.Perks, // ✅ survivors
+      sJson?.Perks,
       sJson?.data,
       sJson?.items,
       sJson
@@ -663,10 +649,10 @@ export default function App() {
         : null
     );
 
-    // ⬇️ prova più chiavi possibili per sicurezza
+
     const kArr = pickFirstArray(
-      kJson?.Killers, // alcuni endpoint killer
-      kJson?.Perks, // altri usano Perks anche per killer
+      kJson?.Killers,
+      kJson?.Perks, 
       kJson?.perks,
       kJson?.data,
       kJson?.items,
@@ -688,7 +674,6 @@ export default function App() {
       throw new Error("EMPTY_DATASET");
     }
 
-    // Slug da owner per killerData
     const killerOwners = Array.from(
       new Set(
         killerPerks.map((p: Perk) => p.meta?.owner).filter(Boolean) as string[]
@@ -718,12 +703,11 @@ export default function App() {
       `[DBD] Loaded perks: survivors=${survivorPerks.length}, killers=${killerPerks.length}`
     );
     return {
-      version: `dennisreep:${new Date().toISOString().slice(0, 10)}`,
+      version: `${new Date().toISOString().slice(0, 10)}`,
       perks,
     };
   }
 
-  // ---- EFFECT SOSTITUITO
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -739,7 +723,6 @@ export default function App() {
           }
         }
       } catch {
-        // fallback al vecchio JSON statico (o al FALLBACK)
         try {
           const res = await fetch("/perks.json", { cache: "no-store" });
           if (!res.ok) throw new Error("perks.json not found");
@@ -785,7 +768,6 @@ export default function App() {
     return Array.from(s).sort();
   }, [perks]);
 
-  // Tags ONLY for the selected role
   const allTags = useMemo(() => {
     const s = new Set<string>();
     perks
@@ -797,7 +779,6 @@ export default function App() {
   const visiblePerks = useMemo(() => {
     const q = normalize(settings.search);
 
-    // valid owner for the current role
     const ownersForRole = new Set(
       perks
         .filter((p) => p.role === settings.role)
@@ -810,7 +791,6 @@ export default function App() {
         (o) => normalize(o) === normalize(settings.filterOwner)
       );
 
-    // active tags, but only those that exist for the current role
     const activeTags = settings.selectedTags.filter((t) => allTags.includes(t));
 
     const tierActive = !!settings.filterTier;
@@ -876,7 +856,6 @@ export default function App() {
       );
     };
 
-    // actual locked = locked - banned
     const lockedPerks = perks.filter(
       (p) =>
         settings.locked.some(
@@ -892,7 +871,6 @@ export default function App() {
       return;
     }
 
-    // pool = same role only, not already chosen, NOT banned
     const pool = perks
       .filter((p) => p.role === settings.role)
       .filter(
@@ -923,7 +901,6 @@ export default function App() {
       );
 
       const pick = pool.shift()!;
-      // (the filter above already avoids banned users, this is just defensive)
       if (
         scorePerk(pick, {
           role: settings.role,
@@ -1421,7 +1398,7 @@ export default function App() {
 
         <footer className="text-center text-xs text-zinc-500 pt-4 border-t border-neutral-900">
           <p className="inline-flex items-center gap-2">
-            <span>Dataset: {dataset?.version ?? "fallback"}</span>
+            <span>Dataset Dnnisreep: {dataset?.version ?? "fallback"}</span>
             <span aria-hidden>·</span>
             <a href="/privacy.html" className="underline hover:text-zinc-300">
               Privacy Policy
