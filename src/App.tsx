@@ -1439,13 +1439,29 @@ function PerkCard({
   onLock: () => void;
   onBan: () => void;
 }) {
+  const [open, setOpen] = useState(false);
   const hasRate =
     typeof perk.meta?.rate !== "undefined" && perk.meta?.rate !== null;
 
+  const toggle = () => setOpen((v) => !v);
+
   return (
-    <div className="p-3 rounded-2xl bg-zinc-900 border border-red-900/40 hover:border-red-900/40 transition">
+    <div
+      className={`p-3 rounded-2xl bg-zinc-900 border transition
+                  ${open ? "border-red-600/60" : "border-red-900/40 hover:border-red-700/50"}`}
+      role="button"
+      tabIndex={0}
+      aria-expanded={open}
+      onClick={toggle}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggle();
+        }
+      }}
+    >
       <div className="flex items-start justify-between gap-2">
-        <div>
+        <div className="min-w-0">
           {/* Icon above the name (if present) */}
           {perk.icon && (
             <img
@@ -1475,7 +1491,7 @@ function PerkCard({
               })()}
           </div>
 
-          {/* Role + Owner (ex. "survivor · Meg Thomas" or "killer · The Artist") */}
+          {/* Role + Owner */}
           <div className="text-xs text-zinc-300 capitalize">
             {perk.role}
             {perk.meta?.owner && (
@@ -1487,16 +1503,22 @@ function PerkCard({
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-2">
+        {/* Actions (non propagano il click) */}
+        <div className="flex gap-2 shrink-0">
           <button
-            onClick={onLock}
+            onClick={(e) => {
+              e.stopPropagation();
+              onLock();
+            }}
             className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700"
           >
             Lock
           </button>
           <button
-            onClick={onBan}
+            onClick={(e) => {
+              e.stopPropagation();
+              onBan();
+            }}
             className="text-xs px-2 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700"
           >
             Ban
@@ -1518,8 +1540,12 @@ function PerkCard({
         </div>
       )}
 
-      {/* Desc */}
-      {perk.desc && <p className="text-xs text-zinc-400 mt-2">{perk.desc}</p>}
+      {/* Desc: visibile solo quando open === true */}
+      {open && perk.desc && (
+        <p className="text-xs text-zinc-400 mt-2 whitespace-pre-line">
+          {perk.desc}
+        </p>
+      )}
     </div>
   );
 }
