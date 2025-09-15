@@ -128,7 +128,7 @@ const API_URLS = {
     `${API_BASE}/getKillerData?killer=${encodeURIComponent(slug)}`,
 };
 
-const API_CACHE_KEY = "dbd-api-cache-v3";  // bumpa se cambi formato cache
+const API_CACHE_KEY = "dbd-api-cache-v4";  // bumpa se cambi formato cache
 const API_TTL_MS = 24 * 60 * 60 * 1000; // 24h
 
 function slugifyId(s: string) {
@@ -165,35 +165,36 @@ function deriveTags(role: Role, raw: any): string[] {
 }
 
 function mapSurvivorPerk(raw: any): Perk {
-  const name = String(raw.name ?? raw.perkName ?? "");
+  const name = String(raw.PerkName ?? raw.name ?? raw.perkName ?? "");
   return {
     id: String(raw.id ?? slugifyId(name)),
     name,
     role: "survivor",
-    tags: deriveTags("survivor", raw),
-    desc: String(raw.description ?? raw.desc ?? "") || undefined,
-    icon: (raw.iconUrl ?? raw.imageUrl ?? raw.icon ?? null) || null,
+    // userò name+Description per deriveTags (Exhaustion ecc.)
+    tags: deriveTags("survivor", { name, description: raw.Description }),
+    desc: raw.Description ? String(raw.Description) : undefined, // HTML ok, la UI lo mostra come testo
+    icon: raw.Image ? String(raw.Image).trim() : null,
     meta: {
-      owner: raw.owner ?? raw.character ?? raw.survivor ?? undefined,
-      tier: raw.tier ?? undefined,
-      rate: raw.usageRate ?? raw.rate ?? undefined,
+      owner: raw.Survivor ?? undefined,     // es. "Feng"
+      tier: raw.Tier ?? undefined,          // "A" / "S"...
+      rate: typeof raw.Rating === "number" ? raw.Rating : undefined, // 0..5
     },
   };
 }
 
 function mapKillerPerk(raw: any): Perk {
-  const name = String(raw.name ?? raw.perkName ?? "");
+  const name = String(raw.PerkName ?? raw.name ?? raw.perkName ?? "");
   return {
     id: String(raw.id ?? slugifyId(name)),
     name,
     role: "killer",
-    tags: deriveTags("killer", raw),
-    desc: String(raw.description ?? raw.desc ?? "") || undefined,
-    icon: (raw.iconUrl ?? raw.imageUrl ?? raw.icon ?? null) || null,
+    tags: deriveTags("killer", { name }), // niente description nel killer API
+    desc: undefined,
+    icon: raw.PerkIcon ? String(raw.PerkIcon).trim() : null,
     meta: {
-      owner: raw.owner ?? raw.character ?? raw.killer ?? undefined,
-      tier: raw.tier ?? undefined,
-      rate: raw.usageRate ?? raw.rate ?? undefined,
+      owner: raw.PerkKiller ?? undefined,   // es. "Cannibal"
+      tier: raw.Tier ?? undefined,
+      rate: typeof raw.Rating === "number" ? raw.Rating : undefined,
     },
   };
 }
@@ -214,26 +215,21 @@ function dedupeByName(perks: Perk[]) {
 type KillerTopPerk = { name: string; rank?: number; usage?: number };
 
 function extractTopPerksFromKillerData(raw: any): KillerTopPerk[] {
-  const list =
-    (Array.isArray(raw?.topPerks) && raw.topPerks) ||
-    (Array.isArray(raw?.perks) && raw.perks) ||
-    (Array.isArray(raw?.data) && raw.data) ||
+  const list: any[] =
+    Array.isArray(raw?.Killers) ? raw.Killers :
+    Array.isArray(raw)          ? raw :
     [];
 
   return list
-    .map(
-      (x: any, i: number): KillerTopPerk => ({
-        name: String(x?.name ?? x?.perk ?? x?.perkName ?? ""),
-        rank: Number(x?.rank ?? x?.position ?? i + 1) || i + 1,
-        usage:
-          typeof x?.usage === "number"
-            ? x.usage
-            : typeof x?.rate === "number"
-            ? x.rate
-            : undefined,
-      })
-    )
-    .filter((p: KillerTopPerk) => Boolean(p.name));
+    .map((x: any, i: number): KillerTopPerk => ({
+      name: String(x?.PerkName ?? x?.name ?? x?.perk ?? x?.perkName ?? ""),
+      rank: Number(x?.rank ?? x?.position ?? i + 1) || i + 1,
+      usage:
+        typeof x?.Rating === "number" ? x.Rating :
+        typeof x?.rate   === "number" ? x.rate   :
+        undefined,
+    }))
+    .filter((r: KillerTopPerk) => Boolean(r.name));
 }
 
 async function fetchKillerDataForSlugs(slugs: string[]) {
@@ -555,19 +551,15 @@ export default function App() {
     } catch {}
   }
 
-  function asArray(x: any): any[] {
-  return Array.isArray(x) ? x : [];
-}
+ // helper locali (mettile sopra o dentro la funzione)
+function asArray(x: any): any[] { return Array.isArray(x) ? x : []; }
 
 function pickFirstArray(...candidates: any[]): any[] {
-  for (const c of candidates) {
-    if (Array.isArray(c)) return c;
-  }
+  for (const c of candidates) if (Array.isArray(c)) return c;
   return [];
 }
 
-  async function fetchDatasetFromAPI(): Promise<DbdDataset> {
-  // 1) Perks
+ async function fetchDatasetFromAPI(): Promise<DbdDataset> {
   const [sRes, kRes] = await Promise.all([
     fetch(API_URLS.survivorPerks, { cache: "no-store", mode: "cors" }),
     fetch(API_URLS.killerPerks,   { cache: "no-store", mode: "cors" }),
@@ -577,19 +569,17 @@ function pickFirstArray(...candidates: any[]): any[] {
   const sJson = await sRes.json();
   const kJson = await kRes.json();
 
-  // Estrazione robusta (copre vari shape possibili)
+  // ⬇️ QUI: chiavi reali degli endpoint
   const sArr = pickFirstArray(
+    sJson?.Perks,      // ✅ survivors
     sJson?.data,
-    sJson?.perks,
-    sJson?.survivorPerks,
     sJson?.items,
-    sJson // nel caso l’endpoint ritorni direttamente un array
+    sJson
   );
 
   const kArr = pickFirstArray(
+    kJson?.Killers,    // ✅ killers
     kJson?.data,
-    kJson?.perks,
-    kJson?.killerPerks,
     kJson?.items,
     kJson
   );
@@ -598,22 +588,19 @@ function pickFirstArray(...candidates: any[]): any[] {
   const killerPerks   = asArray(kArr).map(mapKillerPerk).filter(p => p.name);
   const perks: Perk[] = [...survivorPerks, ...killerPerks];
 
-  // Se è vuoto, forza il fallback (così non salviamo in cache il vuoto)
   if (perks.length === 0) {
     console.warn("[DBD] API hanno risposto ma senza perks (shape non riconosciuto o vuoto). Forzo fallback.");
     throw new Error("EMPTY_DATASET");
   }
 
-  // 2) Slugs killer da owners (per chiamare killerData)
+  // Slug da owner per killerData
   const killerOwners = Array.from(
     new Set(killerPerks.map((p: Perk) => p.meta?.owner).filter(Boolean) as string[])
   );
   const killerSlugs = killerOwners.map(killerSlugFromOwner);
 
-  // 3) KillerData per ognuno (riempie topForKillers)
-  const kdMap = await fetchKillerDataForSlugs(killerSlugs); // { slug -> [{name, rank, usage}] }
+  const kdMap = await fetchKillerDataForSlugs(killerSlugs);
 
-  // 4) Join su perk name normalizzato
   const indexByName: Record<string, Perk> = {};
   for (const p of perks) indexByName[normalize(p.name)] = p;
 
